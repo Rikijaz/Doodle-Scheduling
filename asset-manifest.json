@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/Doodle-Scheduling/static/css/main.b100e6da.chunk.css",
+    "main.js": "/Doodle-Scheduling/static/js/main.ee8f9e44.chunk.js",
+    "main.js.map": "/Doodle-Scheduling/static/js/main.ee8f9e44.chunk.js.map",
+    "runtime-main.js": "/Doodle-Scheduling/static/js/runtime-main.3f9a3e7b.js",
+    "runtime-main.js.map": "/Doodle-Scheduling/static/js/runtime-main.3f9a3e7b.js.map",
+    "static/js/2.80afcc12.chunk.js": "/Doodle-Scheduling/static/js/2.80afcc12.chunk.js",
+    "static/js/2.80afcc12.chunk.js.map": "/Doodle-Scheduling/static/js/2.80afcc12.chunk.js.map",
+    "index.html": "/Doodle-Scheduling/index.html",
+    "precache-manifest.117dd177f59ffaa42186cdec998ce2cb.js": "/Doodle-Scheduling/precache-manifest.117dd177f59ffaa42186cdec998ce2cb.js",
+    "service-worker.js": "/Doodle-Scheduling/service-worker.js",
+    "static/css/main.b100e6da.chunk.css.map": "/Doodle-Scheduling/static/css/main.b100e6da.chunk.css.map",
+    "static/media/DoodleSchedulingIcon.png": "/Doodle-Scheduling/static/media/DoodleSchedulingIcon.c5fdc321.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3f9a3e7b.js",
+    "static/js/2.80afcc12.chunk.js",
+    "static/css/main.b100e6da.chunk.css",
+    "static/js/main.ee8f9e44.chunk.js"
+  ]
+}
