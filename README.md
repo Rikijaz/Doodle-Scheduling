@@ -18,4 +18,4 @@ All development occurs on the branch **dev**. Therefore, to contribute to this p
 
 `git push origin name-of-your-feature`
 
-Once you've completed your work, you can open a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from Github's main page. Please note that the pull request needs to be pointed to the **dev** branch on the merge, NOT **master**. Eric will merge the **dev** branch into the **master** branch.
+Once you've finished completing your feature, you can open a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from Github's main page. Please note that the pull request needs to be pointed to the **dev** branch on the merge, NOT **master**. Eric will merge the **dev** branch into the **master** branch.
