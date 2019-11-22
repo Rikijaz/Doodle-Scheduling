@@ -4,7 +4,7 @@
 
 ## Contributing
 
-All development occurs on the branch **dev**. Therefore, to contribute to this project you must create a branch that branches off of the **dev** branch. Once you've completed your work, you can open a pull request from github's main page. Pull requests needs to be pointed at the **dev** branch on the merge. It will not be accepted if you attempt to merge it into the **master** branch. 
+All development occurs on the branch **dev**. Therefore, to contribute to this project you must create a branch that branches off of the **dev** branch.
 
 1. Create a **name-of-your-feature** branch off of **dev** branch
 
@@ -18,4 +18,4 @@ All development occurs on the branch **dev**. Therefore, to contribute to this p
 
 `git push origin name-of-your-feature`
 
-Once you've finished completing your feature, you can open a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from Github's main page. Please note that the pull request needs to be pointed to the **dev** branch on the merge, NOT **master**. Eric will merge the **dev** branch into the **master** branch.
+Once you've completed your feature and it is ready to be integrated, you can open a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from Github's main page. Please note that the pull request needs to be pointed to the **dev** branch on the merge, NOT **master**. Eric will merge the **dev** branch into the **master** branch.
