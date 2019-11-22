@@ -2,6 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import WeekCalendar from 'react-week-calendar';
 
+// garbage text for testing pull requests to dev
+
 export default class DoodleCalendar extends React.Component {
 
   constructor(props) {
