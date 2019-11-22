@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import EventManager from "./components/EventManager";
 import Login from './components/Login'
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
     return (
