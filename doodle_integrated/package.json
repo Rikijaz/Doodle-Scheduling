@@ -1,7 +1,7 @@
 {
-  "name": "my-app",
+  "name": "doodle_integrated",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "homepage": "https://rikijaz.github.io/Doodle-Scheduling",
   "dependencies": {
     "@material-ui/core": "^4.5.2",
