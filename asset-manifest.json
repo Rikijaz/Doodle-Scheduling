@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/Doodle-Scheduling/static/css/main.b100e6da.chunk.css",
-    "main.js": "/Doodle-Scheduling/static/js/main.ee8f9e44.chunk.js",
-    "main.js.map": "/Doodle-Scheduling/static/js/main.ee8f9e44.chunk.js.map",
-    "runtime-main.js": "/Doodle-Scheduling/static/js/runtime-main.3f9a3e7b.js",
-    "runtime-main.js.map": "/Doodle-Scheduling/static/js/runtime-main.3f9a3e7b.js.map",
-    "static/js/2.80afcc12.chunk.js": "/Doodle-Scheduling/static/js/2.80afcc12.chunk.js",
-    "static/js/2.80afcc12.chunk.js.map": "/Doodle-Scheduling/static/js/2.80afcc12.chunk.js.map",
+    "main.css": "/Doodle-Scheduling/static/css/main.682ff281.chunk.css",
+    "main.js": "/Doodle-Scheduling/static/js/main.a15bcc05.chunk.js",
+    "main.js.map": "/Doodle-Scheduling/static/js/main.a15bcc05.chunk.js.map",
+    "runtime-main.js": "/Doodle-Scheduling/static/js/runtime-main.b12f3701.js",
+    "runtime-main.js.map": "/Doodle-Scheduling/static/js/runtime-main.b12f3701.js.map",
+    "static/css/2.f2f83dcd.chunk.css": "/Doodle-Scheduling/static/css/2.f2f83dcd.chunk.css",
+    "static/js/2.98869d0a.chunk.js": "/Doodle-Scheduling/static/js/2.98869d0a.chunk.js",
+    "static/js/2.98869d0a.chunk.js.map": "/Doodle-Scheduling/static/js/2.98869d0a.chunk.js.map",
     "index.html": "/Doodle-Scheduling/index.html",
-    "precache-manifest.117dd177f59ffaa42186cdec998ce2cb.js": "/Doodle-Scheduling/precache-manifest.117dd177f59ffaa42186cdec998ce2cb.js",
+    "precache-manifest.bb442b6fef39386af7440e472b79831d.js": "/Doodle-Scheduling/precache-manifest.bb442b6fef39386af7440e472b79831d.js",
     "service-worker.js": "/Doodle-Scheduling/service-worker.js",
-    "static/css/main.b100e6da.chunk.css.map": "/Doodle-Scheduling/static/css/main.b100e6da.chunk.css.map",
-    "static/media/DoodleSchedulingIcon.png": "/Doodle-Scheduling/static/media/DoodleSchedulingIcon.c5fdc321.png"
+    "static/css/2.f2f83dcd.chunk.css.map": "/Doodle-Scheduling/static/css/2.f2f83dcd.chunk.css.map",
+    "static/css/main.682ff281.chunk.css.map": "/Doodle-Scheduling/static/css/main.682ff281.chunk.css.map",
+    "static/media/logo.png": "/Doodle-Scheduling/static/media/logo.88ca5a89.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.3f9a3e7b.js",
-    "static/js/2.80afcc12.chunk.js",
-    "static/css/main.b100e6da.chunk.css",
-    "static/js/main.ee8f9e44.chunk.js"
+    "static/js/runtime-main.b12f3701.js",
+    "static/css/2.f2f83dcd.chunk.css",
+    "static/js/2.98869d0a.chunk.js",
+    "static/css/main.682ff281.chunk.css",
+    "static/js/main.a15bcc05.chunk.js"
   ]
 }
