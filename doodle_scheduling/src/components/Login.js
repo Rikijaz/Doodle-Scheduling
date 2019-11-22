@@ -72,7 +72,7 @@ export class Login extends Component {
 
                 //keep this so header can load the page
                 localStorage.setItem("currentUser", JSON.stringify(user.email));
-                console.log("toot");
+                //console.log("toot");
             }
         });
     };

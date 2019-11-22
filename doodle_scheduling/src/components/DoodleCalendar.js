@@ -21,7 +21,7 @@ export default class DoodleCalendar extends React.Component {
 
   handleEventRemove = (event) => {
     const {selectedIntervals} = this.state;
-    console.log('Removing event');
+    //console.log('Removing event');
 
     const index = selectedIntervals.findIndex((interval) => interval.uid === event.uid);
     if (index > -1) {
@@ -33,7 +33,7 @@ export default class DoodleCalendar extends React.Component {
 
   handleEventUpdate = (event) => {
     const {selectedIntervals} = this.state;
-    console.log('Updating event');
+    //console.log('Updating event');
 
     const index = selectedIntervals.findIndex((interval) => interval.uid === event.uid);
     if (index > -1) {

@@ -7,17 +7,23 @@ import uuid from "uuid";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
 import AddFirstPage from "./AddFirstPage";
+import { db, firebase } from "./firebase";
+
+let doc = (JSON.parse(localStorage.getItem("currentUser"))) ? db
+    .collection("users")
+    .doc(JSON.parse(localStorage.getItem("currentUser")))
+    :
+    undefined;
 
 export class EventManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            events: JSON.parse(localStorage.getItem("events")),
+            events: [],
 
             polls: JSON.parse(localStorage.getItem("polls")),
 
             currentEventTitle: "",
-            currentEventDate: "",
             currentEventDescription: "",
 
             errorMessageOpen: false,
@@ -29,8 +35,22 @@ export class EventManager extends Component {
             pollPage: false,
 
             editingEvent: false,
-            indexOfEditEvent: ""
+            indexOfEditEvent: 0
         };
+    }
+
+    componentDidMount() {
+        doc = db
+            .collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")));
+
+        doc.get().then(data => {
+            if (data.exists) {
+                this.setState({ events: data.data().events });
+            } else {
+                //console.log("Sad toot");
+            }
+        });
     }
 
     addEvent = async (title, description, date, time) => {
@@ -45,20 +65,12 @@ export class EventManager extends Component {
                 date: date,
                 time: time
             };
-            if (this.state.events !== null) {
-                this.setState({
-                    events: [...this.state.events, newEvent],
-                    successMessageOpen: true
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
+                .update({
+                    events: firebase.firestore.FieldValue.arrayUnion(newEvent)
                 });
-            } else {
-                //needed to add this, cant call this.state.events if it is null
-                const newEventArray = [];
-                newEventArray.push(newEvent);
-                this.setState({
-                    events: newEventArray,
-                    successMessageOpen: true
-                });
-            }
+            this.setState({ successMessageOpen: true });
             this.finishAddEvent();
         } else if (time !== "" && this.state.editingEvent) {
             const newEvent = {
@@ -71,19 +83,36 @@ export class EventManager extends Component {
             };
             const newEvents = this.state.events;
             newEvents.splice(this.state.indexOfEditEvent, 1, newEvent);
-            this.setState({
-                events: newEvents,
-                indexOfEditEvent: "",
-                editingEvent: false
-            });
+
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
+                .update({
+                    events: newEvents
+                });
+            this.setState({ editingEvent: false })
             this.finishAddEvent();
         }
+    };
+
+    finishAddEvent = () => {
+        //change this to localstorage.clear later
+        doc.get().then(data => {
+            if (data.exists) {
+                this.setState({ events: data.data().events });
+            } else {
+                //console.log("Sad toot");
+            }
+        });
+        localStorage.removeItem("saved_current_event");
+        localStorage.removeItem("saved_current_event_time");
+        this.setState({
+            homePage: !this.state.homePage,
+        });
     };
 
     addFirst = async (t, d, des) => {
         if (t !== "") {
             this.setState({ currentEventTitle: t });
-            this.setState({ currentEventDate: d });
             this.setState({ currentEventDescription: des });
             this.goToNext();
         } else if (t === "") {
@@ -91,7 +120,7 @@ export class EventManager extends Component {
                 errorMessageOpen: true,
                 message: "Missing title!"
             });
-        } 
+        }
     };
 
     goToPrevious = () => {
@@ -99,16 +128,6 @@ export class EventManager extends Component {
     };
     goToNext = () => {
         this.setState({ nextPage: !this.state.nextPage });
-    };
-    finishAddEvent = () => {
-        //componentDidUpdate can handle this
-        //localStorage.setItem("events", JSON.stringify(this.state.events));
-
-        //change this to localstorage.clear later
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
-
-        this.setState({ homePage: !this.state.homePage });
     };
 
     handleErrorClose = (event, reason) => {
@@ -137,24 +156,28 @@ export class EventManager extends Component {
         this.setAdd();
     };
 
-    editEvent = id => {
+    editEvent = (id) => {
         const editedEvent = this.state.events.find(event => {
             return event.id === id;
         });
+        console.log(editedEvent)
         const editedFirstPage = {
             title: editedEvent.title,
-            date: editedEvent.date,
             description: editedEvent.description
         };
         const editedSecondPage = {
+            date: editedEvent.date,
             time: editedEvent.time
         };
-        this.setState({
-            editingEvent: true,
-            indexOfEditEvent: this.state.events.findIndex(
-                event => event.id === id
-            )
-        });
+        for (let i = 0; i < this.state.events.length; i++) {
+            if (this.state.events[i].id === editedEvent.id) {
+                this.setState({
+                    indexOfEditEvent: i,
+                    editingEvent: true,
+                });
+                break;
+            }
+        }
         localStorage.setItem(
             "saved_current_event",
             JSON.stringify(editedFirstPage)
@@ -167,8 +190,18 @@ export class EventManager extends Component {
     };
 
     deleteEvent = id => {
-        this.setState({
-            events: [...this.state.events.filter(event => event.id !== id)]
+        db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")))
+            .update({
+                events: [...this.state.events.filter(event => event.id !== id)]
+            });
+
+        doc.get().then(data => {
+            if (data.exists) {
+                this.setState({ events: data.data().events });
+            } else {
+                //console.log("Sad toot");
+            }
         });
     };
 
@@ -177,19 +210,6 @@ export class EventManager extends Component {
         localStorage.removeItem("saved_current_event_time");
         this.setHomePage();
     };
-
-    cancelPoll = () => {
-        this.setHomePage();
-    };
-
-    beginAddPoll = () => {
-        this.setPollPage();
-    };
-
-    componentDidUpdate() {
-        localStorage.setItem("events", JSON.stringify(this.state.events));
-        localStorage.setItem("polls", JSON.stringify(this.state.polls));
-    }
 
     setAdd = () => {
         this.setState({ nextPage: false, homePage: false, pollPage: false });
@@ -234,6 +254,13 @@ export class EventManager extends Component {
             this.setHomePage();
         }
     };
+    cancelPoll = () => {
+        this.setHomePage();
+    };
+
+    beginAddPoll = () => {
+        this.setPollPage();
+    };
 
     render() {
         return (
@@ -268,7 +295,6 @@ export class EventManager extends Component {
                             addEvent={this.addEvent}
                             title={this.state.currentEventTitle}
                             description={this.state.currentEventDescription}
-                            //date={this.state.currentEventDate}
                             cancelEvent={this.cancelEvent}
                         />
                     )}

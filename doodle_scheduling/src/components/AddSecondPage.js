@@ -11,16 +11,16 @@ export class AddSecondPage extends Component {
         super(props);
         this.state = {
             time: "",
+            date: "",
             calendar: "default"
         };
     }
-    onChangeTime = t => this.setState({ time: t.target.value });
     onSubmit = t => {
         t.preventDefault();
         this.props.addEvent(
             this.props.title,
             this.props.description,
-            this.props.date,
+            this.state.date,
             this.state.time
         );
     };
@@ -42,24 +42,41 @@ export class AddSecondPage extends Component {
     changeCalendar = calendar => {
         this.setState({ calendar });
     };
-    
-    onEventSubmitted(eventData) {
-        var i;
-        for (i = 0; i < eventData.length; i++) {
-            console.log(
-                "Event created from " +
-                    eventData[i].start.format("LLLL") +
-                    " to " +
-                    eventData[i].end.format("LLLL") +
-                    "\n"
-            );
-        }
 
-        // this.props.date = 
+    onEventSubmitted = eventData => {
+        // var i;
+        // for (i = 0; i < eventData.length; i++) {
+        //     let x = new Date(eventData[0].start.format("LLLL"));
+        //     let y = new Date(eventData[0].end.format("LLLL"));
+        //     let start =
+        //         x.getHours().toString() + ":" + x.getMinutes().toString();
+        //     let end = y.getHours().toString() + ":" + y.getMinutes().toString();
+        //     let together = start + "-" + end;
+        //     let date =
+        //         (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
+        //     this.setState({ time: together, date: date });
+        //     // console.log(
+        //     //     "Event created from " +
+        //     //         eventData[i].start.format("LLLL") +
+        //     //         " to " +
+        //     //         eventData[i].end.format("LLLL") +
+        //     //         "\n"
+        //     // );
+        // }
+
+        let x = new Date(eventData[0].start.format("LLLL"));
+        let y = new Date(eventData[0].end.format("LLLL"));
+        let start = x.getHours().toString() + ":" + x.getMinutes().toString();
+        let end = y.getHours().toString() + ":" + y.getMinutes().toString();
+        let together = start + "-" + end;
+        let date = (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
+        this.setState({ time: together, date: date });
+
+        // this.props.date =
         // this.state.time =
-        
+
         // https://momentjs.com/docs/#/parsing/string-format/ if you are looking for a different time format
-    }
+    };
 
     // eric's stuff //
 
@@ -75,7 +92,7 @@ export class AddSecondPage extends Component {
         renderCalendar = (
             <div>
                 <h3>Choose your time!</h3>
-                <DoodleCalendar parentMethod={this.onEventSubmitted}>
+                <DoodleCalendar parentMethod={e => this.onEventSubmitted(e)}>
                     {this.props.children}
                 </DoodleCalendar>
             </div>
@@ -88,20 +105,6 @@ export class AddSecondPage extends Component {
                 {renderCalendar}
 
                 <form onSubmit={t => this.onSubmit(t)}>
-                    {/* {title}
-                    <br />
-                    {description}
-                    <br />
-                    <TextField
-                        variant="outlined"
-                        id="time"
-                        label="Event Time"
-                        type="time"
-                        value={this.state.time}
-                        margin="normal"
-                        onChange={(t) => this.onChangeTime(t)}
-                    />
-                    <br /> */}
                     <Button
                         variant="contained"
                         color="primary"

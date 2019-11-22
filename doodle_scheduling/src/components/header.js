@@ -42,7 +42,7 @@ export class Header extends Component {
                     //console.log("glad toot");
                     this.setState({ user: data.data()});
                 } else {
-                    console.log("Sad toot");
+                    //console.log("Sad toot");
                 }
             });
     }

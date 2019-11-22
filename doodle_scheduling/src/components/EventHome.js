@@ -5,23 +5,30 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-
-// import firebase from "firebase";
-// import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import Form from './Form'
 
 export class EventHome extends Component {
     constructor(props) {
         super(props);
         this.state = {
             anchorEl: null,
-            openMenu: false
+            openMenu: false,
+            showForm: false,
         };
     }
 
+    sendEmail = () => {
+        this.setState({ showForm: true })
+    }
+
     showEvents = () => {
-        if (this.props.events === null || this.props.events.length === 0) {
+        if (this.props.events === null || this.props.events === undefined) {
             return <h2>No events</h2>;
-        } else {
+        }
+        else if (this.props.events.length === 0) {
+            return <h2>No events</h2>;
+        }
+        else {
             return (
                 <div>
                     <ReactTable
@@ -46,12 +53,26 @@ export class EventHome extends Component {
                                     {
                                         Header: "Time",
                                         accessor: "time"
-                                    }
+                                    },
                                 ]
                             },
                             {
                                 Header: "Actions",
                                 columns: [
+                                    {
+                                        Header: "Send",
+                                        Cell: row => (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() =>
+                                                    this.sendEmail()
+                                                }
+                                            >
+                                                Send
+                                            </Button>
+                                        )
+                                    },
                                     {
                                         Header: "Edit",
                                         Cell: row => (
@@ -145,9 +166,16 @@ export class EventHome extends Component {
         this.props.beginAddPoll();
     };
 
+    handleDisplay = () => {
+        this.setState({ showForm: false });
+    }
+
     render() {
         return (
             <div>
+                {this.state.showForm && (
+                    <div><Form handleDisplay={this.handleDisplay}></Form></div>
+                )}
                 <div style={this.getBtnStyle()}>
                     <Button
                         variant="contained"
