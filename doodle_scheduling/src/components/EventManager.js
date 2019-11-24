@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import AddSecondPage from "./AddSecondPage";
-import Poll from "./Poll";
 import EventHome from "./EventHome";
 import Header from "./header";
 import uuid from "uuid";
@@ -21,8 +20,6 @@ export class EventManager extends Component {
         this.state = {
             events: [],
 
-            polls: JSON.parse(localStorage.getItem("polls")),
-
             currentEventTitle: "",
             currentEventDescription: "",
 
@@ -32,7 +29,6 @@ export class EventManager extends Component {
 
             nextPage: false,
             homePage: true,
-            pollPage: false,
 
             editingEvent: false,
             indexOfEditEvent: 0
@@ -212,54 +208,11 @@ export class EventManager extends Component {
     };
 
     setAdd = () => {
-        this.setState({ nextPage: false, homePage: false, pollPage: false });
+        this.setState({ nextPage: false, homePage: false, });
     };
 
     setHomePage = () => {
-        this.setState({ homePage: true, nextPage: false, pollPage: false });
-    };
-
-    setPollPage = () => {
-        this.setState({ homePage: false, nextPage: false, pollPage: true });
-    };
-
-    addPoll = (pollTitle, selectedDays) => {
-        if (pollTitle === "" && selectedDays.length === 0) {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Title and Dates!"
-            });
-        } else if (pollTitle === "") {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Title!"
-            });
-        } else if (selectedDays.length === 0) {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Dates!"
-            });
-        } else {
-            const newPoll = {
-                title: pollTitle,
-                selectedDays: selectedDays
-            };
-            if (this.state.polls === null) {
-                const newPolls = [];
-                newPolls.push(newPoll);
-                this.setState({ polls: newPolls });
-            } else {
-                this.setState({ polls: [...this.state.polls, newPoll] });
-            }
-            this.setHomePage();
-        }
-    };
-    cancelPoll = () => {
-        this.setHomePage();
-    };
-
-    beginAddPoll = () => {
-        this.setPollPage();
+        this.setState({ homePage: true, nextPage: false, });
     };
 
     render() {
@@ -269,17 +222,15 @@ export class EventManager extends Component {
                 {this.state.homePage && (
                     <EventHome
                         events={this.state.events}
-                        polls={this.state.polls}
                         archivedEvents={this.state.archivedEvents}
                         beginAddEvent={this.beginAddEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
-                        beginAddPoll={this.beginAddPoll}
                     />
                 )}
                 {!this.state.nextPage &&
                     !this.state.homePage &&
-                    !this.state.pollPage && (
+                     (
                         <AddFirstPage
                             addFirst={this.addFirst}
                             goToNext={this.goToNext}
@@ -288,7 +239,7 @@ export class EventManager extends Component {
                     )}
                 {this.state.nextPage &&
                     !this.state.homePage &&
-                    !this.state.pollPage && (
+                     (
                         <AddSecondPage
                             goToPrevious={this.goToPrevious}
                             nextPage={this.state.nextPage}
@@ -296,14 +247,6 @@ export class EventManager extends Component {
                             title={this.state.currentEventTitle}
                             description={this.state.currentEventDescription}
                             cancelEvent={this.cancelEvent}
-                        />
-                    )}
-                {this.state.pollPage &&
-                    !this.state.nextPage &&
-                    !this.state.homePage && (
-                        <Poll
-                            cancelPoll={this.cancelPoll}
-                            addPoll={this.addPoll}
                         />
                     )}
                 <Snackbar

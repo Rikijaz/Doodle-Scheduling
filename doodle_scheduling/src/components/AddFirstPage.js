@@ -57,14 +57,6 @@ export class AddFirstPage extends Component {
                         onChange={(des) => this.onChangeDescription(des)}
 
                     />
-                    {/* <TextField
-                        variant="outlined"
-                        id="date"
-                        type="date"
-                        value={this.state.date}
-                        onChange={(d) => this.onChangeDate(d)}
-                        margin="normal"
-                    /> */}
                     <br />
                     <Button
                         type="submit"

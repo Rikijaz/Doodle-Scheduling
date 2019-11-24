@@ -114,23 +114,6 @@ export class EventHome extends Component {
         }
     };
 
-    showPolls = () => {
-        if (this.props.polls === null || this.props.polls.length === 0) {
-            return <h2>No Polls</h2>;
-        } else {
-            return (
-                <div>
-                    <h1>POLLS:</h1>
-                    {/* {this.props.polls.map(x => (
-                            <li>
-                                {x.title} - {x.selectedDays}
-                            </li>
-                        ))} */}
-                </div>
-            );
-        }
-    };
-
     getBtnStyle = () => {
         return {
             textAlign: "right",
@@ -159,11 +142,6 @@ export class EventHome extends Component {
     handleAddEventMenu = () => {
         this.handleClose();
         this.props.beginAddEvent();
-    };
-
-    handleAddPoll = () => {
-        this.handleClose();
-        this.props.beginAddPoll();
     };
 
     handleDisplay = () => {
@@ -195,13 +173,11 @@ export class EventHome extends Component {
                         <MenuItem onClick={this.handleAddEventMenu}>
                             Event
                         </MenuItem>
-                        <MenuItem onClick={this.handleAddPoll}>Poll</MenuItem>
                     </Menu>
                 </div>
                 <div style={this.getMainStyle()}>
                     {this.showEvents()}
-                    <br />
-                    {this.showPolls()}
+                    {/* where calendar would go from eric */}
                 </div>
             </div>
         );
