@@ -15,28 +15,6 @@ export class AddSecondPage extends Component {
             calendar: "default"
         };
     }
-    onSubmit = t => {
-        t.preventDefault();
-        this.props.addEvent(
-            this.props.title,
-            this.props.description,
-            this.state.date,
-            this.state.time
-        );
-    };
-
-    componentWillUnmount() {
-        localStorage.setItem(
-            "saved_current_event_time",
-            JSON.stringify(this.state)
-        );
-    }
-    componentDidMount() {
-        const saved_current_time = JSON.parse(
-            localStorage.getItem("saved_current_event_time")
-        );
-        this.setState(saved_current_time);
-    }
 
     // eric's stuff //
     changeCalendar = calendar => {
@@ -44,6 +22,7 @@ export class AddSecondPage extends Component {
     };
 
     onEventSubmitted = eventData => {
+        
         // var i;
         // for (i = 0; i < eventData.length; i++) {
         //     let x = new Date(eventData[0].start.format("LLLL"));
@@ -64,6 +43,7 @@ export class AddSecondPage extends Component {
         //     // );
         // }
 
+        //right now it should only take in one date & one range of time
         let x = new Date(eventData[0].start.format("LLLL"));
         let y = new Date(eventData[0].end.format("LLLL"));
         let start = x.getHours().toString() + ":" + x.getMinutes().toString();
@@ -71,9 +51,6 @@ export class AddSecondPage extends Component {
         let together = start + "-" + end;
         let date = (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
         this.setState({ time: together, date: date });
-
-        // this.props.date =
-        // this.state.time =
 
         // https://momentjs.com/docs/#/parsing/string-format/ if you are looking for a different time format
     };

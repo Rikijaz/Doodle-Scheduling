@@ -1,18 +1,17 @@
 import React, { Component } from "react";
-import AddSecondPage from "./AddSecondPage";
+import AddEvent from "./AddEvent";
 import EventHome from "./EventHome";
 import Header from "./header";
 import uuid from "uuid";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
-import AddFirstPage from "./AddFirstPage";
 import { db, firebase } from "./firebase";
 
-let doc = (JSON.parse(localStorage.getItem("currentUser"))) ? db
-    .collection("users")
-    .doc(JSON.parse(localStorage.getItem("currentUser")))
-    :
-    undefined;
+let doc = JSON.parse(localStorage.getItem("currentUser"))
+    ? db
+          .collection("users")
+          .doc(JSON.parse(localStorage.getItem("currentUser")))
+    : undefined;
 
 export class EventManager extends Component {
     constructor(props) {
@@ -85,7 +84,7 @@ export class EventManager extends Component {
                 .update({
                     events: newEvents
                 });
-            this.setState({ editingEvent: false })
+            this.setState({ editingEvent: false });
             this.finishAddEvent();
         }
     };
@@ -102,7 +101,7 @@ export class EventManager extends Component {
         localStorage.removeItem("saved_current_event");
         localStorage.removeItem("saved_current_event_time");
         this.setState({
-            homePage: !this.state.homePage,
+            homePage: !this.state.homePage
         });
     };
 
@@ -143,8 +142,8 @@ export class EventManager extends Component {
 
     beginAddEvent = () => {
         //have to account for them refreshing
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
+        localStorage.removeItem("saved_title");
+        localStorage.removeItem("saved_description");
         this.setAdd();
     };
 
@@ -152,11 +151,11 @@ export class EventManager extends Component {
         this.setAdd();
     };
 
-    editEvent = (id) => {
+    editEvent = id => {
         const editedEvent = this.state.events.find(event => {
             return event.id === id;
         });
-        console.log(editedEvent)
+        console.log(editedEvent);
         const editedFirstPage = {
             title: editedEvent.title,
             description: editedEvent.description
@@ -169,7 +168,7 @@ export class EventManager extends Component {
             if (this.state.events[i].id === editedEvent.id) {
                 this.setState({
                     indexOfEditEvent: i,
-                    editingEvent: true,
+                    editingEvent: true
                 });
                 break;
             }
@@ -208,11 +207,11 @@ export class EventManager extends Component {
     };
 
     setAdd = () => {
-        this.setState({ nextPage: false, homePage: false, });
+        this.setState({ nextPage: false, homePage: false });
     };
 
     setHomePage = () => {
-        this.setState({ homePage: true, nextPage: false, });
+        this.setState({ homePage: true, nextPage: false });
     };
 
     render() {
@@ -228,27 +227,19 @@ export class EventManager extends Component {
                         deleteEvent={this.deleteEvent}
                     />
                 )}
-                {!this.state.nextPage &&
-                    !this.state.homePage &&
-                     (
-                        <AddFirstPage
-                            addFirst={this.addFirst}
-                            goToNext={this.goToNext}
-                            cancelEvent={this.cancelEvent}
-                        />
-                    )}
-                {this.state.nextPage &&
-                    !this.state.homePage &&
-                     (
-                        <AddSecondPage
-                            goToPrevious={this.goToPrevious}
-                            nextPage={this.state.nextPage}
-                            addEvent={this.addEvent}
-                            title={this.state.currentEventTitle}
-                            description={this.state.currentEventDescription}
-                            cancelEvent={this.cancelEvent}
-                        />
-                    )}
+                {!this.state.nextPage && !this.state.homePage && (
+                    <AddEvent cancelEvent={this.cancelEvent} />
+                )}
+                {/* {this.state.nextPage && !this.state.homePage && (
+                    <AddSecondPage
+                        goToPrevious={this.goToPrevious}
+                        nextPage={this.state.nextPage}
+                        addEvent={this.addEvent}
+                        title={this.state.currentEventTitle}
+                        description={this.state.currentEventDescription}
+                        cancelEvent={this.cancelEvent}
+                    />
+                )} */}
                 <Snackbar
                     anchorOrigin={{
                         vertical: "bottom",
