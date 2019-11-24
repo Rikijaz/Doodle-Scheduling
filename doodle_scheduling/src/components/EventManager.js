@@ -144,6 +144,8 @@ export class EventManager extends Component {
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
+        localStorage.removeItem("saved_time");
+        localStorage.removeItem("saved_date");
         this.setAdd();
     };
 

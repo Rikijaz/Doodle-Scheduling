@@ -6,7 +6,8 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
-import AddSecondPage from "./AddSecondPage"
+import AddSecondPage from "./AddSecondPage";
+import AddThirdPage from "./AddThirdPage"
 
 export class AddEvent extends Component {
     constructor(props) {
@@ -15,8 +16,8 @@ export class AddEvent extends Component {
             //event variables
             title: JSON.parse(localStorage.getItem("saved_title")),
             description: JSON.parse(localStorage.getItem("saved_description")),
-            date: "",
-            time: "",
+            date: JSON.parse(localStorage.getItem("saved_date")),
+            time: JSON.parse(localStorage.getItem("saved_time")),
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -25,6 +26,8 @@ export class AddEvent extends Component {
             thirdPage: false,
 
             //for social aspect
+            //invitees and owners will be emails
+            owners: [JSON.parse(localStorage.getItem("currentUser"))], //every time event created, user will be owner
             shared: false, //if this is being shared
             invitees: [], //this only if being shared
 
@@ -102,7 +105,7 @@ export class AddEvent extends Component {
 
     onSubmitFirstPage = () => {
         //when they go back from second page, the data still there
-        if (this.state.title !== "" && this.state.title !== null ) {
+        if (this.state.title !== "" && this.state.title !== null) {
             localStorage.setItem(
                 "saved_title",
                 JSON.stringify(this.state.title)
@@ -112,12 +115,37 @@ export class AddEvent extends Component {
                 JSON.stringify(this.state.description)
             );
             //going to second page & unrendering first page
-            this.setState({ firstPage: false, secondPage: true,});
+            this.setState({ firstPage: false, secondPage: true });
         } else {
-            this.setState({errorMessageOpen: true, message: "Please input a title!"})
+            this.setState({
+                errorMessageOpen: true,
+                message: "Please input a title!"
+            });
         }
     };
     //----- end of first page functions -----
+
+    //----- second page functions -----
+    goToFirstPage = () => {
+        this.setState({ firstPage: true, secondPage: false });
+    };
+    goToThirdPage = (date, time) => {
+        this.setState({
+            date: date,
+            time: time,
+            firstPage: false,
+            secondPage: false,
+            thirdPage: true
+        });
+    };
+    //----- end of second page functions -----
+
+    //----- third page functions -----
+    goToSecondPage = () => {
+        this.setState({ firstPage: false, secondPage: true, thirdPage: false });
+    }
+
+    //----- third page functions -----
 
     viewForm = () => {
         const btnStyle = {
@@ -179,7 +207,24 @@ export class AddEvent extends Component {
                 </div>
             );
         } else if (this.state.secondPage) {
-            return (<div><AddSecondPage/></div>);
+            return (
+                <div>
+                    <AddSecondPage
+                        cancelEvent={this.props.cancelEvent}
+                        goToFirstPage={() => this.goToFirstPage()}
+                        goToThirdPage={(date, time) =>
+                            this.goToThirdPage(date, time)
+                        }
+                    />
+                </div>
+            );
+        } else if (this.state.thirdPage) {
+            return (<div>
+                <AddThirdPage
+                    goToSecondPage={() => this.goToSecondPage()}
+                    cancelEvent={this.props.cancelEvent}
+                />
+                </div>);
         }
     };
 }
