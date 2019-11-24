@@ -1,39 +1,38 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-//import EventItem from "./EventItem";
+import { db } from "./firebase";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-import Form from './Form'
+import Form from "./Form";
 
 export class EventHome extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            events: [],
             anchorEl: null,
             openMenu: false,
-            showForm: false,
+            showForm: false
         };
     }
 
     sendEmail = () => {
-        this.setState({ showForm: true })
-    }
+        this.setState({ showForm: true });
+    };
 
     showEvents = () => {
-        if (this.props.events === null || this.props.events === undefined) {
+        if (this.state.events === null || this.state.events === undefined) {
             return <h2>No events</h2>;
-        }
-        else if (this.props.events.length === 0) {
+        } else if (this.state.events.length === 0) {
             return <h2>No events</h2>;
-        }
-        else {
+        } else {
             return (
                 <div>
                     <ReactTable
                         defaultPageSize={5}
-                        data={this.props.events}
+                        data={this.state.events}
                         columns={[
                             {
                                 Header: "Events",
@@ -53,7 +52,7 @@ export class EventHome extends Component {
                                     {
                                         Header: "Time",
                                         accessor: "time"
-                                    },
+                                    }
                                 ]
                             },
                             {
@@ -65,9 +64,7 @@ export class EventHome extends Component {
                                             <Button
                                                 variant="contained"
                                                 color="primary"
-                                                onClick={() =>
-                                                    this.sendEmail()
-                                                }
+                                                onClick={() => this.sendEmail()}
                                             >
                                                 Send
                                             </Button>
@@ -81,7 +78,8 @@ export class EventHome extends Component {
                                                 color="primary"
                                                 onClick={() =>
                                                     this.props.editEvent(
-                                                        row.original.id
+                                                        row.original.id,
+                                                        this.state.events,
                                                     )
                                                 }
                                             >
@@ -124,9 +122,9 @@ export class EventHome extends Component {
     getMainStyle = () => {
         return {
             textAlign: "center",
-            padding: "5px",
-        }
-    }
+            padding: "5px"
+        };
+    };
 
     handleClick = e => {
         this.setState({
@@ -146,13 +144,28 @@ export class EventHome extends Component {
 
     handleDisplay = () => {
         this.setState({ showForm: false });
+    };
+
+    componentDidMount() {
+        db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")))
+            .get()
+            .then(data => {
+                if (data.exists) {
+                    this.setState({ events: data.data().events });
+                } else {
+                    //console.log("Sad toot");
+                }
+            });
     }
 
     render() {
         return (
             <div>
                 {this.state.showForm && (
-                    <div><Form handleDisplay={this.handleDisplay}></Form></div>
+                    <div>
+                        <Form handleDisplay={this.handleDisplay}></Form>
+                    </div>
                 )}
                 <div style={this.getBtnStyle()}>
                     <Button

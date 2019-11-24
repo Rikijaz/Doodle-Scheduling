@@ -28,6 +28,7 @@ export class AddThirdPage extends Component {
                     variant="contained"
                     color="primary"
                     size="large"
+                    onClick={this.props.submitEvent}
                 >
                     Submit Event
                 </Button>

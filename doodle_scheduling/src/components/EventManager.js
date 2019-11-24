@@ -153,8 +153,8 @@ export class EventManager extends Component {
         this.setAdd();
     };
 
-    editEvent = id => {
-        const editedEvent = this.state.events.find(event => {
+    editEvent = (id,events) => {
+        const editedEvent = events.find(event => {
             return event.id === id;
         });
         console.log(editedEvent);
@@ -166,8 +166,8 @@ export class EventManager extends Component {
             date: editedEvent.date,
             time: editedEvent.time
         };
-        for (let i = 0; i < this.state.events.length; i++) {
-            if (this.state.events[i].id === editedEvent.id) {
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].id === editedEvent.id) {
                 this.setState({
                     indexOfEditEvent: i,
                     editingEvent: true
@@ -222,26 +222,17 @@ export class EventManager extends Component {
                 <Header />
                 {this.state.homePage && (
                     <EventHome
-                        events={this.state.events}
-                        archivedEvents={this.state.archivedEvents}
                         beginAddEvent={this.beginAddEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
                     />
                 )}
                 {!this.state.nextPage && !this.state.homePage && (
-                    <AddEvent cancelEvent={this.cancelEvent} />
-                )}
-                {/* {this.state.nextPage && !this.state.homePage && (
-                    <AddSecondPage
-                        goToPrevious={this.goToPrevious}
-                        nextPage={this.state.nextPage}
-                        addEvent={this.addEvent}
-                        title={this.state.currentEventTitle}
-                        description={this.state.currentEventDescription}
-                        cancelEvent={this.cancelEvent}
+                    <AddEvent 
+                    cancelEvent={this.cancelEvent} 
+                    setHomePage={() => this.setHomePage()}
                     />
-                )} */}
+                )}
                 <Snackbar
                     anchorOrigin={{
                         vertical: "bottom",

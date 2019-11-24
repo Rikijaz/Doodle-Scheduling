@@ -7,7 +7,9 @@ import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
 import AddSecondPage from "./AddSecondPage";
-import AddThirdPage from "./AddThirdPage"
+import AddThirdPage from "./AddThirdPage";
+import {db, firebase} from './firebase'
+import uuid from "uuid";
 
 export class AddEvent extends Component {
     constructor(props) {
@@ -129,20 +131,49 @@ export class AddEvent extends Component {
     goToFirstPage = () => {
         this.setState({ firstPage: true, secondPage: false });
     };
+    //redo error messages later when implementing another date and time picker
     goToThirdPage = (date, time) => {
-        this.setState({
-            date: date,
-            time: time,
-            firstPage: false,
-            secondPage: false,
-            thirdPage: true
-        });
+        if (date !== null && date !== "" && time !== null && time !== "") {
+            this.setState({
+                date: date,
+                time: time,
+                firstPage: false,
+                secondPage: false,
+                thirdPage: true
+            });
+        } else {
+            this.setState({
+                errorMessageOpen: true,
+                message: "Please input a date and time!"
+            });
+
+        }
     };
     //----- end of second page functions -----
 
     //----- third page functions -----
     goToSecondPage = () => {
         this.setState({ firstPage: false, secondPage: true, thirdPage: false });
+    };
+
+    submitEvent = () => {
+        const newEvent = {
+            id: uuid.v4(),
+            title: this.state.title,
+            description: this.state.description,
+            date: this.state.date,
+            time: this.state.time,
+            owners: this.state.owners,
+            shared: this.state.shared,
+            invitees: this.state.invitees,
+        };
+        db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")))
+            .update({
+                events: firebase.firestore.FieldValue.arrayUnion(newEvent)
+            });
+        this.setState({ successMessageOpen: true, message: "You have added an event!"});
+        this.props.setHomePage();
     }
 
     //----- third page functions -----
@@ -219,12 +250,15 @@ export class AddEvent extends Component {
                 </div>
             );
         } else if (this.state.thirdPage) {
-            return (<div>
-                <AddThirdPage
-                    goToSecondPage={() => this.goToSecondPage()}
-                    cancelEvent={this.props.cancelEvent}
-                />
-                </div>);
+            return (
+                <div>
+                    <AddThirdPage
+                        goToSecondPage={() => this.goToSecondPage()}
+                        cancelEvent={this.props.cancelEvent}
+                        submitEvent={() => this.submitEvent()}
+                    />
+                </div>
+            );
         }
     };
 }
