@@ -1,267 +1,130 @@
 import React, { Component } from "react";
-import AddSecondPage from "./AddSecondPage";
-import Poll from "./Poll";
+import AddEvent from "./AddEvent";
 import EventHome from "./EventHome";
 import Header from "./header";
-import uuid from "uuid";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContent from "./Snackbar";
-import AddFirstPage from "./AddFirstPage";
-import { db, firebase } from "./firebase";
+import { db } from "./firebase";
 
-let doc = (JSON.parse(localStorage.getItem("currentUser"))) ? db
-    .collection("users")
-    .doc(JSON.parse(localStorage.getItem("currentUser")))
-    :
-    undefined;
+let doc = JSON.parse(localStorage.getItem("currentUser"))
+    ? db
+          .collection("users")
+          .doc(JSON.parse(localStorage.getItem("currentUser")))
+    : undefined;
 
 export class EventManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            events: [],
-
-            polls: JSON.parse(localStorage.getItem("polls")),
-
-            currentEventTitle: "",
-            currentEventDescription: "",
-
-            errorMessageOpen: false,
-            message: "",
-            successMessageOpen: false,
-
-            nextPage: false,
             homePage: true,
-            pollPage: false,
-
+            events: [],
             editingEvent: false,
             indexOfEditEvent: 0
         };
     }
 
+    /**
+     * When this component is mounted, it syncs events with
+     * database events
+     * @return set event state to database's events
+     */
     componentDidMount() {
-        doc = db
-            .collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")));
-
-        doc.get().then(data => {
-            if (data.exists) {
-                this.setState({ events: data.data().events });
-            } else {
-                //console.log("Sad toot");
-            }
-        });
+        db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")))
+            .onSnapshot(doc => {
+                if (doc.exists) {
+                    this.setState({ events: doc.data().events });
+                }
+            });
     }
 
-    addEvent = async (title, description, date, time) => {
-        if (time === "") {
-            this.setState({ errorMessageOpen: true, message: "Missing Time!" });
-        } else if (time !== "" && !this.state.editingEvent) {
-            const newEvent = {
-                id: uuid.v4(),
-                title: title,
-                completed: false,
-                description: description,
-                date: date,
-                time: time
-            };
-            db.collection("users")
-                .doc(JSON.parse(localStorage.getItem("currentUser")))
-                .update({
-                    events: firebase.firestore.FieldValue.arrayUnion(newEvent)
-                });
-            this.setState({ successMessageOpen: true });
-            this.finishAddEvent();
-        } else if (time !== "" && this.state.editingEvent) {
-            const newEvent = {
-                id: uuid.v4(),
-                title: title,
-                completed: false,
-                description: description,
-                date: date,
-                time: time
-            };
-            const newEvents = this.state.events;
-            newEvents.splice(this.state.indexOfEditEvent, 1, newEvent);
-
-            db.collection("users")
-                .doc(JSON.parse(localStorage.getItem("currentUser")))
-                .update({
-                    events: newEvents
-                });
-            this.setState({ editingEvent: false })
-            this.finishAddEvent();
-        }
-    };
-
-    finishAddEvent = () => {
-        //change this to localstorage.clear later
-        doc.get().then(data => {
-            if (data.exists) {
-                this.setState({ events: data.data().events });
-            } else {
-                //console.log("Sad toot");
-            }
-        });
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
-        this.setState({
-            homePage: !this.state.homePage,
-        });
-    };
-
-    addFirst = async (t, d, des) => {
-        if (t !== "") {
-            this.setState({ currentEventTitle: t });
-            this.setState({ currentEventDescription: des });
-            this.goToNext();
-        } else if (t === "") {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing title!"
-            });
-        }
-    };
-
-    goToPrevious = () => {
-        this.setState({ nextPage: !this.state.nextPage });
-    };
-    goToNext = () => {
-        this.setState({ nextPage: !this.state.nextPage });
-    };
-
-    handleErrorClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        this.setState({ errorMessageOpen: false });
-    };
-    handleSuccessClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        this.setState({ successMessageOpen: false });
-    };
-
+    /**
+     * Starts the process of adding a new event
+     * @return sets home page to false
+     * @return clears localStorage of event details
+     */
     beginAddEvent = () => {
         //have to account for them refreshing
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
+        localStorage.removeItem("saved_title");
+        localStorage.removeItem("saved_description");
+        localStorage.removeItem("saved_time");
+        localStorage.removeItem("saved_date");
         this.setAdd();
     };
 
-    beginEditEvent = () => {
-        this.setAdd();
-    };
-
+    /**
+     * @param id id of event that is being edited
+     * 
+     * 
+     */
     editEvent = (id) => {
         const editedEvent = this.state.events.find(event => {
             return event.id === id;
         });
-        console.log(editedEvent)
-        const editedFirstPage = {
-            title: editedEvent.title,
-            description: editedEvent.description
-        };
-        const editedSecondPage = {
-            date: editedEvent.date,
-            time: editedEvent.time
-        };
+        localStorage.setItem("saved_title", JSON.stringify(editedEvent.title));
+        localStorage.setItem(
+            "saved_description",
+            JSON.stringify(editedEvent.description)
+        );
+        localStorage.setItem("saved_date", JSON.stringify(editedEvent.date));
+        localStorage.setItem("saved_time", JSON.stringify(editedEvent.time));
         for (let i = 0; i < this.state.events.length; i++) {
             if (this.state.events[i].id === editedEvent.id) {
                 this.setState({
                     indexOfEditEvent: i,
-                    editingEvent: true,
+                    editingEvent: true
                 });
                 break;
             }
         }
-        localStorage.setItem(
-            "saved_current_event",
-            JSON.stringify(editedFirstPage)
-        );
-        localStorage.setItem(
-            "saved_current_event_time",
-            JSON.stringify(editedSecondPage)
-        );
-        this.beginEditEvent();
+        this.setAdd();
     };
 
-    deleteEvent = id => {
-        db.collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")))
-            .update({
-                events: [...this.state.events.filter(event => event.id !== id)]
-            });
-
-        doc.get().then(data => {
-            if (data.exists) {
-                this.setState({ events: data.data().events });
-            } else {
-                //console.log("Sad toot");
-            }
+    /**
+     * @param id takes in the id of the event to be deleted
+     * @return {array} returns the updated array with 
+     * event removed to the database
+     */
+    deleteEvent = (id)=> {
+        doc.update({
+            events: [...this.state.events.filter(event => event.id !== id)]
         });
     };
 
+    /**
+     * Cancels the process of event creation
+     * @return Return back to the home page
+     */
     cancelEvent = () => {
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
+        localStorage.removeItem("saved_title");
+        localStorage.removeItem("saved_description");
+        localStorage.removeItem("saved_time");
+        localStorage.removeItem("saved_date");
         this.setHomePage();
     };
 
+    /**
+     * function to start add/edit event
+     * @return sets home page to false
+     */
     setAdd = () => {
-        this.setState({ nextPage: false, homePage: false, pollPage: false });
+        this.setState({homePage: false });
     };
 
+    /**
+     * Sets view back to home page
+     * @return Home Page
+     */
     setHomePage = () => {
-        this.setState({ homePage: true, nextPage: false, pollPage: false });
+        this.setState({
+            homePage: true,
+            editingEvent: false,
+            indexOfEditEvent: 0
+        });
     };
 
-    setPollPage = () => {
-        this.setState({ homePage: false, nextPage: false, pollPage: true });
-    };
-
-    addPoll = (pollTitle, selectedDays) => {
-        if (pollTitle === "" && selectedDays.length === 0) {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Title and Dates!"
-            });
-        } else if (pollTitle === "") {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Title!"
-            });
-        } else if (selectedDays.length === 0) {
-            this.setState({
-                errorMessageOpen: true,
-                message: "Missing Dates!"
-            });
-        } else {
-            const newPoll = {
-                title: pollTitle,
-                selectedDays: selectedDays
-            };
-            if (this.state.polls === null) {
-                const newPolls = [];
-                newPolls.push(newPoll);
-                this.setState({ polls: newPolls });
-            } else {
-                this.setState({ polls: [...this.state.polls, newPoll] });
-            }
-            this.setHomePage();
-        }
-    };
-    cancelPoll = () => {
-        this.setHomePage();
-    };
-
-    beginAddPoll = () => {
-        this.setPollPage();
-    };
-
+    /**
+     * Decides what to render, between the 
+     * home page and event creation page
+     */
     render() {
         return (
             <div>
@@ -269,73 +132,19 @@ export class EventManager extends Component {
                 {this.state.homePage && (
                     <EventHome
                         events={this.state.events}
-                        polls={this.state.polls}
-                        archivedEvents={this.state.archivedEvents}
                         beginAddEvent={this.beginAddEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
-                        beginAddPoll={this.beginAddPoll}
                     />
                 )}
-                {!this.state.nextPage &&
-                    !this.state.homePage &&
-                    !this.state.pollPage && (
-                        <AddFirstPage
-                            addFirst={this.addFirst}
-                            goToNext={this.goToNext}
-                            cancelEvent={this.cancelEvent}
-                        />
-                    )}
-                {this.state.nextPage &&
-                    !this.state.homePage &&
-                    !this.state.pollPage && (
-                        <AddSecondPage
-                            goToPrevious={this.goToPrevious}
-                            nextPage={this.state.nextPage}
-                            addEvent={this.addEvent}
-                            title={this.state.currentEventTitle}
-                            description={this.state.currentEventDescription}
-                            cancelEvent={this.cancelEvent}
-                        />
-                    )}
-                {this.state.pollPage &&
-                    !this.state.nextPage &&
-                    !this.state.homePage && (
-                        <Poll
-                            cancelPoll={this.cancelPoll}
-                            addPoll={this.addPoll}
-                        />
-                    )}
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left"
-                    }}
-                    open={this.state.errorMessageOpen}
-                    autoHideDuration={6000}
-                    onClose={this.handleErrorClose}
-                >
-                    <MySnackbarContent
-                        onClose={this.handleErrorClose}
-                        variant="error"
-                        message={this.state.message}
+                {!this.state.homePage && (
+                    <AddEvent
+                        cancelEvent={this.cancelEvent}
+                        setHomePage={() => this.setHomePage()}
+                        editingEvent={this.state.editingEvent}
+                        indexOfEditEvent={this.state.indexOfEditEvent}
                     />
-                </Snackbar>
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left"
-                    }}
-                    open={this.state.successMessageOpen}
-                    autoHideDuration={6000}
-                    onClose={this.handleSuccessClose}
-                >
-                    <MySnackbarContent
-                        onClose={this.handleSuccessClose}
-                        variant="success"
-                        message={"New event has been created"}
-                    />
-                </Snackbar>
+                )}
             </div>
         );
     }

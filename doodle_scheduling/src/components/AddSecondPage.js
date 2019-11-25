@@ -2,7 +2,6 @@ import React, { Component } from "react";
 //import { TextField } from '@material-ui/core';
 import { Button } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
-
 import DoodleCalendar from "./DoodleCalendar";
 import "react-week-calendar/dist/style.css";
 
@@ -10,32 +9,10 @@ export class AddSecondPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            time: "",
-            date: "",
+            time: JSON.parse(localStorage.getItem("saved_time")),
+            date: JSON.parse(localStorage.getItem("saved_date")),
             calendar: "default"
         };
-    }
-    onSubmit = t => {
-        t.preventDefault();
-        this.props.addEvent(
-            this.props.title,
-            this.props.description,
-            this.state.date,
-            this.state.time
-        );
-    };
-
-    componentWillUnmount() {
-        localStorage.setItem(
-            "saved_current_event_time",
-            JSON.stringify(this.state)
-        );
-    }
-    componentDidMount() {
-        const saved_current_time = JSON.parse(
-            localStorage.getItem("saved_current_event_time")
-        );
-        this.setState(saved_current_time);
     }
 
     // eric's stuff //
@@ -64,6 +41,7 @@ export class AddSecondPage extends Component {
         //     // );
         // }
 
+        //right now it should only take in one date & one range of time
         let x = new Date(eventData[0].start.format("LLLL"));
         let y = new Date(eventData[0].end.format("LLLL"));
         let start = x.getHours().toString() + ":" + x.getMinutes().toString();
@@ -71,9 +49,8 @@ export class AddSecondPage extends Component {
         let together = start + "-" + end;
         let date = (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
         this.setState({ time: together, date: date });
-
-        // this.props.date =
-        // this.state.time =
+        localStorage.setItem("saved_date", JSON.stringify(date));
+        localStorage.setItem("saved_time", JSON.stringify(together));
 
         // https://momentjs.com/docs/#/parsing/string-format/ if you are looking for a different time format
     };
@@ -81,15 +58,21 @@ export class AddSecondPage extends Component {
     // eric's stuff //
 
     render() {
-        //eslint-disable-next-line
-        const { title, description } = this.props;
-
         //eric's shit
 
         //eslint-disable-next-line
         const calendar = this.state.calendar;
-        let renderCalendar = null;
-        renderCalendar = (
+        //let renderCalendar = null;
+
+        return (
+            <div>
+                {this.renderCalendar()}
+                {this.renderButtons()}
+            </div>
+        );
+    }
+    renderCalendar = () => {
+        return (
             <div>
                 <h3>Choose your time!</h3>
                 <DoodleCalendar parentMethod={e => this.onEventSubmitted(e)}>
@@ -97,47 +80,51 @@ export class AddSecondPage extends Component {
                 </DoodleCalendar>
             </div>
         );
+    };
 
-        //eric's shit
-
+    renderButtons = () => {
         return (
             <div>
-                {renderCalendar}
-
-                <form onSubmit={t => this.onSubmit(t)}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        onClick={this.props.goToPrevious}
-                    >
-                        Back
-                    </Button>
-                    <br />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        onClick={t => this.onSubmit(t)}
-                    >
-                        Submit Event
-                    </Button>
-                    <br />
-                    <Button
-                        className="userCancelButton"
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        endIcon={<CancelIcon />}
-                        onClick={this.props.cancelEvent}
-                    >
-                        Cancel
-                    </Button>
-                </form>
+                <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={this.props.goToFirstPage}
+                >
+                    Back
+                </Button>
+                <br />
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={e =>
+                        this.props.goToThirdPage(
+                            this.state.date,
+                            this.state.time,
+                            e
+                        )
+                    }
+                >
+                    Next
+                </Button>
+                <br />
+                <Button
+                    type="button"
+                    className="userCancelButton"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    endIcon={<CancelIcon />}
+                    onClick={this.props.cancelEvent}
+                >
+                    Cancel
+                </Button>
             </div>
         );
-    }
+    };
 }
 
 export default AddSecondPage;

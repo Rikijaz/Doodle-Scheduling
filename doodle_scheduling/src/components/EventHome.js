@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-//import EventItem from "./EventItem";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-import Form from './Form'
+import Form from "./Form";
 
 export class EventHome extends Component {
     constructor(props) {
@@ -13,22 +12,24 @@ export class EventHome extends Component {
         this.state = {
             anchorEl: null,
             openMenu: false,
-            showForm: false,
+            showForm: false
         };
     }
 
     sendEmail = () => {
-        this.setState({ showForm: true })
-    }
+        this.setState({ showForm: true });
+    };
 
+    /**
+     * Displays event table
+     * @return Header saying no events or Table of Events
+     */
     showEvents = () => {
         if (this.props.events === null || this.props.events === undefined) {
             return <h2>No events</h2>;
-        }
-        else if (this.props.events.length === 0) {
+        } else if (this.props.events.length === 0) {
             return <h2>No events</h2>;
-        }
-        else {
+        } else {
             return (
                 <div>
                     <ReactTable
@@ -53,7 +54,7 @@ export class EventHome extends Component {
                                     {
                                         Header: "Time",
                                         accessor: "time"
-                                    },
+                                    }
                                 ]
                             },
                             {
@@ -65,9 +66,7 @@ export class EventHome extends Component {
                                             <Button
                                                 variant="contained"
                                                 color="primary"
-                                                onClick={() =>
-                                                    this.sendEmail()
-                                                }
+                                                onClick={() => this.sendEmail()}
                                             >
                                                 Send
                                             </Button>
@@ -81,7 +80,7 @@ export class EventHome extends Component {
                                                 color="primary"
                                                 onClick={() =>
                                                     this.props.editEvent(
-                                                        row.original.id
+                                                        row.original.id,
                                                     )
                                                 }
                                             >
@@ -97,7 +96,7 @@ export class EventHome extends Component {
                                                 color="primary"
                                                 onClick={() =>
                                                     this.props.deleteEvent(
-                                                        row.original.id
+                                                        row.original.id,
                                                     )
                                                 }
                                             >
@@ -114,23 +113,6 @@ export class EventHome extends Component {
         }
     };
 
-    showPolls = () => {
-        if (this.props.polls === null || this.props.polls.length === 0) {
-            return <h2>No Polls</h2>;
-        } else {
-            return (
-                <div>
-                    <h1>POLLS:</h1>
-                    {/* {this.props.polls.map(x => (
-                            <li>
-                                {x.title} - {x.selectedDays}
-                            </li>
-                        ))} */}
-                </div>
-            );
-        }
-    };
-
     getBtnStyle = () => {
         return {
             textAlign: "right",
@@ -141,10 +123,16 @@ export class EventHome extends Component {
     getMainStyle = () => {
         return {
             textAlign: "center",
-            padding: "5px",
-        }
-    }
+            padding: "5px"
+        };
+    };
 
+    /**
+     * Opening drop down menu
+     * @param e takes in event of clicking drop down menu
+     * @return position of drop down menu
+     * @return boolean to open menu
+     */
     handleClick = e => {
         this.setState({
             anchorEl: e.currentTarget,
@@ -152,29 +140,42 @@ export class EventHome extends Component {
         });
     };
 
+    /**
+     * closes drop down menu
+     */
     handleClose = () => {
         this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
     };
 
+
+    /**
+     * Clicks add event option and starts adding event
+     */
     handleAddEventMenu = () => {
         this.handleClose();
         this.props.beginAddEvent();
     };
 
-    handleAddPoll = () => {
-        this.handleClose();
-        this.props.beginAddPoll();
-    };
-
+    /**
+     * this shows form for inviting others
+     */
     handleDisplay = () => {
         this.setState({ showForm: false });
-    }
+    };
 
+    /**
+     * Renders table and buttons below the header.
+     * @return Buttons
+     * @return Event Table
+     * @return Event Calendar(not implemented)
+     */
     render() {
         return (
             <div>
                 {this.state.showForm && (
-                    <div><Form handleDisplay={this.handleDisplay}></Form></div>
+                    <div>
+                        <Form handleDisplay={this.handleDisplay}></Form>
+                    </div>
                 )}
                 <div style={this.getBtnStyle()}>
                     <Button
@@ -195,13 +196,11 @@ export class EventHome extends Component {
                         <MenuItem onClick={this.handleAddEventMenu}>
                             Event
                         </MenuItem>
-                        <MenuItem onClick={this.handleAddPoll}>Poll</MenuItem>
                     </Menu>
                 </div>
                 <div style={this.getMainStyle()}>
                     {this.showEvents()}
-                    <br />
-                    {this.showPolls()}
+                    {/* where calendar would go from eric */}
                 </div>
             </div>
         );

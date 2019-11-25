@@ -6,16 +6,29 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Snackbar from "@material-ui/core/Snackbar";
+import MySnackbarContent from "./Snackbar";
 
 //database
 import { db, firebase } from "./firebase";
 
 export default function AddContact() {
+    //----- states -----
     const [open, setOpen] = React.useState(false);
     const [userInput, setUserInput] = React.useState("");
     const [currentUser] = React.useState(
         JSON.parse(localStorage.getItem("currentUser"))
     );
+    const [errorOpen, setErrorOpen] = React.useState(false);
+    const [successOpen, setSuccessOpen] = React.useState(false);
+    const [message, setMessage] = React.useState("");
+    //----- end of states -----
+
+    //----- styles -----
+    const btnStyle = {
+        textAlign: "left"
+    };
+    //----- end of styles -----
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -25,20 +38,68 @@ export default function AddContact() {
         setOpen(false);
     };
 
-    const handleAddContact = () => {
-        // console.log(userInput);
-        // console.log(contacts);
-        // console.log(currentUser);
-        db.collection("users").doc(currentUser).update({
-            contacts: firebase.firestore.FieldValue.arrayUnion(userInput)
-        });
-        handleClose();
+    const handleErrorClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setErrorOpen(false);
     };
+    const handleSuccessClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setSuccessOpen(false);
+    };
+
+    /**
+     * Adds contact by referencing database
+     */
+    const handleAddContact = () => {
+        /*
+            first it checks in database if userinput exists
+            then it accesses the current user's doc, and updates
+            their contact list with the user's input contact
+
+            when you add the contact, it adds the name and email
+
+            concerns: we did not use boolean variables to seperate the
+            check from the database addition because it does not update 
+            fast enough and the contact does not get added
+        */
+        db.collection("users")
+            .doc(userInput)
+            .get()
+            .then(docSnapshot => {
+                if (docSnapshot.exists) {
+                    db.collection("users")
+                        .doc(currentUser)
+                        .update({
+                            contacts: firebase.firestore.FieldValue.arrayUnion(
+                                {
+                                    displayName: docSnapshot.data().displayName,
+                                    email: userInput,
+                                }
+                            )
+                        });
+                    handleClose();
+                    setSuccessOpen(true);
+                    setMessage("Successfully added contact!");
+                } else {
+                    setErrorOpen(true);
+                    setMessage("Invalid contact!");
+                }
+            });
+    };
+
+    /**
+     * Handles User Input when entering contact's
+     * email
+     * @param {*} t text that user types in
+     */
     const handleInput = t => {
         setUserInput(t.target.value);
-    };
-    const btnStyle = {
-        textAlign: "left"
     };
 
     return (
@@ -82,6 +143,36 @@ export default function AddContact() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                open={errorOpen}
+                autoHideDuration={6000}
+                onClose={handleErrorClose}
+            >
+                <MySnackbarContent
+                    onClose={handleErrorClose}
+                    variant="error"
+                    message={message}
+                />
+            </Snackbar>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                open={successOpen}
+                autoHideDuration={6000}
+                onClose={handleSuccessClose}
+            >
+                <MySnackbarContent
+                    onClose={handleSuccessClose}
+                    variant="success"
+                    message={message}
+                />
+            </Snackbar>
         </div>
     );
 }
