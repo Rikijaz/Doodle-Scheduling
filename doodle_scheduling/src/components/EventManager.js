@@ -21,6 +21,11 @@ export class EventManager extends Component {
         };
     }
 
+    /**
+     * When this component is mounted, it syncs events with
+     * database events
+     * @return set event state to database's events
+     */
     componentDidMount() {
         db.collection("users")
             .doc(JSON.parse(localStorage.getItem("currentUser")))
@@ -31,6 +36,11 @@ export class EventManager extends Component {
             });
     }
 
+    /**
+     * Starts the process of adding a new event
+     * @return sets home page to false
+     * @return clears localStorage of event details
+     */
     beginAddEvent = () => {
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
@@ -40,6 +50,11 @@ export class EventManager extends Component {
         this.setAdd();
     };
 
+    /**
+     * @param id id of event that is being edited
+     * 
+     * 
+     */
     editEvent = (id) => {
         const editedEvent = this.state.events.find(event => {
             return event.id === id;
@@ -63,22 +78,41 @@ export class EventManager extends Component {
         this.setAdd();
     };
 
+    /**
+     * @param id takes in the id of the event to be deleted
+     * @return {array} returns the updated array with 
+     * event removed to the database
+     */
     deleteEvent = (id)=> {
         doc.update({
             events: [...this.state.events.filter(event => event.id !== id)]
         });
     };
 
+    /**
+     * Cancels the process of event creation
+     * @return Return back to the home page
+     */
     cancelEvent = () => {
-        localStorage.removeItem("saved_current_event");
-        localStorage.removeItem("saved_current_event_time");
+        localStorage.removeItem("saved_title");
+        localStorage.removeItem("saved_description");
+        localStorage.removeItem("saved_time");
+        localStorage.removeItem("saved_date");
         this.setHomePage();
     };
 
+    /**
+     * function to start add/edit event
+     * @return sets home page to false
+     */
     setAdd = () => {
         this.setState({homePage: false });
     };
 
+    /**
+     * Sets view back to home page
+     * @return Home Page
+     */
     setHomePage = () => {
         this.setState({
             homePage: true,
@@ -87,6 +121,10 @@ export class EventManager extends Component {
         });
     };
 
+    /**
+     * Decides what to render, between the 
+     * home page and event creation page
+     */
     render() {
         return (
             <div>

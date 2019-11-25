@@ -33,6 +33,10 @@ export class Header extends Component {
     }
 
     //localStorage is to access database document
+    /**
+     * when header mounts, it updates user data
+     * @return user data from the database
+     */
     componentDidMount() {
         db.collection("users")
             .doc(JSON.parse(localStorage.getItem("currentUser")))
@@ -46,11 +50,20 @@ export class Header extends Component {
             });
     }
 
+    /**
+     * Signs out user, kicks them back to login page
+     * @return Back to login page and clears localStorage
+     */
     onClickSignOut = () => {
         firebase.auth().signOut();
-        localStorage.removeItem("currentUser");
+        //localStorage.removeItem("currentUser");
+        localStorage.clear();
     };
 
+    /**
+     * Renders the buttons to view/add contacts and
+     * sign out button and name of user
+     */
     render() {
         return (
             <div>

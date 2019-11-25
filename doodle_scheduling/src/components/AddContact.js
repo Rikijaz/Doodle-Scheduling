@@ -53,6 +53,9 @@ export default function AddContact() {
         setSuccessOpen(false);
     };
 
+    /**
+     * Adds contact by referencing database
+     */
     const handleAddContact = () => {
         /*
             first it checks in database if userinput exists
@@ -90,6 +93,11 @@ export default function AddContact() {
             });
     };
 
+    /**
+     * Handles User Input when entering contact's
+     * email
+     * @param {*} t text that user types in
+     */
     const handleInput = t => {
         setUserInput(t.target.value);
     };

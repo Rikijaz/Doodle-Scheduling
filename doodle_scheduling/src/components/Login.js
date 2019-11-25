@@ -80,6 +80,7 @@ export class Login extends Component {
     onClick = () => {
         firebase.auth().signOut();
         this.setState({ isSignedIn: false });
+        localStorage.clear();
     };
 
     render() {

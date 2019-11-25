@@ -20,6 +20,10 @@ export class EventHome extends Component {
         this.setState({ showForm: true });
     };
 
+    /**
+     * Displays event table
+     * @return Header saying no events or Table of Events
+     */
     showEvents = () => {
         if (this.props.events === null || this.props.events === undefined) {
             return <h2>No events</h2>;
@@ -123,6 +127,12 @@ export class EventHome extends Component {
         };
     };
 
+    /**
+     * Opening drop down menu
+     * @param e takes in event of clicking drop down menu
+     * @return position of drop down menu
+     * @return boolean to open menu
+     */
     handleClick = e => {
         this.setState({
             anchorEl: e.currentTarget,
@@ -130,19 +140,35 @@ export class EventHome extends Component {
         });
     };
 
+    /**
+     * closes drop down menu
+     */
     handleClose = () => {
         this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
     };
 
+
+    /**
+     * Clicks add event option and starts adding event
+     */
     handleAddEventMenu = () => {
         this.handleClose();
         this.props.beginAddEvent();
     };
 
+    /**
+     * this shows form for inviting others
+     */
     handleDisplay = () => {
         this.setState({ showForm: false });
     };
 
+    /**
+     * Renders table and buttons below the header.
+     * @return Buttons
+     * @return Event Table
+     * @return Event Calendar(not implemented)
+     */
     render() {
         return (
             <div>
