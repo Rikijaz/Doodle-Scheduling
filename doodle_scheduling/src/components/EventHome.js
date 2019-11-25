@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import { db } from "./firebase";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ReactTable from "react-table";
@@ -11,7 +10,6 @@ export class EventHome extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            events: [],
             anchorEl: null,
             openMenu: false,
             showForm: false
@@ -23,16 +21,16 @@ export class EventHome extends Component {
     };
 
     showEvents = () => {
-        if (this.state.events === null || this.state.events === undefined) {
+        if (this.props.events === null || this.props.events === undefined) {
             return <h2>No events</h2>;
-        } else if (this.state.events.length === 0) {
+        } else if (this.props.events.length === 0) {
             return <h2>No events</h2>;
         } else {
             return (
                 <div>
                     <ReactTable
                         defaultPageSize={5}
-                        data={this.state.events}
+                        data={this.props.events}
                         columns={[
                             {
                                 Header: "Events",
@@ -79,7 +77,6 @@ export class EventHome extends Component {
                                                 onClick={() =>
                                                     this.props.editEvent(
                                                         row.original.id,
-                                                        this.state.events,
                                                     )
                                                 }
                                             >
@@ -95,7 +92,7 @@ export class EventHome extends Component {
                                                 color="primary"
                                                 onClick={() =>
                                                     this.props.deleteEvent(
-                                                        row.original.id
+                                                        row.original.id,
                                                     )
                                                 }
                                             >
@@ -145,19 +142,6 @@ export class EventHome extends Component {
     handleDisplay = () => {
         this.setState({ showForm: false });
     };
-
-    componentDidMount() {
-        db.collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")))
-            .get()
-            .then(data => {
-                if (data.exists) {
-                    this.setState({ events: data.data().events });
-                } else {
-                    //console.log("Sad toot");
-                }
-            });
-    }
 
     render() {
         return (

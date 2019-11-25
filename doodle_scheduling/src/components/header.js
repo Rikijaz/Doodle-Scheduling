@@ -39,7 +39,6 @@ export class Header extends Component {
             .get()
             .then(data => {
                 if (data.exists) {
-                    //console.log("glad toot");
                     this.setState({ user: data.data()});
                 } else {
                     //console.log("Sad toot");

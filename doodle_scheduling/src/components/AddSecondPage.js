@@ -84,8 +84,9 @@ export class AddSecondPage extends Component {
 
     renderButtons = () => {
         return (
-            <form>
+            <div>
                 <Button
+                    type="button"
                     variant="contained"
                     color="primary"
                     size="large"
@@ -99,12 +100,19 @@ export class AddSecondPage extends Component {
                     variant="contained"
                     color="primary"
                     size="large"
-                    onClick={() => this.props.goToThirdPage(this.state.date, this.state.time)}
+                    onClick={e =>
+                        this.props.goToThirdPage(
+                            this.state.date,
+                            this.state.time,
+                            e
+                        )
+                    }
                 >
                     Next
                 </Button>
                 <br />
                 <Button
+                    type="button"
                     className="userCancelButton"
                     variant="contained"
                     color="primary"
@@ -114,7 +122,7 @@ export class AddSecondPage extends Component {
                 >
                     Cancel
                 </Button>
-            </form>
+            </div>
         );
     };
 }

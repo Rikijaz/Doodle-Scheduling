@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 
@@ -9,12 +9,13 @@ export class AddThirdPage extends Component {
                 PLACEHOLDER FOR SHARING POLL
                 {this.renderButtons()}
             </div>
-        )
+        );
     }
     renderButtons = () => {
         return (
-            <form>
+            <div>
                 <Button
+                    type="button"
                     variant="contained"
                     color="primary"
                     size="large"
@@ -28,12 +29,13 @@ export class AddThirdPage extends Component {
                     variant="contained"
                     color="primary"
                     size="large"
-                    onClick={this.props.submitEvent}
+                    onClick={e => this.props.submitEvent(e)}
                 >
                     Submit Event
                 </Button>
                 <br />
                 <Button
+                    type="button"
                     className="userCancelButton"
                     variant="contained"
                     color="primary"
@@ -43,9 +45,9 @@ export class AddThirdPage extends Component {
                 >
                     Cancel
                 </Button>
-            </form>
+            </div>
         );
     };
 }
 
-export default AddThirdPage
+export default AddThirdPage;

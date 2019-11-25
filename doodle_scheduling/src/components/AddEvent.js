@@ -8,7 +8,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
 import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
-import {db, firebase} from './firebase'
+import { db, firebase } from "./firebase";
 import uuid from "uuid";
 
 export class AddEvent extends Component {
@@ -16,10 +16,11 @@ export class AddEvent extends Component {
         super(props);
         this.state = {
             //event variables
-            title: JSON.parse(localStorage.getItem("saved_title")),
-            description: JSON.parse(localStorage.getItem("saved_description")),
-            date: JSON.parse(localStorage.getItem("saved_date")),
-            time: JSON.parse(localStorage.getItem("saved_time")),
+            title: JSON.parse(localStorage.getItem("saved_title")) || "",
+            description:
+                JSON.parse(localStorage.getItem("saved_description")) || "",
+            date: JSON.parse(localStorage.getItem("saved_date")) || "",
+            time: JSON.parse(localStorage.getItem("saved_time")) || "",
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -105,7 +106,8 @@ export class AddEvent extends Component {
         this.setState({ description: des.target.value });
     };
 
-    onSubmitFirstPage = () => {
+    onSubmitFirstPage = e => {
+        e.preventDefault();
         //when they go back from second page, the data still there
         if (this.state.title !== "" && this.state.title !== null) {
             localStorage.setItem(
@@ -132,7 +134,8 @@ export class AddEvent extends Component {
         this.setState({ firstPage: true, secondPage: false });
     };
     //redo error messages later when implementing another date and time picker
-    goToThirdPage = (date, time) => {
+    goToThirdPage = (date, time, e) => {
+        e.preventDefault();
         if (date !== null && date !== "" && time !== null && time !== "") {
             this.setState({
                 date: date,
@@ -146,7 +149,6 @@ export class AddEvent extends Component {
                 errorMessageOpen: true,
                 message: "Please input a date and time!"
             });
-
         }
     };
     //----- end of second page functions -----
@@ -156,7 +158,9 @@ export class AddEvent extends Component {
         this.setState({ firstPage: false, secondPage: true, thirdPage: false });
     };
 
-    submitEvent = () => {
+    submitEvent = e => {
+        e.preventDefault();
+        const { indexOfEditEvent, editingEvent } = this.props;
         const newEvent = {
             id: uuid.v4(),
             title: this.state.title,
@@ -165,18 +169,37 @@ export class AddEvent extends Component {
             time: this.state.time,
             owners: this.state.owners,
             shared: this.state.shared,
-            invitees: this.state.invitees,
+            invitees: this.state.invitees
         };
-        db.collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")))
-            .update({
-                events: firebase.firestore.FieldValue.arrayUnion(newEvent)
-            });
-        this.setState({ successMessageOpen: true, message: "You have added an event!"});
+        if (!editingEvent) {
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
+                .update({
+                    events: firebase.firestore.FieldValue.arrayUnion(newEvent)
+                });
+        } else {
+            let newEvents = [];
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
+                .get()
+                .then(doc => {
+                    if (doc.exists) {
+                        newEvents = doc.data().events;
+                        newEvents.splice(indexOfEditEvent, 1, newEvent);
+                        db.collection("users")
+                            .doc(
+                                JSON.parse(localStorage.getItem("currentUser"))
+                            )
+                            .update({
+                                events: newEvents
+                            });
+                    }
+                });
+        }
         this.props.setHomePage();
-    }
+    };
 
-    //----- third page functions -----
+    //----- end of third page functions -----
 
     viewForm = () => {
         const btnStyle = {
@@ -188,9 +211,8 @@ export class AddEvent extends Component {
         if (this.state.firstPage) {
             return (
                 <div>
-                    <h3>Create your Event!</h3>
                     <Container maxWidth="sm">
-                        <form onSubmit={() => this.onSubmitFirstPage()}>
+                        <form onSubmit={e => this.onSubmitFirstPage(e)}>
                             <TextField
                                 type="text"
                                 variant="outlined"
@@ -218,12 +240,13 @@ export class AddEvent extends Component {
                                     color="primary"
                                     size="large"
                                     endIcon={<ArrowForwardIcon />}
-                                    onClick={() => this.onSubmitFirstPage()}
+                                    onClick={e => this.onSubmitFirstPage(e)}
                                 >
                                     Continue
                                 </Button>
                             </div>
                             <Button
+                                type="button"
                                 className="userCancelButton"
                                 variant="contained"
                                 color="primary"
@@ -243,8 +266,8 @@ export class AddEvent extends Component {
                     <AddSecondPage
                         cancelEvent={this.props.cancelEvent}
                         goToFirstPage={() => this.goToFirstPage()}
-                        goToThirdPage={(date, time) =>
-                            this.goToThirdPage(date, time)
+                        goToThirdPage={(date, time, e) =>
+                            this.goToThirdPage(date, time, e)
                         }
                     />
                 </div>
@@ -255,7 +278,7 @@ export class AddEvent extends Component {
                     <AddThirdPage
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
-                        submitEvent={() => this.submitEvent()}
+                        submitEvent={e => this.submitEvent(e)}
                     />
                 </div>
             );
