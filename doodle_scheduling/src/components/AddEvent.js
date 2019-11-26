@@ -24,9 +24,9 @@ export class AddEvent extends Component {
             calendar: "default",
 
             //variables to keep track of pages & state
-            firstPage: true,
+            firstPage: false,
             secondPage: false,
-            thirdPage: false,
+            thirdPage: true,
 
             //for social aspect
             //invitees and owners will be emails
