@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
-import Invite from './Invite'
+import Invite from "./Invite";
 
 export class AddThirdPage extends Component {
-  
   render() {
     return (
       <div>
@@ -18,7 +17,12 @@ export class AddThirdPage extends Component {
    * Rendering invite options
    */
   renderOptions = () => {
-      return (<div><Invite/></div>);
+    return (
+      <div>
+        <Invite 
+          setSharedEvent={(checked, list) => this.props.setSharedEvent(checked, list)}/>
+      </div>
+    );
   };
 
   //We are rendering buttons separately from options
