@@ -16,8 +16,8 @@ const logoStyle = {
 
 const logInStyle = {
     textAlign: "center",
-    top: "75%",
-    fontSize: "40px",
+    top: "100%",
+    fontSize: "20px",
     position: "relative"
 };
 const uiConfig = {
@@ -94,8 +94,10 @@ export class Login extends Component {
                 {this.state.isSignedIn ? (
                     <div style={logInStyle}>
                         <h3>
-                            Signed in as{" "}
+                            Name:
                             {firebase.auth().currentUser.displayName}.{" "}
+                            <br/>
+                            email: {firebase.auth().currentUser.email}.{" "}
                         </h3>
                         <Button
                             variant="contained"

@@ -1,4 +1,6 @@
 import firebase from "firebase";
+import "firebase/storage";
+
 const firebaseConfig = {
     apiKey: "AIzaSyAmcdm-nCXD4ahr4EwKddfHQ_vpqkMEPWA",
     authDomain: "cs180-schedulingapp.firebaseapp.com",
