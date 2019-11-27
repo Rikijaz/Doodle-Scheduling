@@ -193,60 +193,56 @@ export class AddEvent extends Component {
      */
     submitEvent = e => {
         e.preventDefault();
-        const { indexOfEditEvent, editingEvent } = this.props;
-        const newEvent = {
-            id: uuid.v4(),
-            title: this.state.title,
-            description: this.state.description,
-            date: this.state.date,
-            time: this.state.time,
-            owners: this.state.owners,
-            accepted_invitees: [],
-            invitees: this.state.invitees
-        };
+        const { idOfEditEvent, editingEvent, editSharedEvent } = this.props;
         const id = uuid.v4();
         if (this.state.shared) {
-            db.collection("shared_events").doc(id).set({
-                id: id,
-                title: this.state.title,
-                description: this.state.description,
-                date: this.state.date,
-                time: this.state.time,
-                owners: this.state.owners,
-                accepted_invitees: [],
-                invitees: this.state.invitees
-            });
+            db.collection("shared_events")
+                .doc(id)
+                .set({
+                    id: id,
+                    title: this.state.title,
+                    description: this.state.description,
+                    date: this.state.date,
+                    time: this.state.time,
+                    owners: this.state.owners,
+                    accepted_invitees: [],
+                    invitees: this.state.invitees
+                });
         } else if (!editingEvent) {
             //add new event
-            db.collection("events").doc(id).set({
-                id: id,
-                title: this.state.title,
-                description: this.state.description,
-                date: this.state.date,
-                time: this.state.time,
-                owners: this.state.owners,
-                accepted_invitees: [],
-                invitees: this.state.invitees
-            });
+            db.collection("events")
+                .doc(id)
+                .set({
+                    id: id,
+                    title: this.state.title,
+                    description: this.state.description,
+                    date: this.state.date,
+                    time: this.state.time,
+                    owners: this.state.owners,
+                    accepted_invitees: [],
+                    invitees: this.state.invitees
+                });
         } else {
             //editing event
-            let newEvents = [];
-            db.collection("users")
-                .doc(JSON.parse(localStorage.getItem("currentUser")))
-                .get()
-                .then(doc => {
-                    if (doc.exists) {
-                        newEvents = doc.data().events;
-                        newEvents.splice(indexOfEditEvent, 1, newEvent);
-                        db.collection("users")
-                            .doc(
-                                JSON.parse(localStorage.getItem("currentUser"))
-                            )
-                            .update({
-                                events: newEvents
-                            });
-                    }
-                });
+            if (editSharedEvent) {
+                db.collection("shared_events")
+                    .doc(idOfEditEvent)
+                    .update({
+                        title: this.state.title,
+                        description: this.state.description,
+                        date: this.state.date,
+                        time: this.state.time
+                    });
+            } else {
+                db.collection("events")
+                    .doc(idOfEditEvent)
+                    .update({
+                        title: this.state.title,
+                        description: this.state.description,
+                        date: this.state.date,
+                        time: this.state.time
+                    });
+            }
         }
         this.props.setHomePage();
     };

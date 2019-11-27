@@ -4,11 +4,11 @@ import EventHome from "./EventHome";
 import Header from "./header";
 import { db } from "./firebase";
 
-let doc = JSON.parse(localStorage.getItem("currentUser"))
-    ? db
-          .collection("users")
-          .doc(JSON.parse(localStorage.getItem("currentUser")))
-    : undefined;
+// let doc = JSON.parse(localStorage.getItem("currentUser"))
+//     ? db
+//           .collection("users")
+//           .doc(JSON.parse(localStorage.getItem("currentUser")))
+//     : undefined;
 
 export class EventManager extends Component {
     constructor(props) {
@@ -16,7 +16,8 @@ export class EventManager extends Component {
         this.state = {
             homePage: true,
             editingEvent: false,
-            indexOfEditEvent: 0
+            idOfEditEvent: "",
+            editSharedEvent: false
         };
     }
 
@@ -36,42 +37,58 @@ export class EventManager extends Component {
 
     /**
      * @param id id of event that is being edited
-     * 
-     * 
+     * @param viewShared if we are editing shared event
+     * or normal event
+     *
      */
-    editEvent = (id) => {
-        console.log(id)
-        // const editedEvent = this.state.events.find(event => {
-        //     return event.id === id;
-        // });
-        // localStorage.setItem("saved_title", JSON.stringify(editedEvent.title));
-        // localStorage.setItem(
-        //     "saved_description",
-        //     JSON.stringify(editedEvent.description)
-        // );
-        // localStorage.setItem("saved_date", JSON.stringify(editedEvent.date));
-        // localStorage.setItem("saved_time", JSON.stringify(editedEvent.time));
-        // for (let i = 0; i < this.state.events.length; i++) {
-        //     if (this.state.events[i].id === editedEvent.id) {
-        //         this.setState({
-        //             indexOfEditEvent: i,
-        //             editingEvent: true
-        //         });
-        //         break;
-        //     }
-        // }
+    editEvent = (id, viewShared) => {
+        //accessing shared event collections
+        if (viewShared) {
+            //db.collection("shared_events").doc(id)
+        }
+        //accessing normal event collections
+        else {
+            db.collection("events")
+                .doc(id)
+                .get()
+                .then(doc => {
+                    console.log("TOOT")
+                    if (doc.exists) {
+                        this.setState({
+                            editingEvent: true,
+                            idOfEditEvent: id,
+                            editSharedEvent: false
+                        });
+                        localStorage.setItem(
+                            "saved_title",
+                            JSON.stringify(doc.data().title)
+                        );
+                        localStorage.setItem(
+                            "saved_description",
+                            JSON.stringify(doc.data().description)
+                        );
+                        localStorage.setItem(
+                            "saved_date",
+                            JSON.stringify(doc.data().date)
+                        );
+                        localStorage.setItem(
+                            "saved_time",
+                            JSON.stringify(doc.data().time)
+                        );
+                    }
+                });
+        }
         this.setAdd();
     };
 
     /**
      * @param id takes in the id of the event to be deleted
-     * @return {array} returns the updated array with 
+     * @return {array} returns the updated array with
      * event removed to the database
+     * @todo delete either shared or personal events
      */
-    deleteEvent = (id)=> {
-        doc.update({
-            events: [...this.state.events.filter(event => event.id !== id)]
-        });
+    deleteEvent = id => {
+        db.collection("events").doc(id).delete();
     };
 
     /**
@@ -91,7 +108,7 @@ export class EventManager extends Component {
      * @return sets home page to false
      */
     setAdd = () => {
-        this.setState({homePage: false });
+        this.setState({ homePage: false });
     };
 
     /**
@@ -102,12 +119,12 @@ export class EventManager extends Component {
         this.setState({
             homePage: true,
             editingEvent: false,
-            indexOfEditEvent: 0
+            idOfEditEvent: ""
         });
     };
 
     /**
-     * Decides what to render, between the 
+     * Decides what to render, between the
      * home page and event creation page
      */
     render() {
@@ -126,7 +143,8 @@ export class EventManager extends Component {
                         cancelEvent={this.cancelEvent}
                         setHomePage={() => this.setHomePage()}
                         editingEvent={this.state.editingEvent}
-                        indexOfEditEvent={this.state.indexOfEditEvent}
+                        idOfEditEvent={this.state.idOfEditEvent}
+                        editSharedEvent={this.state.editSharedEvent}
                     />
                 )}
             </div>

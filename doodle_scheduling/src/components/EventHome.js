@@ -92,7 +92,8 @@ export class EventHome extends Component {
                                                 color="primary"
                                                 onClick={() =>
                                                     this.props.editEvent(
-                                                        row.original.id
+                                                        row.original.id,
+                                                        this.state.showShared,
                                                     )
                                                 }
                                             >
