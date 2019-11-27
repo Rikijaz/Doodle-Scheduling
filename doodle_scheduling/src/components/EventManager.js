@@ -15,25 +15,9 @@ export class EventManager extends Component {
         super(props);
         this.state = {
             homePage: true,
-            events: [],
             editingEvent: false,
             indexOfEditEvent: 0
         };
-    }
-
-    /**
-     * When this component is mounted, it syncs events with
-     * database events
-     * @return set event state to database's events
-     */
-    componentDidMount() {
-        db.collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")))
-            .onSnapshot(doc => {
-                if (doc.exists) {
-                    this.setState({ events: doc.data().events });
-                }
-            });
     }
 
     /**
@@ -56,25 +40,26 @@ export class EventManager extends Component {
      * 
      */
     editEvent = (id) => {
-        const editedEvent = this.state.events.find(event => {
-            return event.id === id;
-        });
-        localStorage.setItem("saved_title", JSON.stringify(editedEvent.title));
-        localStorage.setItem(
-            "saved_description",
-            JSON.stringify(editedEvent.description)
-        );
-        localStorage.setItem("saved_date", JSON.stringify(editedEvent.date));
-        localStorage.setItem("saved_time", JSON.stringify(editedEvent.time));
-        for (let i = 0; i < this.state.events.length; i++) {
-            if (this.state.events[i].id === editedEvent.id) {
-                this.setState({
-                    indexOfEditEvent: i,
-                    editingEvent: true
-                });
-                break;
-            }
-        }
+        console.log(id)
+        // const editedEvent = this.state.events.find(event => {
+        //     return event.id === id;
+        // });
+        // localStorage.setItem("saved_title", JSON.stringify(editedEvent.title));
+        // localStorage.setItem(
+        //     "saved_description",
+        //     JSON.stringify(editedEvent.description)
+        // );
+        // localStorage.setItem("saved_date", JSON.stringify(editedEvent.date));
+        // localStorage.setItem("saved_time", JSON.stringify(editedEvent.time));
+        // for (let i = 0; i < this.state.events.length; i++) {
+        //     if (this.state.events[i].id === editedEvent.id) {
+        //         this.setState({
+        //             indexOfEditEvent: i,
+        //             editingEvent: true
+        //         });
+        //         break;
+        //     }
+        // }
         this.setAdd();
     };
 
@@ -131,7 +116,6 @@ export class EventManager extends Component {
                 <Header />
                 {this.state.homePage && (
                     <EventHome
-                        events={this.state.events}
                         beginAddEvent={this.beginAddEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
