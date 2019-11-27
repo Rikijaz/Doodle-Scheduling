@@ -16,8 +16,8 @@ const logoStyle = {
 
 const logInStyle = {
     textAlign: "center",
-    top: "75%",
-    fontSize: "40px",
+    top: "100%",
+    fontSize: "20px",
     position: "relative"
 };
 const uiConfig = {
@@ -46,7 +46,8 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSignedIn: false
+            isSignedIn: false,
+			picURL: ""
         };
     }
 
@@ -66,8 +67,22 @@ export class Login extends Component {
                             contacts: [],
                             events: [],
                             polls: [],
+                            pictureURL: user.photoURL,
                         });
                     }
+                });
+
+                let docRef = db.collection('users').doc(user.email);
+                let getDoc = docRef.get().then(doc => {
+                    if (!doc.exists) {
+                        console.log('No such document!');
+                    } else {
+                        console.log('Document data:', doc.data());
+                        this.setState({ picURL: doc.data().pictureURL });
+                    }
+                })
+                .catch(err => {
+                    console.log('Error getting document', err);
                 });
 
                 //keep this so header can load the page
@@ -94,8 +109,12 @@ export class Login extends Component {
                 {this.state.isSignedIn ? (
                     <div style={logInStyle}>
                         <h3>
-                            Signed in as{" "}
-                            {firebase.auth().currentUser.displayName}.{" "}
+							<img src={this.state.picURL} alt="Profile" vertical-align="middle" width="100px" height="100px" border-radius="50%" />
+                            <br />
+							Name:
+                            {firebase.auth().currentUser.displayName}
+                            <br />
+                            email: {firebase.auth().currentUser.email}
                         </h3>
                         <Button
                             variant="contained"

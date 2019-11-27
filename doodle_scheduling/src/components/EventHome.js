@@ -16,7 +16,7 @@ export class EventHome extends Component {
             showForm: false,
             showShared: false,
             events: [],
-            sharedEvents: []
+            sharedEvents: [],
         };
     }
 

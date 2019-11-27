@@ -4,12 +4,6 @@ import EventHome from "./EventHome";
 import Header from "./header";
 import { db } from "./firebase";
 
-// let doc = JSON.parse(localStorage.getItem("currentUser"))
-//     ? db
-//           .collection("users")
-//           .doc(JSON.parse(localStorage.getItem("currentUser")))
-//     : undefined;
-
 export class EventManager extends Component {
     constructor(props) {
         super(props);
