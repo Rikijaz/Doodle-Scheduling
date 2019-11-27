@@ -122,6 +122,18 @@ export class AddSecondPage extends Component {
                 >
                     Cancel
                 </Button>
+                <br />
+                <Button
+                    type="calendar view"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={e =>
+                        this.props.goToFourthPage()
+                    }
+                >
+                    Calendar View
+                </Button>
             </div>
         );
     };

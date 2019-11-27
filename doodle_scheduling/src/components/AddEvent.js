@@ -8,6 +8,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
 import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
+import AddFourthPage from "./AddFourthPage";
 import { db, firebase } from "./firebase";
 import uuid from "uuid";
 
@@ -27,6 +28,7 @@ export class AddEvent extends Component {
             firstPage: true,
             secondPage: false,
             thirdPage: false,
+            fourthPage: false,
 
             //for social aspect
             //invitees and owners will be emails
@@ -146,7 +148,7 @@ export class AddEvent extends Component {
      * If you hit back on the second page, it goes back to first page
      */
     goToFirstPage = () => {
-        this.setState({ firstPage: true, secondPage: false });
+        this.setState({ firstPage: true, secondPage: false, thirdPage: false, fourthPage: false  });
     };
     //redo error messages later when implementing another date and time picker
     /**
@@ -180,7 +182,7 @@ export class AddEvent extends Component {
      * Goes back to second page when hitting back on third page
      */
     goToSecondPage = () => {
-        this.setState({ firstPage: false, secondPage: true, thirdPage: false });
+        this.setState({ firstPage: false, secondPage: true, thirdPage: false, fourthPage: false });
     };
 
     /**
@@ -230,6 +232,10 @@ export class AddEvent extends Component {
     };
 
     //----- end of third page functions -----
+
+    goToFourthPage = () => {
+        this.setState({ firstPage: false, secondPage: false, thirdPage: false, fourthPage: true });
+    };
 
     /**
      * Decides what to display when adding event by
@@ -303,6 +309,7 @@ export class AddEvent extends Component {
                         goToThirdPage={(date, time, e) =>
                             this.goToThirdPage(date, time, e)
                         }
+                        goToFourthPage={() => this.goToFourthPage()}
                     />
                 </div>
             );
@@ -313,6 +320,16 @@ export class AddEvent extends Component {
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
                         submitEvent={e => this.submitEvent(e)}
+                    />
+                </div>
+            );
+        } else if (this.state.fourthPage) {
+            console.trace();
+
+            return (
+                <div>
+                    <AddFourthPage
+                        goToSecondPage={() => this.goToSecondPage()}
                     />
                 </div>
             );

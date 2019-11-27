@@ -114,12 +114,15 @@ export class EventManager extends Component {
      * @return Home Page
      */
     setHomePage = () => {
+console.trace();
+
         this.setState({
             homePage: true,
             editingEvent: false,
             indexOfEditEvent: 0
         });
     };
+    
 
     /**
      * Decides what to render, between the 
