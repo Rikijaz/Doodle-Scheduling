@@ -5,6 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import Form from "./Form";
+import EventCalendar from "./EventCalendar"
 
 export class EventHome extends Component {
     constructor(props) {
@@ -113,6 +114,46 @@ export class EventHome extends Component {
         }
     };
 
+    showCalendar = () => {
+        if (this.props.events === null || this.props.events === undefined) {
+            return <h2>No events</h2>;
+        } else if (this.props.events.length === 0) {
+            return <h2>No events</h2>;
+        } else {
+            return (
+                <div className="App">
+                    {/* <header>
+                        <div id="logo">
+                            <span className="icon">
+                                date_range
+                            </span>
+                            <span>
+                                schedule<b>It</b>
+                            </span>
+                        </div>
+                    </header> */}
+                    <div>
+                        <Button
+                            type="button"
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            onClick={this.props.goToSecondPage}
+                        >
+                            Go BACK
+                        </Button>
+                    </div>
+                    <main>
+                        <EventCalendar
+                            events={this.props.events}>
+                        </EventCalendar>
+                    </main>
+                </div>
+            );
+        }
+        
+    }
+
     getBtnStyle = () => {
         return {
             textAlign: "right",
@@ -200,7 +241,7 @@ export class EventHome extends Component {
                 </div>
                 <div style={this.getMainStyle()}>
                     {this.showEvents()}
-                    {/* where calendar would go from eric */}
+                    {this.showCalendar()}
                 </div>
             </div>
         );

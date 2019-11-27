@@ -1,6 +1,6 @@
 import React from 'react';
 import './AddFourthPage.css';
-import CalendarEventView from "./CalendarEventView";
+import EventCalendar from "./EventCalendar";
 import { Button } from "@material-ui/core";
 
 class AddFourthPage extends React.Component {
@@ -35,7 +35,7 @@ class AddFourthPage extends React.Component {
         </Button>
         </div>
         <main>
-          <CalendarEventView />
+          <EventCalendar />
         </main>
       </div>
     )

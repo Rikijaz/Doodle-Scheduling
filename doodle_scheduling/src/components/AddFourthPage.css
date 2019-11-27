@@ -195,6 +195,16 @@ main {
   font-weight: 700;
 }
 
+.calendar .body .cell .title {
+  position: absolute;
+  font-size: 65;
+  line-height: 1;
+  bottom: 0em;
+  left: 0em;
+  font-weight: 700;
+}
+
+
 .calendar .body .disabled {
   color: var(--text-color-light);
   pointer-events: none;
