@@ -33,9 +33,16 @@ export class EventHome extends Component {
      * @return Header saying no events or Table of Events
      */
     showEvents = () => {
-        if (this.state.events === null || this.state.events === undefined) {
+        if (
+            (this.state.events === null || this.state.events === undefined) &&
+            (this.state.sharedEvents === null ||
+                this.state.sharedEvents === undefined)
+        ) {
             return <h2>No events</h2>;
-        } else if (this.state.events.length === 0) {
+        } else if (
+            this.state.events.length === 0 &&
+            this.state.sharedEvents.length === 0
+        ) {
             return <h2>No events</h2>;
         } else {
             let data = [];
@@ -93,7 +100,7 @@ export class EventHome extends Component {
                                                 onClick={() =>
                                                     this.props.editEvent(
                                                         row.original.id,
-                                                        this.state.showShared,
+                                                        this.state.showShared
                                                     )
                                                 }
                                             >
@@ -108,7 +115,7 @@ export class EventHome extends Component {
                                                 variant="contained"
                                                 color="primary"
                                                 onClick={() =>
-                                                    this.props.deleteEvent(
+                                                    this.deleteEvent(
                                                         row.original.id
                                                     )
                                                 }
@@ -222,6 +229,13 @@ export class EventHome extends Component {
     }
 
     /**
+     * Delete Event
+     */
+    deleteEvent = id => {
+        db.collection("events").doc(id).delete();
+    };
+
+    /**
      * @return events that current user made that are not shared
      * @return shared events which are events current user shared(invited people)
      */
@@ -229,7 +243,6 @@ export class EventHome extends Component {
         let tempObject = { temp: [] };
 
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
         db.collection("events")
             .where("owners", "array-contains", currentUser)
             .get()

@@ -54,11 +54,6 @@ export class EventManager extends Component {
                 .then(doc => {
                     console.log("TOOT")
                     if (doc.exists) {
-                        this.setState({
-                            editingEvent: true,
-                            idOfEditEvent: id,
-                            editSharedEvent: false
-                        });
                         localStorage.setItem(
                             "saved_title",
                             JSON.stringify(doc.data().title)
@@ -78,7 +73,11 @@ export class EventManager extends Component {
                     }
                 });
         }
-        this.setAdd();
+        this.setState({
+            editingEvent: true,
+            idOfEditEvent: id,
+            editSharedEvent: false
+        },this.setAdd());
     };
 
     /**
@@ -90,6 +89,7 @@ export class EventManager extends Component {
     deleteEvent = id => {
         db.collection("events").doc(id).delete();
     };
+    
 
     /**
      * Cancels the process of event creation
