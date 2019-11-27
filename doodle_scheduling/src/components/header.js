@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import AddContact from './AddContact'
 import ViewContacts from './ViewContacts'
+//import NotificationsButton from './NotificationsButton'
+//import NotificationMessages from './NotificationMessages'
+//import NotificationsMenuButton from './NotificationsMenuButton'
+//import NotificationTesting from './NotificationTesting'
+import NotificationTesting2 from './NotificationTesting2'
 import firebase from "firebase";
 //import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
@@ -71,6 +76,7 @@ export class Header extends Component {
                     <h1>Schedule It</h1>
                     <AddContact/>
                     <ViewContacts/>
+                    <NotificationTesting2/>
 
                     {this.state.user && (
                         <div>
