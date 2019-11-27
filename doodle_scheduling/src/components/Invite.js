@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Checkbox } from "@material-ui/core";
-//eslint-disable-next-line
-import { TextField } from "@material-ui/core";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+
 import { db } from "./firebase";
 import Button from "@material-ui/core/Button";
+//eslint-disable-next-line
+import InviteContacts from './InviteContacts'
+
 export class Invite extends Component {
   constructor(props) {
     super(props);
@@ -63,24 +65,6 @@ export class Invite extends Component {
    */
   renderInvite = () => {
     if (this.state.checked) {
-      // return (
-      //   <div>
-      //     <form onSubmit={e => this.handleSubmitInvite(e)}>
-      //       <TextField
-      //         type="text"
-      //         variant="outlined"
-      //         placeholder="Enter invitees one at a time:"
-      //         value={this.state.input}
-      //         onChange={i => this.handleInput(i)}
-      //       />
-      //     </form>
-      //   </div>
-      // );
-
-      /*
-       * Grabs users contact list and sets invite list
-       * to the contact's list emails
-       */
       db.collection("users")
         .doc(JSON.parse(localStorage.getItem("currentUser")))
         .get()
@@ -94,13 +78,10 @@ export class Invite extends Component {
         });
       return (
         <div>
-          {this.state.invite_list.map((i, index) => (
-            <li key={index}>
-              {/* Name: {i.displayName}
-              {" - "} Email: {i.email} */}
-              {i}
-            </li>
-          ))}
+          <InviteContacts
+            handleSave={this.handleSave}
+            />
+          <br/>
           <Button
             variant="contained"
             color="secondary"

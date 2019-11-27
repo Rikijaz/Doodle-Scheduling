@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import ReactTable from "react-table";
 import "react-table/react-table.css";
 import Form from "./Form";
 import { db } from "./firebase";
+import Cards from "./Cards";
 
 export class EventHome extends Component {
     constructor(props) {
@@ -16,7 +16,7 @@ export class EventHome extends Component {
             showForm: false,
             showShared: false,
             events: [],
-            sharedEvents: [],
+            sharedEvents: []
         };
     }
 
@@ -28,111 +28,47 @@ export class EventHome extends Component {
         this.setState({ showShared: !this.state.showShared });
     };
 
+    viewForm = () => {
+        if(this.state.showShared){
+            return <div>{this.showSharedEvents()}</div>;
+        }
+        else{
+            return <div>{this.showEvents()}</div>;
+        }
+    }
+
     /**
      * Displays event table
      * @return Header saying no events or Table of Events
      */
     showEvents = () => {
-        if (
-            (this.state.events === null || this.state.events === undefined) &&
-            (this.state.sharedEvents === null ||
-                this.state.sharedEvents === undefined)
-        ) {
-            return <h2>No events</h2>;
-        } else if (
-            this.state.events.length === 0 &&
-            this.state.sharedEvents.length === 0
-        ) {
+        const { events } = this.state;
+        if (events === null || events === undefined) {
+            return <h2>no events</h2>;
+        } else if (events.length === 0) {
             return <h2>No events</h2>;
         } else {
-            let data = [];
-            this.state.showShared
-                ? (data = this.state.sharedEvents)
-                : (data = this.state.events);
-            return (
-                <div>
-                    <ReactTable
-                        defaultPageSize={5}
-                        data={data}
-                        columns={[
-                            {
-                                Header: "Events",
-                                columns: [
-                                    {
-                                        Header: "Title",
-                                        accessor: "title"
-                                    },
-                                    {
-                                        Header: "Description",
-                                        accessor: "description"
-                                    },
-                                    {
-                                        Header: "Date",
-                                        accessor: "date"
-                                    },
-                                    {
-                                        Header: "Time",
-                                        accessor: "time"
-                                    }
-                                ]
-                            },
-                            {
-                                Header: "Actions",
-                                columns: [
-                                    {
-                                        Header: "Send",
-                                        Cell: row => (
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => this.sendEmail()}
-                                            >
-                                                Send
-                                            </Button>
-                                        )
-                                    },
-                                    {
-                                        Header: "Edit",
-                                        Cell: row => (
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() =>
-                                                    this.props.editEvent(
-                                                        row.original.id,
-                                                        this.state.showShared
-                                                    )
-                                                }
-                                            >
-                                                Edit
-                                            </Button>
-                                        )
-                                    },
-                                    {
-                                        Header: "Delete",
-                                        Cell: row => (
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() =>
-                                                    this.deleteEvent(
-                                                        row.original.id
-                                                    )
-                                                }
-                                            >
-                                                Delete
-                                            </Button>
-                                        )
-                                    }
-                                ]
-                            }
-                        ]}
-                    />
-                </div>
-            );
+            return events.map(event => (
+                <Cards
+                    data={event}
+                    editEvent={id => this.props.editEvent(id)}
+                    deleteEvent={id => this.deleteEvent(id)}
+                ></Cards>
+            ));
+        }
+
+    }
+    showSharedEvents = () => {
+        const { sharedEvents } = this.state;
+        if (sharedEvents === null || sharedEvents === undefined||sharedEvents.length === 0) {
+            return <h2>No shared events</h2>;
+        }else {
+            console.log();
+            return sharedEvents.map(event => (
+                <Cards data={event} shared={true}></Cards>
+            ));
         }
     };
-
     getBtnStyle = () => {
         return {
             textAlign: "right",
@@ -204,7 +140,7 @@ export class EventHome extends Component {
                         aria-haspopup="true"
                         onClick={e => this.handleClick(e)}
                     >
-                        Create
+                        Create Event
                     </Button>
                     <Menu
                         id="simple-menu"
@@ -221,7 +157,9 @@ export class EventHome extends Component {
                     <Button onClick={() => this.switchEventView()}>
                         Switch
                     </Button>
-                    {this.showEvents()}
+                    {this.viewForm()}
+                    {/* {this.showEvents()}
+                    {this.showSharedEvents()} */}
                     {/* where calendar would go from eric */}
                 </div>
             </div>
@@ -232,7 +170,9 @@ export class EventHome extends Component {
      * Delete Event
      */
     deleteEvent = id => {
-        db.collection("events").doc(id).delete();
+        db.collection("events")
+            .doc(id)
+            .delete();
     };
 
     /**
@@ -271,6 +211,36 @@ export class EventHome extends Component {
             })
             .catch(err => console.error(err));
         //console.log(tempObject.temp);
+    }
+
+    componentDidUpdate() {
+        let tempObject = { temp: [] };
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        db.collection("events")
+            .where("owners", "array-contains", currentUser)
+            .get()
+            .then(data => {
+                tempObject.temp = [];
+                data.forEach(doc => {
+                    tempObject.temp.push(doc.data());
+                });
+                this.setState({ events: tempObject.temp });
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        db.collection("shared_events")
+            .where("invitees", "array-contains", currentUser)
+            .get()
+            .then(data => {
+                tempObject.temp = [];
+                data.forEach(doc => {
+                    tempObject.temp.push(doc.data());
+                });
+                this.setState({ sharedEvents: tempObject.temp });
+            })
+            .catch(err => console.error(err));
     }
 }
 

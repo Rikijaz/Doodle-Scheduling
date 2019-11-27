@@ -46,8 +46,8 @@ export class EventManager extends Component {
                 .doc(id)
                 .get()
                 .then(doc => {
-                    console.log("TOOT")
                     if (doc.exists) {
+                        console.log("TOOT")
                         localStorage.setItem(
                             "saved_title",
                             JSON.stringify(doc.data().title)
@@ -80,9 +80,6 @@ export class EventManager extends Component {
      * event removed to the database
      * @todo delete either shared or personal events
      */
-    deleteEvent = id => {
-        db.collection("events").doc(id).delete();
-    };
     
 
     /**
@@ -90,10 +87,10 @@ export class EventManager extends Component {
      * @return Return back to the home page
      */
     cancelEvent = () => {
-        localStorage.removeItem("saved_title");
-        localStorage.removeItem("saved_description");
-        localStorage.removeItem("saved_time");
-        localStorage.removeItem("saved_date");
+        // localStorage.removeItem("saved_title");
+        // localStorage.removeItem("saved_description");
+        // localStorage.removeItem("saved_time");
+        // localStorage.removeItem("saved_date");
         this.setHomePage();
     };
 
