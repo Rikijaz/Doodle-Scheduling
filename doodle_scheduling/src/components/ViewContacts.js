@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { db } from "./firebase";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -16,20 +16,24 @@ export default function ViewContacts() {
     const [currentUser] = React.useState(
         JSON.parse(localStorage.getItem("currentUser"))
     );
-
-    let docReference = db.collection("users").doc(currentUser);
     const [c, setListofContacts] = React.useState([]);
 
     const btnStyle = {
         textAlign: "left"
     };
 
+    useEffect(() => {
+        db.collection("users")
+            .doc(currentUser)
+            .get()
+            .then(doc => {
+                if (doc.exists) {
+                    setListofContacts(doc.data().contacts);
+                }
+            });
+        //eslint-disable-next-line
+    }, []);
     const handleClickOpen = () => {
-        docReference.get().then(doc => {
-            if (doc.exists) {
-                setListofContacts(doc.data().contacts);
-            }
-        });
         setOpen(true);
     };
 
@@ -38,7 +42,9 @@ export default function ViewContacts() {
     };
 
     const listOfContacts = c.map((contact, index) => (
-    <li key={index}>{contact.displayName} <br/> {contact.email}</li>
+        <li key={index}>
+            {contact.displayName} <br /> {contact.email}
+        </li>
     ));
 
     return (
@@ -62,9 +68,7 @@ export default function ViewContacts() {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"List of your Contacts"}</DialogTitle>
-                <DialogContent>
-                    {listOfContacts}
-                </DialogContent>
+                <DialogContent>{listOfContacts}</DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Close
