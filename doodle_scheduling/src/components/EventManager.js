@@ -10,8 +10,7 @@ export class EventManager extends Component {
         this.state = {
             homePage: true,
             editingEvent: false,
-            idOfEditEvent: "",
-            editSharedEvent: false
+            idOfEditEvent: ""
         };
     }
 
@@ -47,7 +46,7 @@ export class EventManager extends Component {
                 .get()
                 .then(doc => {
                     if (doc.exists) {
-                        console.log("TOOT")
+                        console.log("TOOT");
                         localStorage.setItem(
                             "saved_title",
                             JSON.stringify(doc.data().title)
@@ -67,11 +66,13 @@ export class EventManager extends Component {
                     }
                 });
         }
-        this.setState({
-            editingEvent: true,
-            idOfEditEvent: id,
-            editSharedEvent: false
-        },this.setAdd());
+        this.setState(
+            {
+                editingEvent: true,
+                idOfEditEvent: id
+            },
+            this.setAdd()
+        );
     };
 
     /**
@@ -80,7 +81,6 @@ export class EventManager extends Component {
      * event removed to the database
      * @todo delete either shared or personal events
      */
-    
 
     /**
      * Cancels the process of event creation
@@ -135,7 +135,6 @@ export class EventManager extends Component {
                         setHomePage={() => this.setHomePage()}
                         editingEvent={this.state.editingEvent}
                         idOfEditEvent={this.state.idOfEditEvent}
-                        editSharedEvent={this.state.editSharedEvent}
                     />
                 )}
             </div>

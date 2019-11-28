@@ -230,7 +230,7 @@ export class EventHome extends Component {
             .catch(error => {
                 console.error(error);
             });
-        db.collection("shared_events")
+        db.collection("events")
             .where("invitees", "array-contains", currentUser)
             .get()
             .then(data => {

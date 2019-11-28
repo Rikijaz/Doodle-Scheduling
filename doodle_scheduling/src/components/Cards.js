@@ -29,9 +29,14 @@ class Cards extends Component {
         const { data, isShared } = this.props;
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
-        let deleteButton = !isShared? (<IconButton aria-label="delete" onClick={() => this.props.deleteEvent(data.id)}>
-        <DeleteIcon />
-    </IconButton>) : null
+        let deleteButton = !isShared ? (
+            <IconButton
+                aria-label="delete"
+                onClick={() => this.props.deleteEvent(data.id)}
+            >
+                <DeleteIcon />
+            </IconButton>
+        ) : null;
         return (
             <Card>
                 <CardContent>
@@ -68,8 +73,9 @@ class Cards extends Component {
                 <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <Typography>
-                            {data.owners.join("\n")}
-                            {invitees}
+                            Owners: {data.owners}
+                            <br/>
+                            Invitees: {invitees}
                         </Typography>
                     </CardContent>
                 </Collapse>

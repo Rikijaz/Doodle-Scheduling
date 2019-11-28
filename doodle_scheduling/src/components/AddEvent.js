@@ -24,9 +24,9 @@ export class AddEvent extends Component {
             calendar: "default",
 
             //variables to keep track of pages & state
-            firstPage: false,
+            firstPage: true,
             secondPage: false,
-            thirdPage: true,
+            thirdPage: false,
 
             //for social aspect
             //invitees and owners will be emails
@@ -193,22 +193,10 @@ export class AddEvent extends Component {
      */
     submitEvent = e => {
         e.preventDefault();
-        const { idOfEditEvent, editingEvent, editSharedEvent } = this.props;
+        const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
-        if (this.state.shared) {
-            db.collection("shared_events")
-                .doc(id)
-                .set({
-                    id: id,
-                    title: this.state.title,
-                    description: this.state.description,
-                    date: this.state.date,
-                    time: this.state.time,
-                    owners: this.state.owners,
-                    accepted_invitees: [],
-                    invitees: this.state.invitees
-                });
-        } else if (!editingEvent) {
+        
+        if (!editingEvent) {
             //add new event
             db.collection("events")
                 .doc(id)
@@ -224,25 +212,15 @@ export class AddEvent extends Component {
                 });
         } else {
             //editing event
-            if (editSharedEvent) {
-                db.collection("shared_events")
-                    .doc(idOfEditEvent)
-                    .update({
-                        title: this.state.title,
-                        description: this.state.description,
-                        date: this.state.date,
-                        time: this.state.time
-                    });
-            } else {
-                db.collection("events")
-                    .doc(idOfEditEvent)
-                    .update({
-                        title: this.state.title,
-                        description: this.state.description,
-                        date: this.state.date,
-                        time: this.state.time
-                    });
-            }
+            db.collection("events")
+                .doc(idOfEditEvent)
+                .update({
+                    title: this.state.title,
+                    description: this.state.description,
+                    date: this.state.date,
+                    time: this.state.time,
+                    invitees: this.state.invitees
+                });
         }
         this.props.setHomePage();
     };
@@ -348,7 +326,6 @@ export class AddEvent extends Component {
             );
         }
     };
-
 }
 
 export default AddEvent;
