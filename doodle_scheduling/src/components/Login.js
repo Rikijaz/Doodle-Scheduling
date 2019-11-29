@@ -73,11 +73,25 @@ export class Login extends Component {
                 });
 
                 let docRef = db.collection('users').doc(user.email);
+<<<<<<< HEAD
+<<<<<<< HEAD
                 docRef.get().then(doc => {
                     if (!doc.exists) {
                         //console.log('No such document!');
                     } else {
                         //console.log('Document data:', doc.data());
+=======
+=======
+>>>>>>> parent of 445a3b2... Revert "Profile/Login Page Update"
+                let getDoc = docRef.get().then(doc => {
+                    if (!doc.exists) {
+                        console.log('No such document!');
+                    } else {
+                        console.log('Document data:', doc.data());
+<<<<<<< HEAD
+>>>>>>> parent of 445a3b2... Revert "Profile/Login Page Update"
+=======
+>>>>>>> parent of 445a3b2... Revert "Profile/Login Page Update"
                         this.setState({ picURL: doc.data().pictureURL });
                     }
                 })
