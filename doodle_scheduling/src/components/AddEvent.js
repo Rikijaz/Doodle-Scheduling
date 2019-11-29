@@ -8,7 +8,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
 import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
-import { db } from "./firebase";
+import { db, firebase } from "./firebase";
 import uuid from "uuid";
 
 export class AddEvent extends Component {
@@ -115,7 +115,7 @@ export class AddEvent extends Component {
     /**
      * Submits user input of title and description
      * @param {*} e Takes in event of pressing button
-     * @return sets state to go to second page and saves title
+     * @return sets state to go to second page and saves title 
      * and description to local storage
      */
     onSubmitFirstPage = e => {
@@ -184,52 +184,50 @@ export class AddEvent extends Component {
     };
 
     /**
-     * When creating/editing event, it adds/edits it to the database./
-     * If the event is going to be shared, it will add it to the
-     * shared event collection
+     * When creating/editing event, it adds/edits it to the database
      * @param {*} e takes in event of hitting submit event
      * @return saves to firestore database and goes back to home page
-     * @todo fix edit event
      */
-    submitEvent = (e, invitees) => {
+    submitEvent = e => {
         e.preventDefault();
-        const { idOfEditEvent, editingEvent } = this.props;
-        const id = uuid.v4();
-        
-        if (!editingEvent) {
-            //add new event
-            db.collection("events")
-                .doc(id)
-                .set({
-                    id: id,
-                    title: this.state.title,
-                    description: this.state.description,
-                    date: this.state.date,
-                    time: this.state.time,
-                    owners: this.state.owners,
-                    accepted_invitees: [],
-                    invitees: invitees
-                });
-        } else {
-            //editing event
-            db.collection("events")
-                .doc(idOfEditEvent)
+        const { indexOfEditEvent, editingEvent } = this.props;
+        const newEvent = {
+            id: uuid.v4(),
+            title: this.state.title,
+            description: this.state.description,
+            date: this.state.date,
+            time: this.state.time,
+            owners: this.state.owners,
+            shared: this.state.shared,
+            invitees: this.state.invitees
+        };
+        if (!editingEvent) { //add new event
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
                 .update({
-                    title: this.state.title,
-                    description: this.state.description,
-                    date: this.state.date,
-                    time: this.state.time,
-                    invitees: invitees
+                    events: firebase.firestore.FieldValue.arrayUnion(newEvent)
+                });
+        } else { //editing event
+            let newEvents = [];
+            db.collection("users")
+                .doc(JSON.parse(localStorage.getItem("currentUser")))
+                .get()
+                .then(doc => {
+                    if (doc.exists) {
+                        newEvents = doc.data().events;
+                        newEvents.splice(indexOfEditEvent, 1, newEvent);
+                        db.collection("users")
+                            .doc(
+                                JSON.parse(localStorage.getItem("currentUser"))
+                            )
+                            .update({
+                                events: newEvents
+                            });
+                    }
                 });
         }
         this.props.setHomePage();
     };
-
-    /**
-     * @param {boolean} check if checkbox is clicked to make event shareable
-     * @param {Array} list populatex invitees with contacts' emails
-     * @todo this list will be populated with people outside the contact list
-     */
 
     //----- end of third page functions -----
 
@@ -314,7 +312,7 @@ export class AddEvent extends Component {
                     <AddThirdPage
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
-                        submitEvent={(e, invitees) => this.submitEvent(e, invitees)}
+                        submitEvent={e => this.submitEvent(e)}
                     />
                 </div>
             );
