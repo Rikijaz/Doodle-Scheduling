@@ -20,7 +20,6 @@ export default function InviteContacts(props) {
     const [emails, setEmails] = React.useState([]);
 
     useEffect(() => {
-        console.log("1")
         db.collection("users")
             .doc(JSON.parse(localStorage.getItem("currentUser")))
             .get()
@@ -33,13 +32,10 @@ export default function InviteContacts(props) {
                 }
             });
 
-    },[]);
+    });
 
-     //if add props to dependencies, infinite useEffect, dont do it
     useEffect(() => {
-        console.log("2")
-        props.setSharedEvent(personEmail);
-        // eslint-disable-next-line
+        props.setSharedEvent(true, personEmail);
     },[personEmail]);
 
     return (

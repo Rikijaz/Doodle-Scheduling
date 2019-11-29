@@ -73,11 +73,11 @@ export class Login extends Component {
                 });
 
                 let docRef = db.collection('users').doc(user.email);
-                docRef.get().then(doc => {
+                let getDoc = docRef.get().then(doc => {
                     if (!doc.exists) {
-                        //console.log('No such document!');
+                        console.log('No such document!');
                     } else {
-                        //console.log('Document data:', doc.data());
+                        console.log('Document data:', doc.data());
                         this.setState({ picURL: doc.data().pictureURL });
                     }
                 })

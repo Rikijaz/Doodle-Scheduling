@@ -19,7 +19,7 @@ export class AddThirdPage extends Component {
         return (
             <div>
                 {this.renderOptions()}
-                <br />
+                <br/>
                 {this.renderButtons()}
             </div>
         );
@@ -31,8 +31,8 @@ export class AddThirdPage extends Component {
      * toggles check of checkbox
      */
     handleCheckbox = () => {
-        this.setState({ checked: !this.state.checked });
-    };
+      this.setState({checked: !this.state.checked});
+    }
 
     /**
      * Rendering invite options
@@ -58,16 +58,11 @@ export class AddThirdPage extends Component {
     };
 
     renderContactDropdown = () => {
-        if (this.state.checked) {
-            return (
-                <InviteContacts setSharedEvent={l => this.setSharedEvent(l)} />
-            );
-        }
-    };
-
-    setSharedEvent = list => {
-        this.setState({ invite_list: list });
-    };
+      if(this.state.checked){
+        return(<InviteContacts
+          setSharedEvent={(c,l) => this.props.setSharedEvent(c,l)}/>);
+      }
+    }
 
     //We are rendering buttons separately from options
     /**
@@ -91,9 +86,7 @@ export class AddThirdPage extends Component {
                     variant="contained"
                     color="primary"
                     size="large"
-                    onClick={e =>
-                        this.props.submitEvent(e, this.state.invite_list)
-                    }
+                    onClick={e => this.props.submitEvent(e)}
                 >
                     Submit Event
                 </Button>

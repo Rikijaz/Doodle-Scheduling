@@ -29,12 +29,13 @@ export class EventHome extends Component {
     };
 
     viewForm = () => {
-        if (this.state.showShared) {
-            return <div>Shared Events <br/> {this.showSharedEvents()}</div>;
-        } else {
-            return <div>Personal Events <br/> {this.showEvents()}</div>;
+        if(this.state.showShared){
+            return <div>{this.showSharedEvents()}</div>;
         }
-    };
+        else{
+            return <div>{this.showEvents()}</div>;
+        }
+    }
 
     /**
      * Displays event table
@@ -42,31 +43,29 @@ export class EventHome extends Component {
      */
     showEvents = () => {
         const { events } = this.state;
-        if (events === null || events === undefined || events.length === 0) {
+        if (events === null || events === undefined) {
+            return <h2>no events</h2>;
+        } else if (events.length === 0) {
             return <h2>No events</h2>;
         } else {
-            return events.map((event, index) => (
+            return events.map(event => (
                 <Cards
-                    key={index}
                     data={event}
                     editEvent={id => this.props.editEvent(id)}
                     deleteEvent={id => this.deleteEvent(id)}
                 ></Cards>
             ));
         }
-    };
+
+    }
     showSharedEvents = () => {
         const { sharedEvents } = this.state;
-        if (
-            sharedEvents === null ||
-            sharedEvents === undefined ||
-            sharedEvents.length === 0
-        ) {
+        if (sharedEvents === null || sharedEvents === undefined||sharedEvents.length === 0) {
             return <h2>No shared events</h2>;
-        } else {
+        }else {
             console.log();
-            return sharedEvents.map((event, index) => (
-                <Cards key={index} data={event} shared={true}></Cards>
+            return sharedEvents.map(event => (
+                <Cards data={event} shared={true}></Cards>
             ));
         }
     };
@@ -159,6 +158,8 @@ export class EventHome extends Component {
                         Switch
                     </Button>
                     {this.viewForm()}
+                    {/* {this.showEvents()}
+                    {this.showSharedEvents()} */}
                     {/* where calendar would go from eric */}
                 </div>
             </div>
@@ -172,7 +173,13 @@ export class EventHome extends Component {
         db.collection("events")
             .doc(id)
             .delete();
+    };
 
+    /**
+     * @return events that current user made that are not shared
+     * @return shared events which are events current user shared(invited people)
+     */
+    componentDidMount() {
         let tempObject = { temp: [] };
 
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -182,6 +189,7 @@ export class EventHome extends Component {
             .then(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
+                    //temp.push(doc.data());
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ events: tempObject.temp });
@@ -189,24 +197,23 @@ export class EventHome extends Component {
             .catch(error => {
                 console.error(error);
             });
-        db.collection("events")
+        db.collection("shared_events")
             .where("invitees", "array-contains", currentUser)
             .get()
             .then(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
                     tempObject.temp.push(doc.data());
+                    //console.log(doc.data());
+                    //temp.push(doc.data());
                 });
                 this.setState({ sharedEvents: tempObject.temp });
             })
             .catch(err => console.error(err));
-    };
+        //console.log(tempObject.temp);
+    }
 
-    /**
-     * @return events that current user made that are not shared
-     * @return shared events which are events current user shared(invited people)
-     */
-    componentDidMount() {
+    componentDidUpdate() {
         let tempObject = { temp: [] };
 
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
