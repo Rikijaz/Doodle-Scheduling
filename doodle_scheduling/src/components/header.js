@@ -79,7 +79,6 @@ export class Header extends Component {
                                     variant="contained"
                                     color="primary"
                                     size="small"
-                                    onClick={() => this.onClickSignOut()}
                                     component={Link}
                                     to="/"
                                 >
