@@ -4,36 +4,14 @@ import EventHome from "./EventHome";
 import Header from "./header";
 import { db } from "./firebase";
 
-let doc = JSON.parse(localStorage.getItem("currentUser"))
-    ? db
-          .collection("users")
-          .doc(JSON.parse(localStorage.getItem("currentUser")))
-    : undefined;
-
 export class EventManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
             homePage: true,
-            events: [],
             editingEvent: false,
-            indexOfEditEvent: 0
+            idOfEditEvent: ""
         };
-    }
-
-    /**
-     * When this component is mounted, it syncs events with
-     * database events
-     * @return set event state to database's events
-     */
-    componentDidMount() {
-        db.collection("users")
-            .doc(JSON.parse(localStorage.getItem("currentUser")))
-            .onSnapshot(doc => {
-                if (doc.exists) {
-                    this.setState({ events: doc.data().events });
-                }
-            });
     }
 
     /**
@@ -52,52 +30,67 @@ export class EventManager extends Component {
 
     /**
      * @param id id of event that is being edited
-     * 
-     * 
+     * @param viewShared if we are editing shared event
+     * or normal event
+     *
      */
-    editEvent = (id) => {
-        const editedEvent = this.state.events.find(event => {
-            return event.id === id;
-        });
-        localStorage.setItem("saved_title", JSON.stringify(editedEvent.title));
-        localStorage.setItem(
-            "saved_description",
-            JSON.stringify(editedEvent.description)
-        );
-        localStorage.setItem("saved_date", JSON.stringify(editedEvent.date));
-        localStorage.setItem("saved_time", JSON.stringify(editedEvent.time));
-        for (let i = 0; i < this.state.events.length; i++) {
-            if (this.state.events[i].id === editedEvent.id) {
-                this.setState({
-                    indexOfEditEvent: i,
-                    editingEvent: true
-                });
-                break;
-            }
+    editEvent = (id, viewShared) => {
+        //accessing shared event collections
+        if (viewShared) {
+            //db.collection("shared_events").doc(id)
         }
-        this.setAdd();
+        //accessing normal event collections
+        else {
+            db.collection("events")
+                .doc(id)
+                .get()
+                .then(doc => {
+                    if (doc.exists) {
+                        console.log("TOOT");
+                        localStorage.setItem(
+                            "saved_title",
+                            JSON.stringify(doc.data().title)
+                        );
+                        localStorage.setItem(
+                            "saved_description",
+                            JSON.stringify(doc.data().description)
+                        );
+                        localStorage.setItem(
+                            "saved_date",
+                            JSON.stringify(doc.data().date)
+                        );
+                        localStorage.setItem(
+                            "saved_time",
+                            JSON.stringify(doc.data().time)
+                        );
+                    }
+                });
+        }
+        this.setState(
+            {
+                editingEvent: true,
+                idOfEditEvent: id
+            },
+            this.setAdd()
+        );
     };
 
     /**
      * @param id takes in the id of the event to be deleted
-     * @return {array} returns the updated array with 
+     * @return {array} returns the updated array with
      * event removed to the database
+     * @todo delete either shared or personal events
      */
-    deleteEvent = (id)=> {
-        doc.update({
-            events: [...this.state.events.filter(event => event.id !== id)]
-        });
-    };
 
     /**
      * Cancels the process of event creation
      * @return Return back to the home page
      */
     cancelEvent = () => {
-        localStorage.removeItem("saved_title");
-        localStorage.removeItem("saved_description");
-        localStorage.removeItem("saved_time");
-        localStorage.removeItem("saved_date");
+        // localStorage.removeItem("saved_title");
+        // localStorage.removeItem("saved_description");
+        // localStorage.removeItem("saved_time");
+        // localStorage.removeItem("saved_date");
         this.setHomePage();
     };
 
@@ -106,7 +99,7 @@ export class EventManager extends Component {
      * @return sets home page to false
      */
     setAdd = () => {
-        this.setState({homePage: false });
+        this.setState({ homePage: false });
     };
 
     /**
@@ -117,12 +110,12 @@ export class EventManager extends Component {
         this.setState({
             homePage: true,
             editingEvent: false,
-            indexOfEditEvent: 0
+            idOfEditEvent: ""
         });
     };
 
     /**
-     * Decides what to render, between the 
+     * Decides what to render, between the
      * home page and event creation page
      */
     render() {
@@ -131,7 +124,6 @@ export class EventManager extends Component {
                 <Header />
                 {this.state.homePage && (
                     <EventHome
-                        events={this.state.events}
                         beginAddEvent={this.beginAddEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
@@ -142,7 +134,7 @@ export class EventManager extends Component {
                         cancelEvent={this.cancelEvent}
                         setHomePage={() => this.setHomePage()}
                         editingEvent={this.state.editingEvent}
-                        indexOfEditEvent={this.state.indexOfEditEvent}
+                        idOfEditEvent={this.state.idOfEditEvent}
                     />
                 )}
             </div>
