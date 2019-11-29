@@ -30,9 +30,9 @@ export class EventHome extends Component {
 
     viewForm = () => {
         if (this.state.showShared) {
-            return <div>Shared Events <br/> {this.showSharedEvents()}</div>;
+            return <div>{this.showSharedEvents()}</div>;
         } else {
-            return <div>Personal Events <br/> {this.showEvents()}</div>;
+            return <div>{this.showEvents()}</div>;
         }
     };
 
@@ -51,7 +51,7 @@ export class EventHome extends Component {
                     data={event}
                     editEvent={id => this.props.editEvent(id)}
                     deleteEvent={id => this.deleteEvent(id)}
-                ></Cards>
+                />
             ));
         }
     };
@@ -66,7 +66,12 @@ export class EventHome extends Component {
         } else {
             console.log();
             return sharedEvents.map((event, index) => (
-                <Cards key={index} data={event} shared={true}></Cards>
+                <Cards
+                    key={index}
+                    data={event}
+                    isShared={true}
+                    
+                />
             ));
         }
     };
@@ -235,6 +240,7 @@ export class EventHome extends Component {
             })
             .catch(err => console.error(err));
     }
+
 }
 
 export default EventHome;
