@@ -191,7 +191,7 @@ export class AddEvent extends Component {
      * @return saves to firestore database and goes back to home page
      * @todo fix edit event
      */
-    submitEvent = e => {
+    submitEvent = (e, invitees) => {
         e.preventDefault();
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
@@ -208,7 +208,7 @@ export class AddEvent extends Component {
                     time: this.state.time,
                     owners: this.state.owners,
                     accepted_invitees: [],
-                    invitees: this.state.invitees
+                    invitees: invitees
                 });
         } else {
             //editing event
@@ -219,7 +219,7 @@ export class AddEvent extends Component {
                     description: this.state.description,
                     date: this.state.date,
                     time: this.state.time,
-                    invitees: this.state.invitees
+                    invitees: invitees
                 });
         }
         this.props.setHomePage();
@@ -230,9 +230,6 @@ export class AddEvent extends Component {
      * @param {Array} list populatex invitees with contacts' emails
      * @todo this list will be populated with people outside the contact list
      */
-    setSharedEvent = (check, list) => {
-        this.setState({ shared: check, invitees: list });
-    };
 
     //----- end of third page functions -----
 
@@ -317,10 +314,7 @@ export class AddEvent extends Component {
                     <AddThirdPage
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
-                        submitEvent={e => this.submitEvent(e)}
-                        setSharedEvent={(checked, list) =>
-                            this.setSharedEvent(checked, list)
-                        }
+                        submitEvent={(e, invitees) => this.submitEvent(e, invitees)}
                     />
                 </div>
             );
