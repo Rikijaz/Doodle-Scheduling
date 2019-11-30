@@ -6,6 +6,7 @@ import "react-table/react-table.css";
 import Form from "./Form";
 import { db } from "./firebase";
 import Cards from "./Cards";
+import EventCalendar from "./EventCalendar"
 
 export class EventHome extends Component {
     constructor(props) {
@@ -30,9 +31,9 @@ export class EventHome extends Component {
 
     viewForm = () => {
         if (this.state.showShared) {
-            return <div>Shared Events <br/> {this.showSharedEvents()}</div>;
+            return <div>{this.showSharedEvents()}</div>;
         } else {
-            return <div>Personal Events <br/> {this.showEvents()}</div>;
+            return <div>{this.showEvents()}</div>;
         }
     };
 
@@ -42,7 +43,7 @@ export class EventHome extends Component {
      */
     showEvents = () => {
         const { events } = this.state;
-        if (events === null || events === undefined || events.length === 0) {
+        if (this.areThereNoEvents()) {
             return <h2>No events</h2>;
         } else {
             return events.map((event, index) => (
@@ -51,25 +52,48 @@ export class EventHome extends Component {
                     data={event}
                     editEvent={id => this.props.editEvent(id)}
                     deleteEvent={id => this.deleteEvent(id)}
-                ></Cards>
+                />
             ));
         }
     };
     showSharedEvents = () => {
         const { sharedEvents } = this.state;
-        if (
-            sharedEvents === null ||
-            sharedEvents === undefined ||
-            sharedEvents.length === 0
-        ) {
+        if (this.areThereNoSharedEvents()) {
             return <h2>No shared events</h2>;
         } else {
             console.log();
             return sharedEvents.map((event, index) => (
-                <Cards key={index} data={event} shared={true}></Cards>
+                <Cards
+                    key={index}
+                    data={event}
+                    isShared={true}
+                    
+                />
             ));
         }
     };
+
+    /**
+     * Displays event calendar 
+     */
+    showCalendar = () => {
+        const { events } = this.state;
+        const { sharedEvents } = this.state;
+
+        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents()) {
+            return (
+                <div className="App">
+                    <main>
+                        <EventCalendar
+                            events={events}
+                            sharedEvents={sharedEvents}>
+                        </EventCalendar>
+                    </main>
+                </div>
+            );
+        }
+    }
+
     getBtnStyle = () => {
         return {
             textAlign: "right",
@@ -159,7 +183,7 @@ export class EventHome extends Component {
                         Switch
                     </Button>
                     {this.viewForm()}
-                    {/* where calendar would go from eric */}
+                    {this.showCalendar()}
                 </div>
             </div>
         );
@@ -234,6 +258,16 @@ export class EventHome extends Component {
                 this.setState({ sharedEvents: tempObject.temp });
             })
             .catch(err => console.error(err));
+    }
+
+    areThereNoEvents() 
+    {
+        return this.state.events === null || this.state.events === undefined || this.state.events.length === 0;
+    }
+
+    areThereNoSharedEvents() 
+    {
+        return this.state.sharedEvents === null || this.state.sharedEvents === undefined || this.state.sharedEvents.length === 0;
     }
 }
 

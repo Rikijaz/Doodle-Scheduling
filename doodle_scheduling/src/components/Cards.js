@@ -13,12 +13,15 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ShareIcon from "@material-ui/icons/Share";
 import Collapse from "@material-ui/core/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Invite from "./Invite";
+
 
 class Cards extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            expanded: false
+            expanded: false,
+            startShare: false
         };
     }
 
@@ -29,6 +32,18 @@ class Cards extends Component {
         const { data, isShared } = this.props;
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
+        let invitePeople = this.state.startShare ? (
+            <Invite id={data.id} open={this.state.startShare}/>
+        ) : null;
+        let editButton = !isShared ? (
+            <Button
+                size="small"
+                color="primary"
+                onClick={() => this.props.editEvent(data.id)}
+            >
+                edit
+            </Button>
+        ) : null;
         let deleteButton = !isShared ? (
             <IconButton
                 aria-label="delete"
@@ -38,49 +53,63 @@ class Cards extends Component {
             </IconButton>
         ) : null;
         return (
-            <Card>
-                <CardContent>
-                    <Typography color="textSecondary" gutterBottom>
-                        {shareStatus}
-                    </Typography>
-                    <Typography variant="h5" component="h2">
-                        {data.title}
-                    </Typography>
-                    <Typography>{data.description}</Typography>
-                    <Typography>{data.date}</Typography>
-                    <Typography>{data.time}</Typography>
-                </CardContent>
-                <CardActions>
-                    <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.props.editEvent(data.id)}
-                    >
-                        edit
-                    </Button>
-                    <IconButton aria-label="share">
-                        <ShareIcon />
-                    </IconButton>
-                    {deleteButton}
-                    <IconButton
-                        onClick={handleExpandClick}
-                        aria-expanded={this.state.expanded}
-                        aria-label="show more"
-                    >
-                        <ExpandMoreIcon />
-                    </IconButton>
-                </CardActions>
-                <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+            <div>
+                <Card>
                     <CardContent>
-                        <Typography>
-                            Owners: {data.owners}
-                            <br/>
-                            Invitees: {invitees}
+                        <Typography color="textSecondary" gutterBottom>
+                            {shareStatus}
                         </Typography>
+                        <Typography variant="h5" component="h2">
+                            {data.title}
+                        </Typography>
+                        <Typography>{data.description}</Typography>
+                        <Typography>{data.date}</Typography>
+                        <Typography>{data.time}</Typography>
                     </CardContent>
-                </Collapse>
-            </Card>
+                    <CardActions>
+                        {editButton}
+                        <IconButton
+                            aria-label="share"
+                            onClick={() => this.handleShareEvent()}
+                        >
+                            <ShareIcon />
+                        </IconButton>
+                        {deleteButton}
+                        <IconButton
+                            onClick={handleExpandClick}
+                            aria-expanded={this.state.expanded}
+                            aria-label="show more"
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </CardActions>
+                    <Collapse
+                        in={this.state.expanded}
+                        timeout="auto"
+                        unmountOnExit
+                    >
+                        <CardContent>
+                            <Typography>
+                                Owners: {data.owners}
+                                <br />
+                                Invitees: {invitees}
+                            </Typography>
+                        </CardContent>
+                    </Collapse>
+                </Card>
+                {invitePeople}
+            </div>
         );
     }
+
+    /**
+     * @param id id of event to be shared with others
+     * @return pop up with checkboxes like the third page, select
+     * people to invite from contacts
+     */
+    handleShareEvent = () => {
+        this.setState({ startShare: !this.state.startShare });
+    };
+    
 }
 export default Cards;
