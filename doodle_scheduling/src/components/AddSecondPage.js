@@ -40,7 +40,7 @@ export class AddSecondPage extends Component {
         //     //         "\n"
         //     // );
         // }
-
+        
         //right now it should only take in one date & one range of time
         let x = new Date(eventData[0].start.format("LLLL"));
         let y = new Date(eventData[0].end.format("LLLL"));
