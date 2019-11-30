@@ -6,7 +6,7 @@ import "react-table/react-table.css";
 import Form from "./Form";
 import { db } from "./firebase";
 import Cards from "./Cards";
-import EventCalendar from "./EventCalendar"
+import EventCalendar from "./EventCalendar/EventCalendar"
 
 export class EventHome extends Component {
     constructor(props) {

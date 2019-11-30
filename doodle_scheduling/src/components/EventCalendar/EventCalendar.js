@@ -1,6 +1,6 @@
 import React from "react";
 import * as dateFns from 'date-fns';
-import Modal from "./Modal/Modal";
+import Modal from "../Modal/Modal";
 import "./EventCalendar.css";
 
 export class EventCalendar extends React.Component {
