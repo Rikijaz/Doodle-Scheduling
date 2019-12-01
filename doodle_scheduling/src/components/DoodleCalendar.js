@@ -64,13 +64,16 @@ export default class DoodleCalendar extends React.Component {
 
   render() {
     return <WeekCalendar
+      dayFormat = {'dddd, MM.DD'}
       startTime = {moment({h: 0, m: 0})}
       endTime = {moment({h: 23, m: 50})}
+      scaleFormat = {'hh:mm a'}
       numberOfDays= {7}
       selectedIntervals = {this.state.selectedIntervals}
       onIntervalSelect = {this.handleSelect}
       onIntervalUpdate = {this.handleEventUpdate}
       onIntervalRemove = {this.handleEventRemove}
+      useModal = {false}
       />
   }
 }

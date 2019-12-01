@@ -16,7 +16,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import Invite from "./Invite";
-
+import moment from "moment";
 
 class Cards extends Component {
     constructor(props) {   
@@ -54,6 +54,7 @@ class Cards extends Component {
                 <DeleteIcon />
             </IconButton>
         ) : null;
+
         let acceptIcon = (isShared && !hasAccepted)? (
             <div>
                 <IconButton onClick = {() => this.props.acceptInvite(data.id)}>
@@ -65,6 +66,7 @@ class Cards extends Component {
             </div>
         ) : null;
         // let acceptIcon = 
+      
         return (
             <div>
                 <Card>
@@ -76,8 +78,9 @@ class Cards extends Component {
                             {data.title}
                         </Typography>
                         <Typography>{data.description}</Typography>
-                        <Typography>{data.date}</Typography>
-                        <Typography>{data.time}</Typography>
+                        {/* <Typography>{data.date}</Typography>
+                        <Typography>{data.time}</Typography> */}
+                        <Typography>{moment(data.startDate).format("LLLL")}</Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
