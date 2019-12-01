@@ -129,19 +129,11 @@ export class EventHome extends Component {
     };
 
     /**
-     * Clicks create event option and starts adding event
+     * Clicks add event option and starts adding event
      */
     handleAddEventMenu = () => {
         this.handleClose();
         this.props.beginAddEvent();
-    };
-
-    /**
-     * Clicks join event option
-     */
-    handleJoinEventMenu = () => {
-        this.handleClose();
-        this.props.beginJoinEvent();
     };
 
     /**
@@ -173,7 +165,7 @@ export class EventHome extends Component {
                         aria-haspopup="true"
                         onClick={e => this.handleClick(e)}
                     >
-                        Create/Join Event
+                        Create Event
                     </Button>
                     <Menu
                         id="simple-menu"
@@ -182,10 +174,7 @@ export class EventHome extends Component {
                         onClose={this.handleClose}
                     >
                         <MenuItem onClick={this.handleAddEventMenu}>
-                            Create Event
-                        </MenuItem>
-                        <MenuItem onClick={this.handleJoinEventMenu}>
-                            Join Event
+                            Event
                         </MenuItem>
                     </Menu>
                 </div>

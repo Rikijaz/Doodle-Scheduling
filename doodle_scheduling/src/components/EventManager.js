@@ -3,7 +3,6 @@ import AddEvent from "./AddEvent";
 import EventHome from "./EventHome";
 import Header from "./header";
 import { db } from "./firebase";
-import Join from "./Join";
 
 export class EventManager extends Component {
     constructor(props) {
@@ -11,8 +10,7 @@ export class EventManager extends Component {
         this.state = {
             homePage: true,
             editingEvent: false,
-            idOfEditEvent: "",
-            joinEvent: false
+            idOfEditEvent: ""
         };
     }
 
@@ -28,10 +26,6 @@ export class EventManager extends Component {
         localStorage.removeItem("saved_time");
         localStorage.removeItem("saved_date");
         this.setAdd();
-    };
-
-    beginJoinEvent = () => {
-        this.setState({ joinEvent: !this.state.joinEvent });
     };
 
     /**
@@ -125,14 +119,12 @@ export class EventManager extends Component {
      * home page and event creation page
      */
     render() {
-        let joinDialog = this.state.joinEvent ? <Join open={true}/> : null;
         return (
             <div>
                 <Header />
                 {this.state.homePage && (
                     <EventHome
                         beginAddEvent={this.beginAddEvent}
-                        beginJoinEvent={this.beginJoinEvent}
                         editEvent={this.editEvent}
                         deleteEvent={this.deleteEvent}
                     />
@@ -145,7 +137,6 @@ export class EventManager extends Component {
                         idOfEditEvent={this.state.idOfEditEvent}
                     />
                 )}
-                {joinDialog}
             </div>
         );
     }

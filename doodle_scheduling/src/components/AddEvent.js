@@ -193,17 +193,15 @@ export class AddEvent extends Component {
      */
     submitEvent = (e, invitees) => {
         e.preventDefault();
-        let code = this.makeCode(5);
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
-
+        
         if (!editingEvent) {
             //add new event
             db.collection("events")
                 .doc(id)
                 .set({
                     id: id,
-                    code: code,
                     title: this.state.title,
                     description: this.state.description,
                     date: this.state.date,
@@ -225,19 +223,6 @@ export class AddEvent extends Component {
                 });
         }
         this.props.setHomePage();
-    };
-
-    makeCode = length => {
-        var result = "";
-        var characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(
-                Math.floor(Math.random() * charactersLength)
-            );
-        }
-        return result;
     };
 
     /**
@@ -329,9 +314,7 @@ export class AddEvent extends Component {
                     <AddThirdPage
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
-                        submitEvent={(e, invitees) =>
-                            this.submitEvent(e, invitees)
-                        }
+                        submitEvent={(e, invitees) => this.submitEvent(e, invitees)}
                     />
                 </div>
             );
