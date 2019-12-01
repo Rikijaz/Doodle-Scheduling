@@ -19,8 +19,8 @@ export class AddEvent extends Component {
             title: JSON.parse(localStorage.getItem("saved_title")) || "",
             description:
                 JSON.parse(localStorage.getItem("saved_description")) || "",
-            date: JSON.parse(localStorage.getItem("saved_date")) || "",
-            time: JSON.parse(localStorage.getItem("saved_time")) || "",
+            startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
+            endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -150,18 +150,18 @@ export class AddEvent extends Component {
     };
     //redo error messages later when implementing another date and time picker
     /**
-     * @param {string=} date Takes in date from eric's calendar
-     * @param {string=} time Takes in time from eric's calendar
+     * @param {string=} startDate Takes in start date from eric's calendar
+     * @param {string=} endDate Takes in end date from eric's calendar
      * @param {*} e Takes in event of hitting button to go to next page
      * @return Sets date and time in state
      * @return error message if date & time are null
      */
-    goToThirdPage = (date, time, e) => {
+    goToThirdPage = (startDate, endDate, e) => {
         e.preventDefault();
-        if (date !== null && date !== "" && time !== null && time !== "") {
+        if (startDate !== null && startDate !== "" && endDate !== null && endDate !== "") {
             this.setState({
-                date: date,
-                time: time,
+                startDate: startDate,
+                endDate: endDate,
                 firstPage: false,
                 secondPage: false,
                 thirdPage: true
@@ -193,21 +193,26 @@ export class AddEvent extends Component {
      */
     submitEvent = (e, invitees) => {
         e.preventDefault();
+        let code = this.makeCode(5);
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
-        
+
         if (!editingEvent) {
             //add new event
             db.collection("events")
                 .doc(id)
                 .set({
                     id: id,
+                    code: code,
                     title: this.state.title,
                     description: this.state.description,
-                    date: this.state.date,
-                    time: this.state.time,
+                    startDate: this.state.startDate,
+                    endDate: this.state.endDate,
+                    // date: this.state.startDate,
+                    // time: this.state.endDate,
                     owners: this.state.owners,
                     accepted_invitees: [],
+                    declined_invitees: [],
                     invitees: invitees
                 });
         } else {
@@ -217,12 +222,27 @@ export class AddEvent extends Component {
                 .update({
                     title: this.state.title,
                     description: this.state.description,
-                    date: this.state.date,
-                    time: this.state.time,
+                    // date: this.state.startDate,
+                    // time: this.state.endDate,
+                    startDate: this.state.startDate,
+                    endDate: this.state.endDate,
                     invitees: invitees
                 });
         }
         this.props.setHomePage();
+    };
+
+    makeCode = length => {
+        var result = "";
+        var characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength)
+            );
+        }
+        return result;
     };
 
     /**
@@ -302,8 +322,8 @@ export class AddEvent extends Component {
                     <AddSecondPage
                         cancelEvent={this.props.cancelEvent}
                         goToFirstPage={() => this.goToFirstPage()}
-                        goToThirdPage={(date, time, e) =>
-                            this.goToThirdPage(date, time, e)
+                        goToThirdPage={(startDate, endDate, e) =>
+                            this.goToThirdPage(startDate, endDate, e)
                         }
                     />
                 </div>
@@ -314,7 +334,9 @@ export class AddEvent extends Component {
                     <AddThirdPage
                         goToSecondPage={() => this.goToSecondPage()}
                         cancelEvent={this.props.cancelEvent}
-                        submitEvent={(e, invitees) => this.submitEvent(e, invitees)}
+                        submitEvent={(e, invitees) =>
+                            this.submitEvent(e, invitees)
+                        }
                     />
                 </div>
             );

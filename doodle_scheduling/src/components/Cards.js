@@ -13,11 +13,13 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ShareIcon from "@material-ui/icons/Share";
 import Collapse from "@material-ui/core/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ClearIcon from '@material-ui/icons/Clear';
+import CheckIcon from '@material-ui/icons/Check';
 import Invite from "./Invite";
-
+import moment from "moment";
 
 class Cards extends Component {
-    constructor(props) {
+    constructor(props) {   
         super(props);
         this.state = {
             expanded: false,
@@ -29,7 +31,7 @@ class Cards extends Component {
         const handleExpandClick = () => {
             this.setState({ expanded: !this.state.expanded });
         };
-        const { data, isShared } = this.props;
+        const { data, isShared, hasAccepted } = this.props;
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
         let invitePeople = this.state.startShare ? (
@@ -52,6 +54,19 @@ class Cards extends Component {
                 <DeleteIcon />
             </IconButton>
         ) : null;
+
+        let acceptIcon = (isShared && !hasAccepted)? (
+            <div>
+                <IconButton onClick = {() => this.props.acceptInvite(data.id)}>
+                <CheckIcon/>
+            </IconButton>
+            <IconButton onClick = {() => this.props.declineInvite(data.id)}>
+                <ClearIcon/>
+            </IconButton>
+            </div>
+        ) : null;
+        // let acceptIcon = 
+      
         return (
             <div>
                 <Card>
@@ -63,8 +78,9 @@ class Cards extends Component {
                             {data.title}
                         </Typography>
                         <Typography>{data.description}</Typography>
-                        <Typography>{data.date}</Typography>
-                        <Typography>{data.time}</Typography>
+                        {/* <Typography>{data.date}</Typography>
+                        <Typography>{data.time}</Typography> */}
+                        <Typography>{moment(data.startDate).format("LLLL")}</Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
@@ -82,6 +98,7 @@ class Cards extends Component {
                         >
                             <ExpandMoreIcon />
                         </IconButton>
+                        {acceptIcon}
                     </CardActions>
                     <Collapse
                         in={this.state.expanded}

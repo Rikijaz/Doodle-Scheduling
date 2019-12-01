@@ -1,6 +1,7 @@
 import React from "react";
 import "./Modal.css";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 export default class Modal extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class Modal extends React.Component {
     }
     return (
       <div className="modal" id="modal">
-        <h2>{this.props.title} {this.props.time}</h2>
+        <h2>{this.props.title} {moment(this.props.startDate).format("LT")}</h2>
         <div className="content">{this.props.description}</div>
         <div className="actions">
           <button className="toggle-button" onClick={this.onClose}>
