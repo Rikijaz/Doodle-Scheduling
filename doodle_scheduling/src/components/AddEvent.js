@@ -210,6 +210,7 @@ export class AddEvent extends Component {
                     time: this.state.time,
                     owners: this.state.owners,
                     accepted_invitees: [],
+                    declined_invitees: [],
                     invitees: invitees
                 });
         } else {
