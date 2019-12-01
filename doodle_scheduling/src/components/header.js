@@ -85,6 +85,7 @@ export class Header extends Component {
                     <h1>Schedule It</h1>
                     <AddContact/>
                     <ViewContacts/>
+                    <NotificationTesting2/>
 
                     <Button onClick={this.notificationTrue}>Notifications</Button>
                     {this.state.notifications && (<NotificationsUI2/>)}
