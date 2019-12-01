@@ -67,7 +67,7 @@ class Cards extends Component {
                         <Typography>{data.description}</Typography>
                         {/* <Typography>{data.date}</Typography>
                         <Typography>{data.time}</Typography> */}
-                        <Typography>{moment(data.startTime).format("LLLL")}</Typography>
+                        <Typography>{moment(data.startDate).format("LLLL")}</Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
