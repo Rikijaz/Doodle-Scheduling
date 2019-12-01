@@ -9,7 +9,7 @@ import {
     MenuLink
   } from "@reach/menu-button";
 
-  export class NotificationTesting2 extends Component {
+export class NotificationTesting2 extends Component {
     constructor(props) {
         super(props);
         this.state = {

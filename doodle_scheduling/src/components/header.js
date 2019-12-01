@@ -2,11 +2,7 @@ import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import AddContact from './AddContact'
 import ViewContacts from './ViewContacts'
-//import NotificationsButton from './NotificationsButton'
-//import NotificationMessages from './NotificationMessages'
-//import NotificationsMenuButton from './NotificationsMenuButton'
-//import NotificationTesting from './NotificationTesting'
-import NotificationTesting2 from './NotificationTesting2'
+import NotificationsUI2 from './NotificationsUI2'
 import firebase from "firebase";
 //import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
@@ -34,6 +30,7 @@ export class Header extends Component {
         this.state = {
             user: null,
             addContactsPrompt: false,
+            notifications: false
         };
     }
 
@@ -65,6 +62,18 @@ export class Header extends Component {
         localStorage.clear();
     };
 
+    /* Tracks the opening and closing of the Notification Button */
+    notificationTrue = () => {
+        if (this.state.notifications === false)
+        {
+            this.setState({notifications: true});   // open notifications
+        }
+        else
+        {
+            this.setState({notifications: false});   // close notifications
+        }
+    }
+
     /**
      * Renders the buttons to view/add contacts and
      * sign out button and name of user
@@ -76,8 +85,10 @@ export class Header extends Component {
                     <h1>Schedule It</h1>
                     <AddContact/>
                     <ViewContacts/>
-                    <NotificationTesting2/>
 
+                    <Button onClick={this.notificationTrue}>Notifications</Button>
+                    {this.state.notifications && (<NotificationsUI2/>)}
+                    
                     {this.state.user && (
                         <div>
                             <div style={signOutStyle}>
