@@ -85,11 +85,10 @@ export class Header extends Component {
                     <h1>Schedule It</h1>
                     <AddContact/>
                     <ViewContacts/>
-                    <NotificationTesting2/>
 
                     <Button onClick={this.notificationTrue}>Notifications</Button>
                     {this.state.notifications && (<NotificationsUI2/>)}
-                    
+
                     {this.state.user && (
                         <div>
                             <div style={signOutStyle}>
@@ -97,7 +96,6 @@ export class Header extends Component {
                                     variant="contained"
                                     color="primary"
                                     size="small"
-                                    onClick={() => this.onClickSignOut()}
                                     component={Link}
                                     to="/"
                                 >
