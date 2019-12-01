@@ -89,7 +89,7 @@ export class EventHome extends Component {
           key={index}
           data={event}
           isShared={true}
-          hasAccpeted={false}
+          hasAccepted={false}
           acceptInvite={id => this.acceptInvite(id)}
           declineInvite={id => this.declineInvite(id)}
         />
@@ -102,7 +102,7 @@ export class EventHome extends Component {
       return <h2>No accepted events</h2>;
     } else {
       return acceptedEvents.map((event, index) => (
-        <Cards key={index} data={event} isShared={true} hasAccpeted={true} />
+        <Cards key={index} data={event} isShared={true} hasAccepted={true} />
       ));
     }
   };
