@@ -25,8 +25,10 @@ export class EventManager extends Component {
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
-        localStorage.removeItem("saved_time");
-        localStorage.removeItem("saved_date");
+        // localStorage.removeItem("saved_time");
+        // localStorage.removeItem("saved_date");
+        localStorage.removeItem("saved_start_date");
+        localStorage.removeItem("saved_end_date");
         this.setAdd();
     };
 
@@ -61,13 +63,21 @@ export class EventManager extends Component {
                             "saved_description",
                             JSON.stringify(doc.data().description)
                         );
+                        // localStorage.setItem(
+                        //     "saved_date",
+                        //     JSON.stringify(doc.data().date)
+                        // );
+                        // localStorage.setItem(
+                        //     "saved_time",
+                        //     JSON.stringify(doc.data().time)
+                        // );
                         localStorage.setItem(
-                            "saved_date",
-                            JSON.stringify(doc.data().date)
+                            "saved_start_date",
+                            JSON.stringify(doc.data().startDate)
                         );
                         localStorage.setItem(
-                            "saved_time",
-                            JSON.stringify(doc.data().time)
+                            "saved_end_date",
+                            JSON.stringify(doc.data().endDate)
                         );
                     }
                 });

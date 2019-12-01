@@ -2,6 +2,7 @@ import React from "react";
 import * as dateFns from 'date-fns';
 import Modal from "../Modal/Modal";
 import "./EventCalendar.css";
+import moment from "moment";
 
 export class EventCalendar extends React.Component {
     constructor(props) {
@@ -12,23 +13,23 @@ export class EventCalendar extends React.Component {
             show: false,
             title: "",
             description: "",
-            time: ""
+            startDate: "",
+            endDate: ""
         };
     }
 
-    showModal = (eventTitle, eventDescription, time) => {
+    showModal = (eventTitle, eventDescription, startDate, endDate) => {
         this.title = eventTitle;
         this.description = eventDescription;
-        this.time = time;
-
-        console.log(this.title);
-        console.log(this.description);
+        this.startDate = startDate;
+        this.endDate = endDate;
 
         this.setState({
           show: !this.state.show,
           title: this.title,
           description: this.description,
-          time: this.time,
+          startDate: this.startDate,
+          endDate: this.endDate,
         });
       };
 
@@ -80,10 +81,8 @@ export class EventCalendar extends React.Component {
             this.props.sharedEvents === null ||
             this.props.sharedEvents === undefined ||
             this.props.sharedEvents.length === 0);
-        
-        console.log(areThereEvents);
-        console.log(areThereSharedEvents);
-        if (areThereEvents || areThereSharedEvents) {
+
+            if (areThereEvents || areThereSharedEvents) {
             const { currentMonth, selectedDate } = this.state;
             const monthStart = dateFns.startOfMonth(currentMonth);
             const monthEnd = dateFns.endOfMonth(monthStart);
@@ -100,29 +99,16 @@ export class EventCalendar extends React.Component {
             let eventData = [];
             if (areThereEvents) {
                 for (let i = 0; i < this.props.events.length; ++i) {
-                    // var dateString = '2019-' + this.props.events[i].date;
-                    // var dateString = dateFns.parse(
-                    //     this.props.events[i].date + '/2019',
-                    //     'MM/dd/yyyy',
-                    //     new Date()
-                    // );
-    
-                    // var dateString = new Date('2019-' + this.props.events[i].date);
-                    
-                    console.log(this.props.events[i].date.split('/')[0]);
-                    if (this.props.events[i].date.split('/')[0] == dateFns.getMonth(currentMonth) + 1) {
+                    if (moment(this.props.events[i].startDate).format("L").split('/')[0] == dateFns.getMonth(currentMonth) + 1) {
                         var data = {
-                            // Date = toDate('2019-02-11T11:30:30')
-                            // date: dateFns.toDate(dateString),
                             date: this.props.events[i].date,
                             title: this.props.events[i].title,
                             description: this.props.events[i].description,
-                            time: this.props.events[i].time,
+                            startDate: this.props.events[i].startDate,
+                            endDate: this.props.events[i].endDate,
                         }
         
                         eventData.push(data)
-                        console.log(data);
-                        console.log(this.props.events[i]);
                     }
                 }
             }
@@ -130,35 +116,22 @@ export class EventCalendar extends React.Component {
             if (areThereSharedEvents) {
                 for (let i = 0; i < this.props.sharedEvents.length; ++i) {
 
-                    if (this.props.sharedEvents[i].date.split('/')[0] == dateFns.getMonth(currentMonth) + 1) {
+                    if (moment(this.props.sharedEvents[i].startDate).format('L').split('/')[0]== dateFns.getMonth(currentMonth) + 1) {
                         var data = {
                             date: this.props.sharedEvents[i].date,
                             title: this.props.sharedEvents[i].title,
                             description: this.props.sharedEvents[i].description,
-                            time: this.props.sharedEvents[i].time,
+                            startDate: this.props.sharedEvents[i].startDate,
+                            endDate: this.props.sharedEvents[i].endDate,
                         }
         
                         eventData.push(data)
                     }
-                    else {
-                        console.log(this.props.sharedEvents[i].date.split('/')[0] );
-                        console.log(dateFns.getMonth(currentMonth));
-                    }
-                    // var data = {
-                    //     date: this.props.sharedEvents[i].date,
-                    //     title: this.props.sharedEvents[i].title,
-                    //     description: this.props.sharedEvents[i].description,
-                    // }
-    
-                    // eventData.push(data)
                 }
             }
 
 
             console.log(Object.prototype.toString.call(day).match(/^\[object\s(.*)\]$/)[1]);
-            // console.log(Object.prototype.toString.call(eventData.date).match(/^\[object\s(.*)\]$/)[1]);
-            // console.log(eventData[0].date);
-
 
             while (day <= endDate) {
                 for (let i = 0; i < 7; i++) {
@@ -168,12 +141,10 @@ export class EventCalendar extends React.Component {
                     var isEvent = false;
 
                     for (let i = 0; i < eventData.length && !isEvent; ++i) {
-                        // console.log('day: ' + formattedDate + ' eventDate: ' + (eventData[i].date).substr(3));
-                        
                         var eventTitle = eventData[i].title;
 
-                        if ((eventData[i].date).substr(3) == dateFns.getDate(day) &&
-                            eventData[i].date.split('/')[0] == dateFns.getMonth(day) + 1) {
+                        if (moment(eventData[i].startDate).format('L').split('/')[1] == dateFns.getDate(day) &&
+                            moment(eventData[i].startDate).format('L').split('/')[0] == dateFns.getMonth(day) + 1) {
                             days.push(
                                 <div
                                     className={`col cell ${
@@ -187,7 +158,8 @@ export class EventCalendar extends React.Component {
                                     this.showModal(
                                         eventData[i].title, 
                                         eventData[i].description,
-                                        eventData[i].time);
+                                        eventData[i].startDate,
+                                        eventData[i].endDate);
                                     }}
                                 >
                                     <span className="number">{formattedDate}</span>
@@ -250,8 +222,6 @@ export class EventCalendar extends React.Component {
     }
 
     onDateClick = day => {
-      console.log(Object.prototype.toString.call(day).match(/\s\w+/)[0].trim());
-
         this.setState({
             selectedDate: "day"
         });
@@ -284,7 +254,8 @@ export class EventCalendar extends React.Component {
               show={this.state.show}
               title={this.title}
               description={this.description}
-              time={this.time}
+              startDate={this.startDate}
+              endDate={this.endDate}
               >
               </Modal>
             </div>

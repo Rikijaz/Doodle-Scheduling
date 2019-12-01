@@ -14,7 +14,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import Collapse from "@material-ui/core/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Invite from "./Invite";
-
+import moment from "moment";
 
 class Cards extends Component {
     constructor(props) {
@@ -52,6 +52,8 @@ class Cards extends Component {
                 <DeleteIcon />
             </IconButton>
         ) : null;
+
+        console.log(data);
         return (
             <div>
                 <Card>
@@ -63,8 +65,9 @@ class Cards extends Component {
                             {data.title}
                         </Typography>
                         <Typography>{data.description}</Typography>
-                        <Typography>{data.date}</Typography>
-                        <Typography>{data.time}</Typography>
+                        {/* <Typography>{data.date}</Typography>
+                        <Typography>{data.time}</Typography> */}
+                        <Typography>{moment(data.startTime).format("LLLL")}</Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
