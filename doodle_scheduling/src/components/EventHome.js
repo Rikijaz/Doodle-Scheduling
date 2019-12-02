@@ -14,8 +14,10 @@ export class EventHome extends Component {
     this.state = {
       anchorEl: null,
       openMenu: false,
+      anchorEl2 : null,
+      openMenu2: false,
       showForm: false,
-      showShared: false,
+      showShared: "events",
       events: [],
       sharedEvents: [],
       acceptedEvents: []
@@ -52,10 +54,14 @@ export class EventHome extends Component {
   };
 
   viewForm = () => {
-    if (this.state.showShared) {
-      return <div>{this.showSharedEvents()}</div>;
-    } else {
+    if (this.state.showShared === "events") {
       return <div>{this.showEvents()}</div>;
+    } else if (this.state.showShared === "shared") {
+      return <div>{this.showSharedEvents()}</div>;
+    }else if(this.state.showShared === "accepted") {
+      return  <div>{this.showAcceptedEvents()}</div>
+    }else if(this.state.showShared === "calendar"){
+    return <div>{this.showCalendar()}</div>
     }
   };
 
@@ -112,7 +118,7 @@ export class EventHome extends Component {
    */
   showCalendar = () => {
     const { events } = this.state;
-    const { sharedEvents } = this.state;
+    const { sharedEvents, acceptedEvents } = this.state;
 
     if (!this.areThereNoEvents() || !this.areThereNoSharedEvents()) {
       return (
@@ -121,10 +127,14 @@ export class EventHome extends Component {
             <EventCalendar
               events={events}
               sharedEvents={sharedEvents}
+              acceptedEvents = {acceptedEvents}
             ></EventCalendar>
           </main>
         </div>
       );
+    }
+    else{
+      return(<h2>There are no events to be displayed</h2>)
     }
   };
 
@@ -154,12 +164,22 @@ export class EventHome extends Component {
       openMenu: !this.state.openMenu
     });
   };
+  handleClick2 = e => {
+    this.setState({
+      anchorEl2: e.currentTarget,
+      openMenu2: !this.state.openMenu2
+    });
+  };
+  
 
   /**
    * closes drop down menu
    */
   handleClose = () => {
     this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
+  };
+  handleClose2 = () => {
+    this.setState({ anchorEl2: null, openMenu2: !this.state.openMenu2});
   };
 
   /**
@@ -184,6 +204,10 @@ export class EventHome extends Component {
   handleDisplay = () => {
     this.setState({ showForm: false });
   };
+  handleMenuClick = (text) =>{
+    this.handleClose2();
+    this.setState({showShared : text})
+  }
 
   /**
    * Renders table and buttons below the header.
@@ -220,9 +244,20 @@ export class EventHome extends Component {
           </Menu>
         </div>
         <div style={this.getMainStyle()}>
-          <Button onClick={() => this.switchEventView()}>Switch</Button>
+          <Button onClick={e => this.handleClick2(e)}>Switch</Button>
+          <Menu 
+          id = "simple-menu"
+          anchorEl = {this.state.anchorEl2}
+          open = {this.state.openMenu2}
+          onClose = {this.handleClose2}
+          >
+            <MenuItem onClick={() => this.handleMenuClick("events")}>Show Own Events</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("shared")}>Show New Event Invites</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("accepted")}>Show Accepted Events</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("calendar")}>Show Event Calendar</MenuItem>  
+          </Menu>
           {this.viewForm()}
-          {this.showCalendar()}
+          
         </div>
       </div>
     );

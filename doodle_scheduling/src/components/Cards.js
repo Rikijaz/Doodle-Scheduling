@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
+import CardMedia from "@material-ui/core/CardMedia"
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-//import CardMedia from "@material-ui/core/CardMedia";
-// import { makeStyles } from "@material-ui/core/styles";
-// import clsx from "clsx";
-//import { withStyles } from "@material-ui/styles";
+import PieChart from 'react-minimal-pie-chart';
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ShareIcon from "@material-ui/icons/Share";
@@ -65,7 +63,7 @@ class Cards extends Component {
             </IconButton>
             </div>
         ) : null;
-        // let acceptIcon = 
+        
       
         return (
             <div>
@@ -78,8 +76,7 @@ class Cards extends Component {
                             {data.title}
                         </Typography>
                         <Typography>{data.description}</Typography>
-                        {/* <Typography>{data.date}</Typography>
-                        <Typography>{data.time}</Typography> */}
+                         <Typography>{data.startDate} - {data.endDate} </Typography>
                         <Typography>{moment(data.startDate).format("LLLL")}</Typography>
                     </CardContent>
                     <CardActions>
@@ -106,10 +103,26 @@ class Cards extends Component {
                         unmountOnExit
                     >
                         <CardContent>
+                            
+                            <PieChart data = {[
+                                {title: "People confirmed going", value: data.owners.length + data.accepted_invitees.length, color : "#00e676"},
+                                {title: "People who might go", value: data.invitees.length, color : "#fff59d"},
+                                {title: "People who won't go", value: data.declined_invitees.length, color : "#78909c"}
+                            ]} radius = {50} style={{
+                                height: '125px',
+                                marginBottom: '2em',
+                                marginTop : '0',
+                                display: 'flex'
+
+                              }}/>
                             <Typography>
                                 Owners: {data.owners}
                                 <br />
-                                Invitees: {invitees}
+                                Invitees: {data.invitees}
+                                <br />
+                                Accepted Invitees: {data.accepted_invitees}
+                                <br />
+                                Declined Invitees: {data.declined_invitees}
                             </Typography>
                         </CardContent>
                     </Collapse>
