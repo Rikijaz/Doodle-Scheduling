@@ -8,54 +8,61 @@ import { db, firebase } from "./firebase";
 import Cards from "./Cards";
 import EventCalendar from "./EventCalendar/EventCalendar";
 
+//let unsubscribe1, unsubscribe2, unsubscribe3;
 export class EventHome extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      anchorEl: null,
-      openMenu: false,
-      showForm: false,
-      showShared: false,
-      events: [],
-      sharedEvents: [],
-      acceptedEvents: []
+    constructor(props) {
+      super(props);
+      this.state = {
+        anchorEl: null,
+        openMenu: false,
+        anchorEl2 : null,
+        openMenu2: false,
+        showForm: false,
+        showShared: "events",
+        events: [],
+        sharedEvents: [],
+        acceptedEvents: []
+        };
+    }
+    areThereNoEvents() {
+        return (
+            this.state.events === null ||
+            this.state.events === undefined ||
+            this.state.events.length === 0
+        );
+    }
+
+    areThereNoSharedEvents() {
+        return (
+            this.state.sharedEvents === null ||
+            this.state.sharedEvents === undefined ||
+            this.state.sharedEvents.length === 0
+        );
+    }
+    areNoAcceptedEvents() {
+        return (
+            this.state.acceptedEvents === null ||
+            this.state.acceptedEvents === undefined ||
+            this.state.acceptedEvents.length === 0
+        );
+    }
+    sendEmail = () => {
+        this.setState({ showForm: true });
     };
-  }
-  areThereNoEvents() {
-    return (
-      this.state.events === null ||
-      this.state.events === undefined ||
-      this.state.events.length === 0
-    );
-  }
 
-  areThereNoSharedEvents() {
-    return (
-      this.state.sharedEvents === null ||
-      this.state.sharedEvents === undefined ||
-      this.state.sharedEvents.length === 0
-    );
-  }
-  areNoAcceptedEvents() {
-    return (
-      this.state.acceptedEvents === null ||
-      this.state.acceptedEvents === undefined ||
-      this.state.acceptedEvents.length === 0
-    );
-  }
-  sendEmail = () => {
-    this.setState({ showForm: true });
-  };
-
-  switchEventView = () => {
-    this.setState({ showShared: !this.state.showShared });
-  };
+    switchEventView = () => {
+        this.setState({ showShared: !this.state.showShared });
+    };
 
   viewForm = () => {
-    if (this.state.showShared) {
-      return <div>{this.showSharedEvents()}</div>;
-    } else {
+    if (this.state.showShared === "events") {
       return <div>{this.showEvents()}</div>;
+    } else if (this.state.showShared === "shared") {
+      return <div>{this.showSharedEvents()}</div>;
+    }else if(this.state.showShared === "accepted") {
+      return  <div>{this.showAcceptedEvents()}</div>
+    }else if(this.state.showShared === "calendar"){
+    return <div>{this.showCalendar()}</div>
     }
   };
 
@@ -89,7 +96,7 @@ export class EventHome extends Component {
           key={index}
           data={event}
           isShared={true}
-          hasAccpeted={false}
+          hasAccepted={false}
           acceptInvite={id => this.acceptInvite(id)}
           declineInvite={id => this.declineInvite(id)}
         />
@@ -102,7 +109,7 @@ export class EventHome extends Component {
       return <h2>No accepted events</h2>;
     } else {
       return acceptedEvents.map((event, index) => (
-        <Cards key={index} data={event} isShared={true} hasAccpeted={true} />
+        <Cards key={index} data={event} isShared={true} hasAccepted={true} />
       ));
     }
   };
@@ -112,7 +119,7 @@ export class EventHome extends Component {
    */
   showCalendar = () => {
     const { events } = this.state;
-    const { sharedEvents } = this.state;
+    const { sharedEvents, acceptedEvents } = this.state;
 
     if (!this.areThereNoEvents() || !this.areThereNoSharedEvents()) {
       return (
@@ -121,27 +128,51 @@ export class EventHome extends Component {
             <EventCalendar
               events={events}
               sharedEvents={sharedEvents}
+              acceptedEvents = {acceptedEvents}
             ></EventCalendar>
           </main>
         </div>
       );
     }
+    else{
+      return(<h2>There are no events to be displayed</h2>)
+    }
   };
 
-  getBtnStyle = () => {
-    return {
-      textAlign: "right",
-      padding: "10px"
+    getMainStyle = () => {
+        return {
+            textAlign: "center",
+            padding: "5px"
+        };
     };
-  };
 
-  getMainStyle = () => {
-    return {
-      textAlign: "center",
-      padding: "5px"
+    getBtnStyle = () => {
+      return {
+        textAlign: "right",
+        padding: "10px"
+      };
     };
-  };
 
+    /**
+     * Opening drop down menu
+     * @param e takes in event of clicking drop down menu
+     * @return position of drop down menu
+     * @return boolean to open menu
+     */
+    handleClick = e => {
+        this.setState({
+            anchorEl: e.currentTarget,
+            openMenu: !this.state.openMenu
+        });
+    };
+
+    /**
+     * Clicks create event option and starts adding event
+     */
+    handleAddEventMenu = () => {
+        this.handleClose();
+        this.props.beginAddEvent();
+    };
   /**
    * Opening drop down menu
    * @param e takes in event of clicking drop down menu
@@ -154,6 +185,13 @@ export class EventHome extends Component {
       openMenu: !this.state.openMenu
     });
   };
+  handleClick2 = e => {
+    this.setState({
+      anchorEl2: e.currentTarget,
+      openMenu2: !this.state.openMenu2
+    });
+  };
+  
 
   /**
    * closes drop down menu
@@ -161,31 +199,63 @@ export class EventHome extends Component {
   handleClose = () => {
     this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
   };
-
-  /**
-   * Clicks create event option and starts adding event
-   */
-  handleAddEventMenu = () => {
-    this.handleClose();
-    this.props.beginAddEvent();
+  handleClose2 = () => {
+    this.setState({ anchorEl2: null, openMenu2: !this.state.openMenu2});
   };
 
-  /**
-   * Clicks join event option
-   */
-  handleJoinEventMenu = () => {
-    this.handleClose();
-    this.props.beginJoinEvent();
+    /**
+     * Clicks join event option
+     */
+    handleJoinEventMenu = () => {
+        this.handleClose();
+        this.props.beginJoinEvent();
+    };
+
+
+    /**
+     * Delete Event
+     */
+    deleteEvent = id => {
+      db.collection("events")
+          .doc(id)
+          .delete();
+  };
+  acceptInvite = id => {
+      const document = db.collection("events").doc(id);
+      document
+          .update({
+              invitees: firebase.firestore.FieldValue.arrayRemove(
+                  JSON.parse(localStorage.getItem("currentUser"))
+              )
+          })
+          .catch(err => console.error(err));
+      document
+          .update({
+              accepted_invitees: firebase.firestore.FieldValue.arrayUnion(
+                  JSON.parse(localStorage.getItem("currentUser"))
+              )
+          })
+          .catch(err => console.error(err));
+  };
+  declineInvite = id => {
+      const document = db.collection("events").doc(id);
+      document
+          .update({
+              invitees: firebase.firestore.FieldValue.arrayRemove(
+                  JSON.parse(localStorage.getItem("currentUser"))
+              )
+          })
+          .catch(err => console.error(err));
+      document
+          .update({
+              declined_invitees: firebase.firestore.FieldValue.arrayUnion(
+                  JSON.parse(localStorage.getItem("currentUser"))
+              )
+          })
+          .catch(err => console.error(err));
   };
 
-  /**
-   * this shows form for inviting others
-   */
-  handleDisplay = () => {
-    this.setState({ showForm: false });
-  };
-
-  /**
+    /**
    * Renders table and buttons below the header.
    * @return Buttons
    * @return Event Table
@@ -220,115 +290,89 @@ export class EventHome extends Component {
           </Menu>
         </div>
         <div style={this.getMainStyle()}>
-          <Button onClick={() => this.switchEventView()}>Switch</Button>
+          <Button onClick={e => this.handleClick2(e)}>Switch</Button>
+          <Menu 
+          id = "simple-menu"
+          anchorEl = {this.state.anchorEl2}
+          open = {this.state.openMenu2}
+          onClose = {this.handleClose2}
+          >
+            <MenuItem onClick={() => this.handleMenuClick("events")}>Show Own Events</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("shared")}>Show New Event Invites</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("accepted")}>Show Accepted Events</MenuItem>
+            <MenuItem onClick={() => this.handleMenuClick("calendar")}>Show Event Calendar</MenuItem>  
+          </Menu>
           {this.viewForm()}
-          {this.showCalendar()}
+          
         </div>
       </div>
     );
   }
 
-  /**
-   * Delete Event
+    /**
+   * this shows form for inviting others
    */
-  deleteEvent = id => {
-    db.collection("events")
-      .doc(id)
-      .delete();
-
-    let tempObject = { temp: [] };
-
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    db.collection("events")
-      .where("owners", "array-contains", currentUser)
-      .get()
-      .then(data => {
-        tempObject.temp = [];
-        data.forEach(doc => {
-          tempObject.temp.push(doc.data());
-        });
-        this.setState({ events: tempObject.temp });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    db.collection("events")
-      .where("invitees", "array-contains", currentUser)
-      .get()
-      .then(data => {
-        tempObject.temp = [];
-        data.forEach(doc => {
-          tempObject.temp.push(doc.data());
-        });
-        this.setState({ sharedEvents: tempObject.temp });
-      })
-      .catch(err => console.error(err));
+  handleDisplay = () => {
+    this.setState({ showForm: false });
   };
-  acceptInvite = id => {
-    const document = db.collection("events").doc(id);
-    document
-      .update({
-        invitees: firebase.firestore.FieldValue.arrayRemove(JSON.parse(localStorage.getItem("currentUser")))
-      })
-      .catch(err => console.error(err));
-    document
-      .update({
-        accepted_invitees: firebase.firestore.FieldValue.arrayUnion(JSON.parse(localStorage.getItem("currentUser")))
-      })
-      .catch(err => console.error(err));
-  };
-  declineInvite = id => {
-    const document = db.collection("events").doc(id);
-    document
-      .update({
-        invitees: firebase.firestore.FieldValue.arrayRemove(JSON.parse(localStorage.getItem("currentUser")))
-      })
-      .catch(err => console.error(err));
-    document
-      .update({
-        declined_invitees: firebase.firestore.FieldValue.arrayUnion(JSON.parse(localStorage.getItem("currentUser")))
-      })
-      .catch(err => console.error(err));
-  };
-  componentDidMount() {
-    let tempObject = { temp: [] };
-
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    db.collection("events")
-      .where("owners", "array-contains", currentUser)
-      .get()
-      .then(data => {
-        tempObject.temp = [];
-        data.forEach(doc => {
-          tempObject.temp.push(doc.data());
-        });
-        this.setState({ events: tempObject.temp });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    db.collection("events")
-      .where("invitees", "array-contains", currentUser)
-      .get()
-      .then(data => {
-        tempObject.temp = [];
-        data.forEach(doc => {
-          tempObject.temp.push(doc.data());
-        });
-        this.setState({ sharedEvents: tempObject.temp });
-      })
-      .catch(err => console.error(err));
-    db.collection("events")
-      .where("accepted_invitees", "array-contains", currentUser)
-      .get()
-      .then(data => {
-        tempObject.temp = [];
-        data.forEach(doc => {
-          tempObject.temp.push(doc.data());
-        });
-        this.setState({ acceptedEvents: tempObject.temp });
-      });
+  handleMenuClick = (text) =>{
+    this.handleClose2();
+    this.setState({showShared : text})
   }
+
+
+  componentDidMount() {
+      let tempObject = { temp: [] };
+      
+
+  
+
+
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        this.unsubscribe1 = db
+            .collection("events")
+            .where("owners", "array-contains", currentUser)
+            .onSnapshot(data => {
+                tempObject.temp = [];
+                data.forEach(doc => {
+                    console.log("1");
+                    tempObject.temp.push(doc.data());
+                });
+                this.setState({ events: tempObject.temp });
+            });
+
+        this.unsubscribe2 = db
+            .collection("events")
+            .where("invitees", "array-contains", currentUser)
+            .onSnapshot(data => {
+                tempObject.temp = [];
+                data.forEach(doc => {
+                    console.log("2");
+                    tempObject.temp.push(doc.data());
+                });
+                this.setState({ sharedEvents: tempObject.temp });
+            });
+
+        this.unsubscribe3 = db
+            .collection("events")
+            .where("accepted_invitees", "array-contains", currentUser)
+            .onSnapshot(data => {
+                tempObject.temp = [];
+                data.forEach(doc => {
+                    console.log("3");
+                    tempObject.temp.push(doc.data());
+                });
+                this.setState({ acceptedEvents: tempObject.temp });
+            });
+    }
+
+    componentWillUnmount() {
+        console.log("unsub");
+        this.unsubscribe1();
+        this.unsubscribe2();
+        this.unsubscribe3();
+    }
 }
 /**
  * @return events that current user made that are not shared

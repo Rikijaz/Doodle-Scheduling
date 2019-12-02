@@ -197,6 +197,10 @@ export class AddEvent extends Component {
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
 
+        console.trace();
+        console.log(this.state.startDate);
+        console.log(this.state.endDate);
+
         if (!editingEvent) {
             //add new event
             db.collection("events")

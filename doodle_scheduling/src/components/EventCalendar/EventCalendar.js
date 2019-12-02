@@ -12,27 +12,41 @@ export class EventCalendar extends React.Component {
             selectedDate: null,
             show: false,
             title: "",
-            description: "",
-            startDate: "",
-            endDate: ""
+            calendarEventDayData: null
         };
     }
 
-    showModal = (eventTitle, eventDescription, startDate, endDate) => {
-        this.title = eventTitle;
-        this.description = eventDescription;
-        this.startDate = startDate;
-        this.endDate = endDate;
+    /**
+     * Comparator for ordering events.
+     * Used for days where there are multiple events.
+     */
+    compareEventStartDates(a, b) {
+        if ( moment(a.startDate).valueOf() < moment(b.startDate).valueOf() ){
+            return -1;
+        }
+
+        if ( moment(a.startDate).valueOf() > moment(b.startDate).valueOf() ){
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Updates modal state to display the events data
+     */
+    showModal = (calendarEventDayData) => {
+        this.calendarEventDayData = calendarEventDayData;
 
         this.setState({
           show: !this.state.show,
-          title: this.title,
-          description: this.description,
-          startDate: this.startDate,
-          endDate: this.endDate,
+          calendarEventDayData: this.calendarEventDayData,
         });
       };
 
+    /**
+     * Calendar header
+     */
     renderHeader() {
         const dateFormat = "MMMM yyyy";
 
@@ -53,6 +67,9 @@ export class EventCalendar extends React.Component {
         );
     }
 
+    /**
+     * Calendar week days
+     */
     renderDays() {
         const dateFormat = "iiii";
         const days = [];
@@ -70,8 +87,11 @@ export class EventCalendar extends React.Component {
         return <div className="days row">{days}</div>;
     }
 
-    renderCells() {
 
+    /**
+     * Calendar days
+     */
+    renderCells() {
         var areThereEvents = !(
             this.props.events === null ||
             this.props.events === undefined || 
@@ -82,7 +102,7 @@ export class EventCalendar extends React.Component {
             this.props.sharedEvents === undefined ||
             this.props.sharedEvents.length === 0);
 
-            if (areThereEvents || areThereSharedEvents) {
+        if (areThereEvents || areThereSharedEvents) {
             const { currentMonth, selectedDate } = this.state;
             const monthStart = dateFns.startOfMonth(currentMonth);
             const monthEnd = dateFns.endOfMonth(monthStart);
@@ -115,7 +135,6 @@ export class EventCalendar extends React.Component {
             
             if (areThereSharedEvents) {
                 for (let i = 0; i < this.props.sharedEvents.length; ++i) {
-
                     if (moment(this.props.sharedEvents[i].startDate).format('L').split('/')[0]== dateFns.getMonth(currentMonth) + 1) {
                         var data = {
                             date: this.props.sharedEvents[i].date,
@@ -131,42 +150,104 @@ export class EventCalendar extends React.Component {
             }
 
 
-            console.log(Object.prototype.toString.call(day).match(/^\[object\s(.*)\]$/)[1]);
+            let calendarEvents = [];
+
+            for (let i = 0; i < eventData.length; ++i) {
+
+                var duplicate = false;
+                var  eventDate = moment(eventData[i].startDate).format('L');
+                var calendarEventData = {
+                    title: eventData[i].title, 
+                    description: eventData[i].description,
+                    startDate: eventData[i].startDate,
+                    endDate: eventData[i].endDate
+                }
+
+                for (let j = 0; j < calendarEvents.length && !duplicate; ++j) {
+                    if (calendarEvents[j].date === eventDate) {
+                        duplicate = true;
+                        
+                        calendarEvents[j].events.push(calendarEventData)
+                    }
+
+                }
+
+                if (!duplicate) {
+                    var calendarData = {
+                        date: eventDate,
+                        events: [ calendarEventData ]
+                    }
+
+                    calendarEvents.push(calendarData)
+                }
+            }
+
+            for (let i = 0; i < calendarEvents.length; ++i) {
+                calendarEvents[i].events.sort(this.compareEventStartDates);
+            }
+
 
             while (day <= endDate) {
                 for (let i = 0; i < 7; i++) {
                     formattedDate = dateFns.format(day, dateFormat);
-                    const cloneDay = day;
                     
                     var isEvent = false;
 
-                    for (let i = 0; i < eventData.length && !isEvent; ++i) {
-                        var eventTitle = eventData[i].title;
+                    for (let i = 0; i < calendarEvents.length && !isEvent; ++i) {
+                        var calendarEventDay = calendarEvents[i].date.split('/')[1].replace(/^0+/, '');
+                        var calendarEventMonth = calendarEvents[i].date.split('/')[0].replace(/^0+/, '');
 
-                        if (moment(eventData[i].startDate).format('L').split('/')[1] == dateFns.getDate(day) &&
-                            moment(eventData[i].startDate).format('L').split('/')[0] == dateFns.getMonth(day) + 1) {
-                            days.push(
-                                <div
-                                    className={`col cell ${
-                                        !dateFns.isSameMonth(day, monthStart)
-                                            ? "disabled"
-                                            : dateFns.isSameDay(day, selectedDate) ? "selected" : ""
-                                        }`}
-                                    key={day}
-                                    // onClick={() => this.onDateClick(dateFns.toDate(cloneDay))}
-                                    onClick={e => {
-                                    this.showModal(
-                                        eventData[i].title, 
-                                        eventData[i].description,
-                                        eventData[i].startDate,
-                                        eventData[i].endDate);
-                                    }}
-                                >
-                                    <span className="number">{formattedDate}</span>
-                                    <span className="bg">{formattedDate}</span>
-                                    <span className="title">{eventTitle}</span>
-                                </div>
-                            );
+                        // eslint-disable-next-line eqeqeq
+                        if ((calendarEventDay == dateFns.getDate(day).toString()) &&
+                            // eslint-disable-next-line eqeqeq
+                            (calendarEventMonth == (dateFns.getMonth(day) + 1))) {
+
+                                if (calendarEvents[i].events.length > 1) {
+
+                                    var multipleEventsTitle = (calendarEvents[i].events[0].title + " +" + (calendarEvents[i].events.length - 1)).toString();
+                                    console.log(multipleEventsTitle);
+                                    days.push(
+                                        <div
+                                            className={`col cell ${
+                                                !dateFns.isSameMonth(day, monthStart)
+                                                    ? "disabled"
+                                                    : dateFns.isSameDay(day, selectedDate) ? "selected" : ""
+                                                }`}
+                                            key={day}
+                                            // onClick={() => this.onDateClick(dateFns.toDate(cloneDay))}
+                                            onClick={e => {
+                                                this.showModal(calendarEvents[i]);
+                                                }}
+                                        >
+                                            <span className="number">{formattedDate}</span>
+                                            <span className="bg">{formattedDate}</span>
+                                            <span className="title">{multipleEventsTitle}</span>
+                                        </div>
+                                    );
+                                }
+                                else {
+                                    var title = calendarEvents[i].events[0].title.toString();
+                                    console.log(title);
+
+                                    days.push(
+                                        <div
+                                            className={`col cell ${
+                                                !dateFns.isSameMonth(day, monthStart)
+                                                    ? "disabled"
+                                                    : dateFns.isSameDay(day, selectedDate) ? "selected" : ""
+                                                }`}
+                                            key={day}
+                                            onClick={e => {
+                                                this.showModal(calendarEvents[i]);
+                                                }}
+                                        >
+                                            <span className="number">{formattedDate}</span>
+                                            <span className="bg">{formattedDate}</span>
+                                            <span className="title">{title}</span>
+                                        </div>
+                                    );
+                                }
+                            
 
                             isEvent = true;
                         }   
@@ -216,11 +297,14 @@ export class EventCalendar extends React.Component {
                 );
                 days = [];
             }
-            return <div className="body">{rows}</div>;
+                return <div className="body">{rows}</div>;
         }
-            
     }
 
+
+    /**
+     * Set the current state to the selected day
+     */
     onDateClick = day => {
         this.setState({
             selectedDate: "day"
@@ -228,12 +312,19 @@ export class EventCalendar extends React.Component {
         
     };
 
+    /**
+     * Go to next month
+     */
     nextMonth = () => {
         this.setState({
             currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
         });
     };
 
+    
+    /**
+     * Go to previous month
+     */
     prevMonth = () => {
         this.setState({
             currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
@@ -252,10 +343,7 @@ export class EventCalendar extends React.Component {
               <Modal 
               onClose={this.showModal} 
               show={this.state.show}
-              title={this.title}
-              description={this.description}
-              startDate={this.startDate}
-              endDate={this.endDate}
+              calendarEventDayData={this.calendarEventDayData}
               >
               </Modal>
             </div>
