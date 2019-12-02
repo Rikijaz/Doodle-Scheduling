@@ -35,11 +35,7 @@ class Cards extends Component {
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
         let invitePeople = this.state.startShare ? (
-            <Invite
-                id={data.id}
-                open={this.state.startShare}
-                refresh={() => this.props.refresh()}
-            />
+            <Invite id={data.id} open={this.state.startShare} />
         ) : null;
         let editButton = !isShared ? (
             <Button

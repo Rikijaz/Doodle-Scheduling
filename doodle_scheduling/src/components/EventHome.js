@@ -8,6 +8,7 @@ import { db, firebase } from "./firebase";
 import Cards from "./Cards";
 import EventCalendar from "./EventCalendar/EventCalendar";
 
+//let unsubscribe1, unsubscribe2, unsubscribe3;
 export class EventHome extends Component {
     constructor(props) {
         super(props);
@@ -53,11 +54,7 @@ export class EventHome extends Component {
 
     viewForm = () => {
         if (this.state.showShared) {
-            return (
-                <div>
-                    {this.showSharedEvents()}
-                </div>
-            );
+            return <div>{this.showSharedEvents()}</div>;
         } else {
             return <div>{this.showEvents()}</div>;
         }
@@ -74,7 +71,6 @@ export class EventHome extends Component {
         } else {
             return events.map((event, index) => (
                 <Cards
-                    refresh={() => this.refresh()}
                     key={index}
                     data={event}
                     editEvent={id => this.props.editEvent(id)}
@@ -90,7 +86,6 @@ export class EventHome extends Component {
         } else {
             return sharedEvents.map((event, index) => (
                 <Cards
-                    refresh={() => this.refresh()}
                     key={index}
                     data={event}
                     isShared={true}
@@ -252,9 +247,6 @@ export class EventHome extends Component {
         db.collection("events")
             .doc(id)
             .delete();
-
-        this.refresh();
-        
     };
     acceptInvite = id => {
         const document = db.collection("events").doc(id);
@@ -272,7 +264,6 @@ export class EventHome extends Component {
                 )
             })
             .catch(err => console.error(err));
-        this.refresh();
     };
     declineInvite = id => {
         const document = db.collection("events").doc(id);
@@ -290,88 +281,54 @@ export class EventHome extends Component {
                 )
             })
             .catch(err => console.error(err));
-        this.refresh();
     };
     componentDidMount() {
         let tempObject = { temp: [] };
 
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        db.collection("events")
+        this.unsubscribe1 = db
+            .collection("events")
             .where("owners", "array-contains", currentUser)
-            .get()
-            .then(data => {
+            .onSnapshot(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
+                    console.log("1");
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ events: tempObject.temp });
-            })
-            .catch(error => {
-                console.error(error);
             });
-        db.collection("events")
+
+        this.unsubscribe2 = db
+            .collection("events")
             .where("invitees", "array-contains", currentUser)
-            .get()
-            .then(data => {
+            .onSnapshot(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
+                    console.log("2");
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ sharedEvents: tempObject.temp });
-            })
-            .catch(err => console.error(err));
-        db.collection("events")
+            });
+
+        this.unsubscribe3 = db
+            .collection("events")
             .where("accepted_invitees", "array-contains", currentUser)
-            .get()
-            .then(data => {
+            .onSnapshot(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
+                    console.log("3");
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ acceptedEvents: tempObject.temp });
             });
     }
 
-    refresh = () => {
-        console.log("REFRESH");
-        let tempObject = { temp: [] };
-
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        db.collection("events")
-            .where("owners", "array-contains", currentUser)
-            .get()
-            .then(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ events: tempObject.temp });
-            })
-            .catch(error => {
-                console.error(error);
-            });
-        db.collection("events")
-            .where("invitees", "array-contains", currentUser)
-            .get()
-            .then(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ sharedEvents: tempObject.temp });
-            })
-            .catch(err => console.error(err));
-        db.collection("events")
-            .where("accepted_invitees", "array-contains", currentUser)
-            .get()
-            .then(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ acceptedEvents: tempObject.temp });
-            });
-    };
+    componentWillUnmount() {
+        console.log("unsub");
+        this.unsubscribe1();
+        this.unsubscribe2();
+        this.unsubscribe3();
+    }
 }
 /**
  * @return events that current user made that are not shared
