@@ -13,13 +13,13 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ShareIcon from "@material-ui/icons/Share";
 import Collapse from "@material-ui/core/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ClearIcon from '@material-ui/icons/Clear';
-import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from "@material-ui/icons/Clear";
+import CheckIcon from "@material-ui/icons/Check";
 import Invite from "./Invite";
 import moment from "moment";
 
 class Cards extends Component {
-    constructor(props) {   
+    constructor(props) {
         super(props);
         this.state = {
             expanded: false,
@@ -35,7 +35,7 @@ class Cards extends Component {
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
         let invitePeople = this.state.startShare ? (
-            <Invite id={data.id} open={this.state.startShare}/>
+            <Invite id={data.id} open={this.state.startShare} />
         ) : null;
         let editButton = !isShared ? (
             <Button
@@ -55,18 +55,23 @@ class Cards extends Component {
             </IconButton>
         ) : null;
 
-        let acceptIcon = (isShared && !hasAccepted)? (
-            <div>
-                <IconButton onClick = {() => this.props.acceptInvite(data.id)}>
-                <CheckIcon/>
-            </IconButton>
-            <IconButton onClick = {() => this.props.declineInvite(data.id)}>
-                <ClearIcon/>
-            </IconButton>
-            </div>
-        ) : null;
-        // let acceptIcon = 
-      
+        let acceptIcon =
+            isShared && !hasAccepted ? (
+                <div>
+                    <IconButton
+                        onClick={() => this.props.acceptInvite(data.id)}
+                    >
+                        <CheckIcon />
+                    </IconButton>
+                    <IconButton
+                        onClick={() => this.props.declineInvite(data.id)}
+                    >
+                        <ClearIcon />
+                    </IconButton>
+                </div>
+            ) : null;
+        // let acceptIcon =
+
         return (
             <div>
                 <Card>
@@ -80,7 +85,9 @@ class Cards extends Component {
                         <Typography>{data.description}</Typography>
                         {/* <Typography>{data.date}</Typography>
                         <Typography>{data.time}</Typography> */}
-                        <Typography>{moment(data.startDate).format("LLLL")}</Typography>
+                        <Typography>
+                            {moment(data.startDate).format("LLLL")}
+                        </Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
@@ -127,6 +134,5 @@ class Cards extends Component {
     handleShareEvent = () => {
         this.setState({ startShare: !this.state.startShare });
     };
-    
 }
 export default Cards;

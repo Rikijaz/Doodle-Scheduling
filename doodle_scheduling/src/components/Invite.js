@@ -25,7 +25,7 @@ export default function Invite(props) {
     const [emails, setEmails] = React.useState([]);
 
     //this is because personEmail will be empty on first render
-    //since useState callback 
+    //since useState callback
     const [fix, setFix] = React.useState(false);
 
     const handleClose = () => {
@@ -33,16 +33,15 @@ export default function Invite(props) {
     };
 
     /**
-     * 
+     *
      * @param {*} n an email that user selected
      * @return {array} array with user included or not included
      */
     const handleChange = n => {
         if (!personEmail.includes(n)) {
             setPersonEmail([...personEmail, n]);
-        }
-        else{
-            setPersonEmail(personEmail.filter((email) => email !== n))
+        } else {
+            setPersonEmail(personEmail.filter(email => email !== n));
         }
     };
 
@@ -55,7 +54,7 @@ export default function Invite(props) {
                     let temp = doc.data().contacts.map(c => {
                         return c.email;
                     });
-                    setEmails(temp); 
+                    setEmails(temp);
                 }
             });
         db.collection("events")
