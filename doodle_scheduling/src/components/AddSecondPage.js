@@ -24,8 +24,22 @@ export class AddSecondPage extends Component {
     };
 
     onEventSubmitted = eventData => {
+        console.log(eventData[0].start.format());
+        console.log(moment(eventData[0].start.format()).format("LLLL"));
+
+        // //right now it should only take in one date & one range of time
+        // let x = new Date(eventData[0].start.format("LLLL"));
+        // let y = new Date(eventData[0].end.format("LLLL"));
+        // let start = x.getHours().toString() + ":" + x.getMinutes().toString();
+        // let end = y.getHours().toString() + ":" + y.getMinutes().toString();
+        // let together = start + "-" + end;
+        // let date = (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
+        // localStorage.setItem("saved_date", JSON.stringify(date));
+        // localStorage.setItem("saved_time", JSON.stringify(together));
+
         var eventStartDate = eventData[0].start.format();
         var eventEndDate = eventData[0].end.format();
+
         this.setState({ startDate: eventStartDate, endDate: eventEndDate });
 
         localStorage.setItem("saved_start_date", JSON.stringify(eventStartDate));
@@ -80,8 +94,8 @@ export class AddSecondPage extends Component {
                     size="large"
                     onClick={e =>
                         this.props.goToThirdPage(
-                            this.state.endDate,
                             this.state.startDate,
+                            this.state.endDate,
                             e
                         )
                     }
