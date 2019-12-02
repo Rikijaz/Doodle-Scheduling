@@ -30,6 +30,7 @@ export default function Invite(props) {
 
     const handleClose = () => {
         setOpen(false);
+        props.refresh();
     };
 
     /**
