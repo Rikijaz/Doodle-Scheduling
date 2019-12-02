@@ -15,6 +15,7 @@
     "react-day-picker": "^7.4.0",
     "react-dom": "^16.11.0",
     "react-firebaseui": "^4.0.0",
+    "react-minimal-pie-chart": "^6.0.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "react-table": "^6.10.3",
