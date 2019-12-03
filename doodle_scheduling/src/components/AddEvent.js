@@ -10,6 +10,7 @@ import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
 import { db } from "./firebase";
 import uuid from "uuid";
+import Category from "./Category";
 
 export class AddEvent extends Component {
     constructor(props) {
@@ -19,8 +20,10 @@ export class AddEvent extends Component {
             title: JSON.parse(localStorage.getItem("saved_title")) || "",
             description:
                 JSON.parse(localStorage.getItem("saved_description")) || "",
-            startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
+            startDate:
+                JSON.parse(localStorage.getItem("saved_start_date")) || "",
             endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
+            category: JSON.parse(localStorage.getItem("saved_category")) || "",
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -112,6 +115,10 @@ export class AddEvent extends Component {
         this.setState({ description: des.target.value });
     };
 
+    setCategory = input => {
+        this.setState({ category: input });
+    };
+
     /**
      * Submits user input of title and description
      * @param {*} e Takes in event of pressing button
@@ -129,6 +136,10 @@ export class AddEvent extends Component {
             localStorage.setItem(
                 "saved_description",
                 JSON.stringify(this.state.description)
+            );
+            localStorage.setItem(
+                "saved_category",
+                JSON.stringify(this.state.category)
             );
             //going to second page & unrendering first page
             this.setState({ firstPage: false, secondPage: true });
@@ -158,7 +169,12 @@ export class AddEvent extends Component {
      */
     goToThirdPage = (startDate, endDate, e) => {
         e.preventDefault();
-        if (startDate !== null && startDate !== "" && endDate !== null && endDate !== "") {
+        if (
+            startDate !== null &&
+            startDate !== "" &&
+            endDate !== null &&
+            endDate !== ""
+        ) {
             this.setState({
                 startDate: startDate,
                 endDate: endDate,
@@ -217,7 +233,8 @@ export class AddEvent extends Component {
                     owners: this.state.owners,
                     accepted_invitees: [],
                     declined_invitees: [],
-                    invitees: invitees
+                    invitees: invitees,
+                    category: this.state.category
                 });
         } else {
             //editing event
@@ -230,7 +247,8 @@ export class AddEvent extends Component {
                     // time: this.state.endDate,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
-                    invitees: invitees
+                    invitees: invitees,
+                    category: this.state.category
                 });
         }
         this.props.setHomePage();
@@ -272,6 +290,10 @@ export class AddEvent extends Component {
             return (
                 <div>
                     <Container maxWidth="sm">
+                        <Category
+                            checked={this.state.category}
+                            setCategory={t => this.setCategory(t)}
+                        />
                         <form onSubmit={e => this.onSubmitFirstPage(e)}>
                             <TextField
                                 type="text"

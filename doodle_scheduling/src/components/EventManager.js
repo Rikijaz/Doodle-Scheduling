@@ -25,7 +25,7 @@ export class EventManager extends Component {
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
-        // localStorage.removeItem("saved_time");
+        localStorage.removeItem("saved_category");
         // localStorage.removeItem("saved_date");
         localStorage.removeItem("saved_start_date");
         localStorage.removeItem("saved_end_date");
@@ -54,7 +54,6 @@ export class EventManager extends Component {
                 .get()
                 .then(doc => {
                     if (doc.exists) {
-                        console.log("TOOT");
                         localStorage.setItem(
                             "saved_title",
                             JSON.stringify(doc.data().title)
@@ -63,14 +62,6 @@ export class EventManager extends Component {
                             "saved_description",
                             JSON.stringify(doc.data().description)
                         );
-                        // localStorage.setItem(
-                        //     "saved_date",
-                        //     JSON.stringify(doc.data().date)
-                        // );
-                        // localStorage.setItem(
-                        //     "saved_time",
-                        //     JSON.stringify(doc.data().time)
-                        // );
                         localStorage.setItem(
                             "saved_start_date",
                             JSON.stringify(doc.data().startDate)
@@ -78,6 +69,10 @@ export class EventManager extends Component {
                         localStorage.setItem(
                             "saved_end_date",
                             JSON.stringify(doc.data().endDate)
+                        );
+                        localStorage.setItem(
+                            "saved_category",
+                            JSON.stringify(doc.data().category)
                         );
                     }
                 });
