@@ -86,7 +86,7 @@ export class Header extends Component {
                     <AddContact/>
                     <ViewContacts/>
 
-                    <Button onClick={this.notificationTrue}>Notifications</Button>
+                    <Button id="notificationButton" onClick={this.notificationTrue}>Notifications</Button>
                     {this.state.notifications && (<NotificationsUI2/>)}
 
                     {this.state.user && (
