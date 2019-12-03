@@ -482,7 +482,7 @@ export class EventHome extends Component {
                 <TextField
                     type="text"
                     variant="outlined"
-                    placeholder="search by title, description, category, date..."
+                    placeholder="Event Name"
                     fullWidth
                     value={this.state.search}
                     margin="normal"
