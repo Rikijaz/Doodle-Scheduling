@@ -10,17 +10,6 @@ import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
 import { db } from "./firebase";
 import uuid from "uuid";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-
-export const categories = Object.freeze({
-    None: "None",
-    Hobbies: "Hobbies",
-    Social: "Social",
-    Errands: "Errands",
-    Projects: "Projects",
-    Miscellaneous: "Miscellaneous",
-});
 
 export class AddEvent extends Component {
     constructor(props) {
@@ -32,7 +21,6 @@ export class AddEvent extends Component {
                 JSON.parse(localStorage.getItem("saved_description")) || "",
             startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
             endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
-            category: JSON.parse(localStorage.getItem("saved_category")) || categories.None,
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -49,11 +37,7 @@ export class AddEvent extends Component {
             //snackbar errors
             errorMessageOpen: false,
             message: "",
-            successMessageOpen: false,
-
-            // Category
-            anchorEl: null,
-            openMenu: false,
+            successMessageOpen: false
         };
     }
 
@@ -146,10 +130,6 @@ export class AddEvent extends Component {
                 "saved_description",
                 JSON.stringify(this.state.description)
             );
-            localStorage.setItem(
-                "saved_category",
-                JSON.stringify(this.state.category)
-            );
             //going to second page & unrendering first page
             this.setState({ firstPage: false, secondPage: true });
         } else {
@@ -169,7 +149,6 @@ export class AddEvent extends Component {
         this.setState({ firstPage: true, secondPage: false });
     };
     //redo error messages later when implementing another date and time picker
-
     /**
      * @param {string=} startDate Takes in start date from eric's calendar
      * @param {string=} endDate Takes in end date from eric's calendar
@@ -204,29 +183,6 @@ export class AddEvent extends Component {
         this.setState({ firstPage: false, secondPage: true, thirdPage: false });
     };
 
-    handleCategoryMenuClick = selectedCategory => {
-        this.handleClose();
-        this.setState({ category: selectedCategory });
-    };
-
-    handleClose = () => {
-        this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
-    };
-
-    
-    /**
-     * Opening drop down menu
-     * @param e takes in event of clicking drop down menu
-     * @return position of drop down menu
-     * @return boolean to open menu
-     */
-    handleClick = e => {
-        this.setState({
-            anchorEl: e.currentTarget,
-            openMenu: !this.state.openMenu
-        });
-    };
-
     /**
      * When creating/editing event, it adds/edits it to the database./
      * If the event is going to be shared, it will add it to the
@@ -240,7 +196,11 @@ export class AddEvent extends Component {
         let code = this.makeCode(5);
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
-        
+
+        console.trace();
+        console.log(this.state.startDate);
+        console.log(this.state.endDate);
+
         if (!editingEvent) {
             //add new event
             db.collection("events")
@@ -250,9 +210,10 @@ export class AddEvent extends Component {
                     code: code,
                     title: this.state.title,
                     description: this.state.description,
-                    category: this.state.category,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
+                    // date: this.state.startDate,
+                    // time: this.state.endDate,
                     owners: this.state.owners,
                     accepted_invitees: [],
                     declined_invitees: [],
@@ -265,7 +226,8 @@ export class AddEvent extends Component {
                 .update({
                     title: this.state.title,
                     description: this.state.description,
-                    category: this.state.category,
+                    // date: this.state.startDate,
+                    // time: this.state.endDate,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
                     invitees: invitees
@@ -329,39 +291,6 @@ export class AddEvent extends Component {
                                 margin="normal"
                                 onChange={des => this.handleDescription(des)}
                             />
-                            {/* <div style={this.getBtnStyle()}> */}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                aria-controls="simple-menu"
-                                aria-haspopup="true"
-                                onClick={e => this.handleClick(e)}
-                            >
-                                {this.state.category}
-                            </Button>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={this.state.anchorEl}
-                                open={this.state.openMenu}
-                                onClose={this.handleClose}
-                            >
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Hobbies)}>
-                                {categories.Hobbies}
-                                </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Social)}>
-                                {categories.Social}
-                                </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Errands)}>
-                                {categories.Errands}
-                                </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Projects)}>
-                                {categories.Projects}
-                                </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Miscellaneous)}>
-                                {categories.Miscellaneous}
-                                </MenuItem>
-                            </Menu>
-                            {/* </div> */}
                             <br />
                             <div style={btnStyle}>
                                 <Button
