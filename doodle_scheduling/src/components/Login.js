@@ -1,29 +1,27 @@
 import React, { Component } from "react";
-import logo from "./logo.png";
+import { firebase, db } from "./firebase";
+import FileUploader from "react-firebase-file-uploader";
 import { Button } from "@material-ui/core";
 import Header from "./header";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import { Link } from "react-router-dom";
-import { firebase, db } from "./firebase";
-import FileUploader from "react-firebase-file-uploader";
-import { textAlign } from "@material-ui/system";
+//import { Link } from "react-router-dom";
+//import logo from "./logo.png";
+//import { textAlign } from "@material-ui/system";
+
 
 var CLIENT_ID = "YOUR_OAUTH_CLIENT_ID";
-/*
-const logoStyle = {
-    textAlign: "center"
-};
-*/
+
 const logInStyle = {
     textAlign: "center",
     top: "100%",
+    background: "#fff",
     fontSize: "20px",
     position: "relative"
 };
 const uiConfig = {
     // Popup signin flow rather than redirect flow.
     signInFlow: "popup",
-    // We will display Google and Facebook as auth providers.
+    // We will use Google and email as auth providers.
     signInOptions: [
         {
             provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -119,7 +117,7 @@ export class Login extends Component {
                     console.log('Error getting document', err);
                 });
 
-                //keep this so header can load the page
+                //locally store current user's email
                 localStorage.setItem("currentUser", JSON.stringify(user.email));
                 //console.log("toot");
             }
@@ -133,18 +131,6 @@ export class Login extends Component {
     };
 
     //update profile info in db
-    updateName = e => {
-        this.setState({
-            nameDisplay: e.target.value
-        });
-    }
-    
-    updateBio = e => {
-        this.setState({
-            bioDisplay: e.target.value
-        });
-    }
-
     updateDb = e => {
         if (this.state.nameDisplay !== this.state.userName) {
             db.collection("users")
@@ -153,7 +139,7 @@ export class Login extends Component {
                     displayName: this.state.nameDisplay,
                 });
         }
-        if (this.state.bioInput !== "") {
+        if (this.state.bioDisplay !== this.state.userBio) {
             db.collection("users")
                 .doc(this.state.current_user_email)
                 .update({
@@ -177,20 +163,40 @@ export class Login extends Component {
                         <br />                        
                         <form onSubmit={this.updateDb}>
                             {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
-                            <FileUploader
-                                accept="image/*"
-                                name="Profile Picture"
-                                randomizeFilename
-                                storageRef={firebase.storage().ref("images")}
-                                onUploadStart={this.handleUploadStart}
-                                onUploadError={this.handleUploadError}
-                                onUploadSuccess={this.handleUploadSuccess}
-                                onProgress={this.handleProgress}
-                            />
+                            <label
+                                style={{
+                                    backgroundColor: '#3f51b5',
+                                    color: 'white',
+                                    padding: '5px',
+                                    borderRadius: 4,
+                                    fontSize: 18,
+                                    cursor: 'pointer'
+                                }}>
+                                    Upload profile picture
+                                <FileUploader
+                                    hidden
+                                    accept="image/*"
+                                    name="Profile Picture"
+                                    randomizeFilename
+                                    storageRef={firebase.storage().ref("images")}
+                                    onUploadStart={this.handleUploadStart}
+                                    onUploadError={this.handleUploadError}
+                                    onUploadSuccess={this.handleUploadSuccess}
+                                    onProgress={this.handleProgress}
+                                />
+                            </label>
                             <br />
-                            <label>{firebase.auth().currentUser.email}</label>
+                            <label style={{
+                                fontSize: 18
+                            }}>
+                                {firebase.auth().currentUser.email}
+                            </label>
                             <br />
-                            <label>Name</label>
+                            <label style={{
+                                fontSize: 18,
+                            }}>
+                                Name
+                            </label>
                             <br />
                             <input
                                 type="text"
@@ -201,7 +207,11 @@ export class Login extends Component {
                                 value={this.state.nameDisplay}
                             />
                             <br />
-                            <label>Biography</label>
+                            <label style={{
+                                fontSize: 18,
+                            }}>
+                                Biography
+                            </label>
                             <br />
                             <textarea
                                 name="bioText"
