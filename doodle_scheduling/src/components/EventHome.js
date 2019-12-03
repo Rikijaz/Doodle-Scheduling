@@ -9,6 +9,7 @@ import Cards from "./Cards";
 import EventCalendar from "./EventCalendar/EventCalendar";
 import moment from "moment";
 import { categories } from "./AddEvent";
+import { TextField } from "@material-ui/core";
 
 export class EventHome extends Component {
     constructor(props) {
@@ -25,7 +26,11 @@ export class EventHome extends Component {
             events: [],
             sharedEvents: [],
             acceptedEvents: [],
-            eventSortOrder: "descending"
+            filteredEvents: [],
+            filteredSharedEvents: [],
+            filteredAcceptedEvents: [],
+            eventSortOrder: "descending",
+            search: ""
         };
     }
 
@@ -47,6 +52,11 @@ export class EventHome extends Component {
             this.state.acceptedEvents.length === 0
         );
     }
+
+    isSearching() {
+        return this.state.search != "";
+    }
+
     sendEmail = () => {
         this.setState({ showForm: true });
     };
@@ -95,7 +105,6 @@ export class EventHome extends Component {
      */
     compareEventCategory(a, b) {
         const map = {};
-
         map[categories.None] = 0;
         map[categories.Hobbies] = 1;
         map[categories.Social] = 2;
@@ -131,19 +140,25 @@ export class EventHome extends Component {
      * @return Header saying no events or Table of Events
      */
     showEvents = () => {
-        const { events } = this.state;
+        var displayedEvents = [];
+
+        if (this.isSearching()) {
+            displayedEvents = this.state.filteredEvents;
+        } else {
+            displayedEvents = this.state.events;
+        }
 
         switch (this.state.eventSortOrder) {
             case "ascending": {
-                events.sort(this.compareEventStartDatesAscending);
+                displayedEvents.sort(this.compareEventStartDatesAscending);
                 break;
             }
             case "descending": {
-                events.sort(this.compareEventStartDatesDescending);
+                displayedEvents.sort(this.compareEventStartDatesDescending);
                 break;
             }
             case "category": {
-                events.sort(this.compareEventCategory);
+                displayedEvents.sort(this.compareEventCategory);
                 break;
             }
             default: {
@@ -154,7 +169,7 @@ export class EventHome extends Component {
         if (this.areThereNoEvents()) {
             return <h2>No events</h2>;
         } else {
-            return events.map((event, index) => (
+            return displayedEvents.map((event, index) => (
                 <Cards
                     key={index}
                     data={event}
@@ -166,19 +181,25 @@ export class EventHome extends Component {
     };
 
     showSharedEvents = () => {
-        const { sharedEvents } = this.state;
+        var displayedEvents = [];
+
+        if (this.isSearching()) {
+            displayedEvents = this.state.filteredSharedEvents;
+        } else {
+            displayedEvents = this.state.events;
+        }
 
         switch (this.state.eventSortOrder) {
             case "ascending": {
-                sharedEvents.sort(this.compareEventStartDatesAscending);
+                displayedEvents.sort(this.compareEventStartDatesAscending);
                 break;
             }
             case "descending": {
-                sharedEvents.sort(this.compareEventStartDatesDescending);
+                displayedEvents.sort(this.compareEventStartDatesDescending);
                 break;
             }
             case "category": {
-                sharedEvents.sort(this.compareEventCategory);
+                displayedEvents.sort(this.compareEventCategory);
                 break;
             }
             default: {
@@ -190,7 +211,7 @@ export class EventHome extends Component {
             return <h2>No shared events</h2>;
         } else {
             console.log();
-            return sharedEvents.map((event, index) => (
+            return displayedEvents.map((event, index) => (
                 <Cards
                     key={index}
                     data={event}
@@ -204,11 +225,36 @@ export class EventHome extends Component {
     };
 
     showAcceptedEvents = () => {
-        const { acceptedEvents } = this.state;
+        var displayedEvents = [];
+
+        if (this.isSearching()) {
+            displayedEvents = this.state.filteredAcceptedEvents;
+        } else {
+            displayedEvents = this.state.events;
+        }
+
+        switch (this.state.eventSortOrder) {
+            case "ascending": {
+                displayedEvents.sort(this.compareEventStartDatesAscending);
+                break;
+            }
+            case "descending": {
+                displayedEvents.sort(this.compareEventStartDatesDescending);
+                break;
+            }
+            case "category": {
+                displayedEvents.sort(this.compareEventCategory);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         if (this.areNoAcceptedEvents()) {
             return <h2>No accepted events</h2>;
         } else {
-            return acceptedEvents.map((event, index) => (
+            return displayedEvents.map((event, index) => (
                 <Cards key={index} data={event} isShared={true} hasAccepted={true} />
             ));
         }
@@ -238,17 +284,56 @@ export class EventHome extends Component {
         }
     };
 
+    handleSearch = text => {
+        this.setState({
+            search: text.target.value,
+            filteredEvents: this.filterEvents(this.state.events),
+            filteredSharedEvents: this.filterEvents(this.state.sharedEvents),
+            filteredAcceptedEvents: this.filterEvents(this.state.acceptedEvents),
+        });
+    };
+
+    /**
+     * Filters event by search input. Supports event title, description, category, and time
+     * @param eventsToFilter Takes in events to filter
+     * @return Filtered events by search input
+     */
+    filterEvents = eventsToFilter => {
+        var filteredEvents = [];
+
+        for (let i = 0; i < eventsToFilter.length; i++) {
+            let searchLowerCase = this.state.search.toLowerCase();
+
+            let accepted =
+                eventsToFilter[i].title.toLowerCase().includes(searchLowerCase) ||
+                eventsToFilter[i].category.toLowerCase().includes(searchLowerCase) ||
+                eventsToFilter[i].description.toLowerCase().includes(searchLowerCase) ||
+                moment(eventsToFilter[i].startDate)
+                    .format("LLLL")
+                    .toLowerCase()
+                    .includes(searchLowerCase);
+
+            if (accepted) {
+                filteredEvents.push(eventsToFilter[i]);
+            }
+        }
+
+        return filteredEvents;
+    };
+
     getMainStyle = () => {
         return {
             textAlign: "center",
-            padding: "5px"
+            padding: "5px",
+            background: "#fff"
         };
     };
 
     getBtnStyle = () => {
         return {
             textAlign: "right",
-            padding: "10px"
+            padding: "10px",
+            background: "#fff"
         };
     };
 
@@ -407,11 +492,20 @@ export class EventHome extends Component {
                         open={this.state.openMenu3}
                         onClose={this.handleClose3}
                     >
-                        <MenuItem onClick={() => this.setEventOrder("ascending")}>Latest</MenuItem>
-                        <MenuItem onClick={() => this.setEventOrder("descending")}>Earliest</MenuItem>
+                        <MenuItem onClick={() => this.setEventOrder("descending")}>Latest</MenuItem>
+                        <MenuItem onClick={() => this.setEventOrder("ascending")}>Earliest</MenuItem>
                         <MenuItem onClick={() => this.setEventOrder("category")}>Category</MenuItem>
                     </Menu>
                 </div>
+                <TextField
+                    type="text"
+                    variant="outlined"
+                    placeholder="Event Name"
+                    fullWidth
+                    value={this.state.search}
+                    margin="normal"
+                    onChange={search => this.handleSearch(search)}
+                />
                 <div style={this.getMainStyle()}>
                     <Button onClick={e => this.handleClick2(e)}>Switch</Button>
                     <Menu
