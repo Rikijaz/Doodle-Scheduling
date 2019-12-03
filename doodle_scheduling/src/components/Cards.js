@@ -74,6 +74,9 @@ class Cards extends Component {
                         <Typography variant="h5" component="h2">
                             {data.title}
                         </Typography>
+                        <Typography variant="h5" component="h2">
+                            {data.category}
+                        </Typography>
                         <Typography>{data.description}</Typography>
                         <Typography>{moment(data.startDate).format("LLLL")+ " - " + moment(data.endDate).format("LT")}</Typography>
                     </CardContent>
