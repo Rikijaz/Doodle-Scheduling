@@ -14,9 +14,9 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 
 export const categories = Object.freeze({
+    None: "None",
     Hobbies: "Hobbies",
     Social: "Social",
-    Health: "Health",
     Errands: "Errands",
     Projects: "Projects",
     Miscellaneous: "Miscellaneous",
@@ -32,7 +32,7 @@ export class AddEvent extends Component {
                 JSON.parse(localStorage.getItem("saved_description")) || "",
             startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
             endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
-            category: JSON.parse(localStorage.getItem("saved_category")) || "",
+            category: JSON.parse(localStorage.getItem("saved_category")) || categories.None,
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -54,7 +54,6 @@ export class AddEvent extends Component {
             // Category
             anchorEl: null,
             openMenu: false,
-            selectedCategory: "Category"
         };
     }
 
@@ -149,7 +148,7 @@ export class AddEvent extends Component {
             );
             localStorage.setItem(
                 "saved_category",
-                JSON.stringify(this.state.selectedCategory)
+                JSON.stringify(this.state.category)
             );
             //going to second page & unrendering first page
             this.setState({ firstPage: false, secondPage: true });
@@ -205,9 +204,9 @@ export class AddEvent extends Component {
         this.setState({ firstPage: false, secondPage: true, thirdPage: false });
     };
 
-    handleCategoryMenuClick = category => {
+    handleCategoryMenuClick = selectedCategory => {
         this.handleClose();
-        this.setState({ selectedCategory: category });
+        this.setState({ category: selectedCategory });
     };
 
     handleClose = () => {
@@ -251,7 +250,7 @@ export class AddEvent extends Component {
                     code: code,
                     title: this.state.title,
                     description: this.state.description,
-                    category: this.state.selectedCategory,
+                    category: this.state.category,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
                     owners: this.state.owners,
@@ -266,7 +265,7 @@ export class AddEvent extends Component {
                 .update({
                     title: this.state.title,
                     description: this.state.description,
-                    category: this.state.selectedCategory,
+                    category: this.state.category,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
                     invitees: invitees
@@ -338,7 +337,7 @@ export class AddEvent extends Component {
                                 aria-haspopup="true"
                                 onClick={e => this.handleClick(e)}
                             >
-                                {this.state.selectedCategory}
+                                {this.state.category}
                             </Button>
                             <Menu
                                 id="simple-menu"
@@ -354,9 +353,6 @@ export class AddEvent extends Component {
                                 </MenuItem>
                                 <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Errands)}>
                                 {categories.Errands}
-                                </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Health)}>
-                                {categories.Health}
                                 </MenuItem>
                                 <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Projects)}>
                                 {categories.Projects}

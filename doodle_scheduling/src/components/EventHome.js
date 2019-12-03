@@ -96,12 +96,12 @@ export class EventHome extends Component {
     compareEventCategory(a, b) {
         const map = {};
 
+        map[categories.None] = 0;
         map[categories.Hobbies] = 1;
-        map[categories.Social] = 1;
-        map[categories.Health] = 3;
-        map[categories.Errands] = 4;
-        map[categories.Projects] = 5;
-        map[categories.Hobbies] = 6;
+        map[categories.Social] = 2;
+        map[categories.Errands] = 3;
+        map[categories.Projects] = 4;
+        map[categories.Hobbies] = 5;
 
         if (map[a.category] < map[b.category]) {
             return -1;
