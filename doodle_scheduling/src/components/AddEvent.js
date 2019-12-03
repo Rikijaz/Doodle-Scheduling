@@ -201,6 +201,13 @@ export class AddEvent extends Component {
         console.log(this.state.startDate);
         console.log(this.state.endDate);
 
+        // for emailing invitees
+        var templateId = 'yes';   // for linking to specific email template on EmailJS
+        var emailEvent = "";
+        var emailDescription = "";
+        var emailStartDate = "";
+        var emailEndDate = "";
+
         if (!editingEvent) {
             //add new event
             db.collection("events")
@@ -219,6 +226,20 @@ export class AddEvent extends Component {
                     declined_invitees: [],
                     invitees: invitees
                 });
+            
+            /* email invitees WORKING */
+            // console.log("invitees: " + invitees);
+            // emailEvent = this.state.title;
+            // emailDescription = this.state.description;
+            // emailStartDate = this.state.startDate;
+            // emailEndDate = this.state.endDate;
+            // // window.emailjs.send("gmail", templateId, {"send_to": ["marcus.anhminh.martin@gmail.com", "mmart149@ucr.edu"], "subject": "You've been invited to an event!", "content": variables.message_html})   // insert custom emails for send_to
+            // window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "CS180 Doodle Scheduling: You've been invited to an event!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})   // insert custom emails for send_to
+            // .then(res => {
+            //     console.log('Email successfully sent!');
+            // })
+            // // Handle errors here however you like, or use a React error boundary
+            // .catch(err => console.error('Oh well, you failed. Here some thoughts on the error that occured:', err))
         } else {
             //editing event
             db.collection("events")
@@ -232,6 +253,19 @@ export class AddEvent extends Component {
                     endDate: this.state.endDate,
                     invitees: invitees
                 });
+            
+            /* email invitees WORKING */
+            // emailEvent = this.state.title;
+            // emailDescription = this.state.description;
+            // emailStartDate = this.state.startDate;
+            // emailEndDate = this.state.endDate;
+            // // window.emailjs.send("gmail", templateId, {"send_to": ["marcus.anhminh.martin@gmail.com", "mmart149@ucr.edu"], "subject": "You've been invited to an event!", "content": variables.message_html})   // insert custom emails for send_to
+            // window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "CS180 Doodle Scheduling: This event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})   // insert custom emails for send_to
+            // .then(res => {
+            //     console.log('Email successfully sent!');
+            // })
+            // // Handle errors here however you like, or use a React error boundary
+            // .catch(err => console.error('Oh well, you failed. Here some thoughts on the error that occured:', err))
         }
         this.props.setHomePage();
     };

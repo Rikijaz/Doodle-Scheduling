@@ -47,7 +47,8 @@ class Cards extends Component {
         let deleteButton = !isShared ? (
             <IconButton
                 aria-label="delete"
-                onClick={() => this.props.deleteEvent(data.id)}
+                onClick={() => this.props.deleteEvent(data.id) 
+                }
             >
                 <DeleteIcon />
             </IconButton>

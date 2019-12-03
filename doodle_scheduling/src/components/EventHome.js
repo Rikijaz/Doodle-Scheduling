@@ -46,6 +46,8 @@ export class EventHome extends Component {
             this.state.acceptedEvents.length === 0
         );
     }
+
+    //not being used rn? -marcus
     sendEmail = () => {
         this.setState({ showForm: true });
     };
@@ -216,10 +218,32 @@ export class EventHome extends Component {
      * Delete Event
      */
     deleteEvent = id => {
-      db.collection("events")
+      /* email invitees WORKING */
+      this.state.events.find(event => {
+        // if (event.id === id)
+        // {
+        //   var invitees = event.invitees;
+        //   var templateId = 'yes';
+        //   var emailEvent = event.title;
+        //   var emailDescription = event.description;
+        //   var emailStartDate = event.startDate;
+        //   var emailEndDate = event.endDate;
+        //   //window.emailjs.send("gmail", templateId, {"send_to": ["marcus.anhminh.martin@gmail.com", "mmart149@ucr.edu"], "subject": "You've been invited to an event!", "content": variables.message_html})   // insert custom emails for send_to
+        //   window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "CS180 Doodle Scheduling: An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})   // insert custom emails for send_to
+        //   .then(res => {
+        //       console.log('Email successfully sent!');
+        //   })
+        //   // Handle errors here however you like, or use a React error boundary
+        //   .catch(err => console.error('Oh well, you failed. Here some thoughts on the error that occured:', err))
+        // }
+
+        // after sending email, delete the event (asysnc)
+        db.collection("events")
           .doc(id)
           .delete();
+      });
   };
+
   acceptInvite = id => {
       const document = db.collection("events").doc(id);
       document
