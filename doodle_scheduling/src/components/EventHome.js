@@ -241,15 +241,17 @@ export class EventHome extends Component {
     getMainStyle = () => {
         return {
             textAlign: "center",
-            padding: "5px"
+            padding: "5px",
+            background: "#fff"
         };
     };
 
     getBtnStyle = () => {
-        return {
-            textAlign: "right",
-            padding: "10px"
-        };
+      return {
+        textAlign: "right",
+        padding: "10px",
+        background: "#fff"
+      };
     };
 
     /**
