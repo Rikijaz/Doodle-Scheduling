@@ -3,10 +3,10 @@ import { Button } from "@material-ui/core";
 import AddContact from './AddContact'
 import ViewContacts from './ViewContacts'
 import firebase from "firebase";
-//import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import logo from "./logo.png";
 import { Link } from "react-router-dom";
-
 import { db } from "./firebase";
+//import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
 const headerStyle = {
     background: "#D0E6FF",
@@ -37,7 +37,9 @@ export class Header extends Component {
      * when header mounts, it updates user data
      * @return user data from the database
      */
+    
     componentDidMount() {
+        /*
         db.collection("users")
             .doc(JSON.parse(localStorage.getItem("currentUser")))
             .get()
@@ -47,6 +49,20 @@ export class Header extends Component {
                 } else {
                     //console.log("Sad toot");
                 }
+            });
+            */
+        let docRef = db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")));
+        docRef.get().then(doc => {
+            if (!doc.exists) {
+                console.log('No such document!');
+            } else {
+                console.log('Document data:', doc.data());
+                this.setState({ user: doc.data() });
+            }
+        })
+            .catch(err => {
+                console.log('Error getting document', err);
             });
     }
 
@@ -80,7 +96,7 @@ export class Header extends Component {
                                     color="primary"
                                     size="small"
                                     component={Link}
-                                    to="/"
+                                    to="/profile"
                                 >
                                     {this.state.user.email}
                                 </Button>
