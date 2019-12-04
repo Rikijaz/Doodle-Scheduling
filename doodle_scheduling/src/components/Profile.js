@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import { firebase, db } from "./firebase";
 import FileUploader from "react-firebase-file-uploader";
-import { Button } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import Header from "./header";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
+import Snackbar from "@material-ui/core/Snackbar";
+import MySnackbarContent from "./Snackbar";
+import AddContact from "./AddContact";
+
 //import logo from "./logo.png";
 //import { textAlign } from "@material-ui/system";
 
@@ -21,9 +25,8 @@ export class Profile extends Component {
         super(props);
         this.state = {
             user: null,
-            //
-            isSignedIn: false,
             picURL: "",
+            oldURL: "",
             nameDisplay: "",
             current_user_email: "",
             userName: "",
@@ -31,29 +34,12 @@ export class Profile extends Component {
             userBio: "",
             isUploading: false,
             progress: 0,
-            profilePic: ""
+            profilePic: "",
+            errorOpen: false,
+            successOpen: false,
+            message: ""
         };
     }
-
-    // handle profile pic upload to Storage
-    handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-
-    handleProgress = progress => this.setState({ progress });
-
-    handleUploadError = error => {
-        this.setState({ isUploading: false });
-        console.error(error);
-    };
-
-    handleUploadSuccess = filename => {
-        this.setState({ profilePic: filename, progress: 100, isUploading: false });
-        firebase
-            .storage()
-            .ref("images")
-            .child(filename)
-            .getDownloadURL()
-            .then(url => this.setState({ picURL: url }));
-    };
 
     componentDidMount = () => {
         let docRef = db.collection("users")
@@ -71,6 +57,7 @@ export class Profile extends Component {
                 this.setState({ bioDisplay: doc.data().bio });
                 this.setState({ userBio: doc.data().bio });
                 this.setState({ current_user_email: doc.data().email });
+                this.setState({ oldURL: doc.data().pictureURL });
             }
         })
             .catch(err => {
@@ -78,9 +65,44 @@ export class Profile extends Component {
             });
     };
 
+    handleErrorClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        this.setState({ errorOpen: false });
+    };
+    handleSuccessClose = (event, reason) => {
+        this.setState({ successOpen: false });
+    };
+    
+    // handle profile pic upload to Storage
+    handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
+
+    handleProgress = progress => this.setState({ progress });
+
+    handleUploadError = error => {
+        this.setState({
+            isUploading: false
+        });
+        console.error(error);
+    };
+
+    handleUploadSuccess = filename => {
+        this.setState({
+            profilePic: filename,
+            progress: 100,
+            isUploading: false,
+        });
+        firebase
+            .storage()
+            .ref("images")
+            .child(filename)
+            .getDownloadURL()
+            .then(url => this.setState({ picURL: url }));
+    };
+
     signOut = () => {
         firebase.auth().signOut();
-        this.setState({ isSignedIn: false });
         localStorage.clear();
     };
 
@@ -92,6 +114,10 @@ export class Profile extends Component {
                 .update({
                     displayName: this.state.nameDisplay,
                 });
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
+            });
         }
         if (this.state.bioDisplay !== this.state.userBio) {
             db.collection("users")
@@ -99,12 +125,22 @@ export class Profile extends Component {
                 .update({
                     bio: this.state.bioDisplay
                 });
-        }
-        db.collection("users")
-            .doc(this.state.current_user_email)
-            .update({
-                pictureURL: this.state.picURL
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
             });
+        }
+        if (this.state.picURL !== this.state.oldURL) {
+            db.collection("users")
+                .doc(this.state.current_user_email)
+                .update({
+                    pictureURL: this.state.picURL
+                });
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
+            });
+        }
     };
 
     render() {
@@ -115,7 +151,6 @@ export class Profile extends Component {
                     <img src={this.state.picURL} alt="Profile" vertical-align="middle" width="100px" height="100px" border-radius="50%" />
                     <br />
                     <form onSubmit={this.updateDb}>
-                        {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
                         <label
                             style={{
                                 backgroundColor: '#3f51b5',
@@ -188,7 +223,37 @@ export class Profile extends Component {
                         to="/"
                     >
                         Sign Out
-                        </Button>
+                    </Button>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left"
+                        }}
+                        open={this.state.errorOpen}
+                        autoHideDuration={10}
+                        onClose={this.state.handleErrorClose}
+                    >
+                        <MySnackbarContent
+                            onClose={this.state.handleErrorClose}
+                            variant="error"
+                            message={this.state.message}
+                        />
+                    </Snackbar>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left"
+                        }}
+                        open={this.state.successOpen}
+                        autoHideDuration={10}
+                        onClose={this.state.handleSuccessClose}
+                    >
+                        <MySnackbarContent
+                            onClose={this.state.handleSuccessClose}
+                            variant="success"
+                            message={this.state.message}
+                        />
+                    </Snackbar>
                 </div>
             </div>
         );
