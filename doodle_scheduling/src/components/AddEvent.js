@@ -276,6 +276,27 @@ export class AddEvent extends Component {
                     declined_invitees: [],
                     invitees: invitees
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = this.state.startDate;
+            var emailEndDate = this.state.endDate;
+
+            console.log("add event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         } else {
             //editing event
 
@@ -311,6 +332,27 @@ export class AddEvent extends Component {
                     endDate: this.state.endDate
                     // invitees: invitees TODO: XD it nukes all the other invitees that you didn't call for
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = this.state.startDate;
+            var emailEndDate = this.state.endDate;
+            
+            console.log("edit event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         }
         this.props.setHomePage();
     };
