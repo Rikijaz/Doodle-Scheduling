@@ -1,0 +1,27 @@
+.userCancelButton {
+    float: left;
+    border-radius: 3px;
+
+}
+
+.userContinueButton {
+    float: right;
+    border-radius: 3px;
+
+}
+
+.categoryBtn {
+    text-align: center;
+}
+
+.container {
+    margin: 20px 100px 100px 100px;
+}
+
+.form {
+    margin: auto
+}
+
+.btnGroup {
+    margin: 25px
+}
