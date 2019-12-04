@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import AddContact from './AddContact'
-import ViewContacts from './ViewContacts'
+import AddContact from "./AddContact";
+import ViewContacts from "./ViewContacts";
 import firebase from "firebase";
 //import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
@@ -9,26 +9,24 @@ import { Link } from "react-router-dom";
 import { db } from "./firebase";
 
 const headerStyle = {
-    background: "#D0E6FF",
-    color: "#5a769e",
+    background: "#7FDBFF",
+    color: "white",
     textAlign: "center",
-    padding: "3px",
+    padding: "2px",
     fontSize: "24px",
-    fontFamily: "Courier New",
-    fontStyle: "italic"
+    fontFamily: "Simplifica"
 };
 
 const signOutStyle = {
     textAlign: "right"
 };
 
-
 export class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
             user: null,
-            addContactsPrompt: false,
+            addContactsPrompt: false
         };
     }
 
@@ -43,7 +41,7 @@ export class Header extends Component {
             .get()
             .then(data => {
                 if (data.exists) {
-                    this.setState({ user: data.data()});
+                    this.setState({ user: data.data() });
                 } else {
                     //console.log("Sad toot");
                 }
@@ -68,10 +66,6 @@ export class Header extends Component {
         return (
             <div>
                 <header style={headerStyle}>
-                    <h1>Schedule It</h1>
-                    <AddContact/>
-                    <ViewContacts/>
-
                     {this.state.user && (
                         <div>
                             <div style={signOutStyle}>
@@ -88,6 +82,9 @@ export class Header extends Component {
                             <div>Welcome {this.state.user.displayName}</div>
                         </div>
                     )}
+                    <h1>Schedule It!</h1>
+                    <AddContact />
+                    <ViewContacts />
                 </header>
             </div>
         );
