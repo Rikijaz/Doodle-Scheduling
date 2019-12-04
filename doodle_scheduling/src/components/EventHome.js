@@ -268,7 +268,7 @@ export class EventHome extends Component {
         const { events } = this.state;
         const { sharedEvents, acceptedEvents } = this.state;
 
-        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents() || this.areNoAcceptedEvents()) {
+        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents() || !this.areNoAcceptedEvents()) {
             return (
                 <div className="App">
                     <main>
@@ -436,17 +436,19 @@ export class EventHome extends Component {
                   var templateId = 'yes';
                   var emailEvent = event.title;
                   var emailDescription = event.description;
-                  var emailStartDate = event.startDate;
-                  var emailEndDate = event.endDate;
+                  var emailStartDate = moment(event.startDate).format("LLLL")+ " - " + moment(event.endDate).format("LT");
+                  console.log("event categories: " + event.categories);
+                  var emailCategory = event.category;
+                  //var emailEndDate = event.endDate;
 
                   console.log("delete event");
                   console.log("invitees: " + invitees);
                   console.log("emailEvent: " + emailEvent);
                   console.log("emailDescription: " + emailDescription);
                   console.log("emailStartDate: " + emailStartDate);
-                  console.log("emailEndDate: " + emailEndDate);
+                  //console.log("emailEndDate: " + emailEndDate);
                   
-                  window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+                  window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
                   .then(res => {
                       console.log('Email successfully sent!');
                       db.collection("events")
