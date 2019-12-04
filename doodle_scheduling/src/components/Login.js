@@ -1,13 +1,10 @@
 import React, { Component } from "react";
 import { firebase, db } from "./firebase";
-import FileUploader from "react-firebase-file-uploader";
-import { Button } from "@material-ui/core";
-import Header from "./header";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-//import { Link } from "react-router-dom";
-//import logo from "./logo.png";
+import { Redirect, Route, Link } from "react-router-dom";
+import logo from "./logo.png";
+import { Button } from "@material-ui/core";
 //import { textAlign } from "@material-ui/system";
-
 
 var CLIENT_ID = "YOUR_OAUTH_CLIENT_ID";
 
@@ -45,44 +42,20 @@ export class Login extends Component {
         super(props);
         this.state = {
             isSignedIn: false,
-            picURL: "",
-            nameDisplay: "",
             current_user_email: "",
-            userName: "",
-            bioDisplay: "",
-            userBio: "",
-            isUploading: false,
-            progress: 0,
-            profilePic: ""
         };
     }
-
-    // handle profile pic upload to Storage
-    handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-
-    handleProgress = progress => this.setState({ progress });
-
-    handleUploadError = error => {
-        this.setState({ isUploading: false });
-        console.error(error);
-    };
-
-    handleUploadSuccess = filename => {
-        this.setState({ profilePic: filename, progress: 100, isUploading: false });
-        firebase
-            .storage()
-            .ref("images")
-            .child(filename)
-            .getDownloadURL()
-            .then(url => this.setState({ picURL: url }));
-    };
 
     componentDidMount = () => {
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 this.setState({
-                    isSignedIn: !!user
+                    //isSignedIn: !!user
+                    isSignedIn: true
                 });
+                //locally store current user's email
+                localStorage.setItem("currentUser", JSON.stringify(user.email));
+
                 //lets contacts data persist
                 let docReference = db.collection("users").doc(user.email);
                 docReference.get().then(documentSnapshot => {
@@ -113,134 +86,56 @@ export class Login extends Component {
                         this.setState({ userBio: doc.data().bio });
                     }
                 })
-                .catch(err => {
-                    console.log('Error getting document', err);
-                });
-
-                //locally store current user's email
-                localStorage.setItem("currentUser", JSON.stringify(user.email));
-                //console.log("toot");
+                    .catch(err => {
+                        console.log('Error getting document', err);
+                    });
             }
+            else {
+                this.setState({ isSignedIn: false })
+            }
+
+            this.id = setTimeout(() => this.setState({ redirect: true }), 1000)
         });
     };
-
+    /*
     onClick = () => {
         firebase.auth().signOut();
         this.setState({ isSignedIn: false });
         localStorage.clear();
     };
-
-    //update profile info in db
-    updateDb = e => {
-        if (this.state.nameDisplay !== this.state.userName) {
-            db.collection("users")
-                .doc(this.state.current_user_email)
-                .update({
-                    displayName: this.state.nameDisplay,
-                });
-        }
-        if (this.state.bioDisplay !== this.state.userBio) {
-            db.collection("users")
-                .doc(this.state.current_user_email)
-                .update({
-                    bio: this.state.bioDisplay
-                });
-        }
-        db.collection("users")
-            .doc(this.state.current_user_email)
-            .update({
-                pictureURL: this.state.picURL
-            });
-    };
-
+    */
     render() {
         return (
-            <div style={{ textAlign: "center" }}>
-                <Header />
+            <div style={{
+                textAlign: "center",
+                backgroundColor: 'white',
+                height: '300px',
+                width: '300px',
+                margin: '0 auto'
+            }}>
+                <img
+                    src={logo}
+                    height="117px"
+                    width="150px"
+                    alt="Schedule It" />
+                <br />
                 {this.state.isSignedIn ? (
-                    <div style={logInStyle}>
-                        <img src={this.state.picURL} alt="Profile" vertical-align="middle" width="100px" height="100px" border-radius="50%" />
-                        <br />                        
-                        <form onSubmit={this.updateDb}>
-                            {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
-                            <label
-                                style={{
-                                    backgroundColor: '#3f51b5',
-                                    color: 'white',
-                                    padding: '5px',
-                                    borderRadius: 4,
-                                    fontSize: 18,
-                                    cursor: 'pointer'
-                                }}>
-                                    Upload profile picture
-                                <FileUploader
-                                    hidden
-                                    accept="image/*"
-                                    name="Profile Picture"
-                                    randomizeFilename
-                                    storageRef={firebase.storage().ref("images")}
-                                    onUploadStart={this.handleUploadStart}
-                                    onUploadError={this.handleUploadError}
-                                    onUploadSuccess={this.handleUploadSuccess}
-                                    onProgress={this.handleProgress}
-                                />
-                            </label>
-                            <br />
-                            <label style={{
-                                fontSize: 18
-                            }}>
-                                {firebase.auth().currentUser.email}
-                            </label>
-                            <br />
-                            <label style={{
-                                fontSize: 18,
-                            }}>
-                                Name
-                            </label>
-                            <br />
-                            <input
-                                type="text"
-                                name="fullname"
-                                size="26"
-                                placeholder="Your name"
-                                onChange={e => this.setState({ nameDisplay: e.target.value })}
-                                value={this.state.nameDisplay}
-                            />
-                            <br />
-                            <label style={{
-                                fontSize: 18,
-                            }}>
-                                Biography
-                            </label>
-                            <br />
-                            <textarea
-                                name="bioText"
-                                rows="10"
-                                cols="27"
-                                placeholder="Biography"
-                                value={this.state.bioDisplay}
-                                onChange={e => this.setState({ bioDisplay: e.target.value })}
-                            >
-                            </textarea>
-                            <br/>
-                            <button type="submit">Save changes</button>
-                        </form>
-                        <br />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => this.onClick()}
-                        >
-                            Sign Out
-                        </Button>
-                    </div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        component={Link}
+                        to="/home"
+                    >
+                        Home
+                    </Button>
                 ) : (
-                    <StyledFirebaseAuth
-                        uiCallback={ui => ui.disableAutoSignIn()}
-                        uiConfig={uiConfig}
-                        firebaseAuth={firebase.auth()}
-                    />
-                )}
+                        <StyledFirebaseAuth
+                            uiCallback={ui => ui.disableAutoSignIn()}
+                            uiConfig={uiConfig}
+                            firebaseAuth={firebase.auth()}
+                        />
+                    )}
             </div>
         );
     }
