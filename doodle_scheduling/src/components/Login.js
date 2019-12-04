@@ -6,19 +6,23 @@ import logo from "./logo.png";
 import { Button } from "@material-ui/core";
 import { textAlign } from "@material-ui/system";
 
+// import firebase from "firebase";
+
 var CLIENT_ID = "YOUR_OAUTH_CLIENT_ID";
+const logoStyle = {
+    textAlign: "center"
+};
 
 const logInStyle = {
     textAlign: "center",
     top: "100%",
-    background: "#fff",
     fontSize: "20px",
     position: "relative"
 };
 const uiConfig = {
     // Popup signin flow rather than redirect flow.
     signInFlow: "popup",
-    // We will use Google and email as auth providers.
+    // We will display Google and Facebook as auth providers.
     signInOptions: [
         {
             provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -67,7 +71,6 @@ export class Login extends Component {
                             events: [],
                             polls: [],
                             pictureURL: user.photoURL,
-                            bio: ""
                         });
                     }
                 });
@@ -79,11 +82,6 @@ export class Login extends Component {
                     } else {
                         //console.log('Document data:', doc.data());
                         this.setState({ picURL: doc.data().pictureURL });
-                        this.setState({ nameDisplay: doc.data().displayName });
-                        this.setState({ userName: doc.data().displayName });
-                        this.setState({ current_user_email: doc.data().email });
-                        this.setState({ bioDisplay: doc.data().bio });
-                        this.setState({ userBio: doc.data().bio });
                     }
                 })
                     .catch(err => {
