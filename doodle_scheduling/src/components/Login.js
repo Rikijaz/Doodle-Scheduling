@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { firebase, db } from "./firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import { Redirect, Route, Link } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import logo from "./logo.png";
 import { Button } from "@material-ui/core";
-//import { textAlign } from "@material-ui/system";
+import { textAlign } from "@material-ui/system";
 
 var CLIENT_ID = "YOUR_OAUTH_CLIENT_ID";
 
@@ -93,23 +93,15 @@ export class Login extends Component {
             else {
                 this.setState({ isSignedIn: false })
             }
-
-            this.id = setTimeout(() => this.setState({ redirect: true }), 1000)
-        });
+      });
     };
-    /*
-    onClick = () => {
-        firebase.auth().signOut();
-        this.setState({ isSignedIn: false });
-        localStorage.clear();
-    };
-    */
+    
     render() {
         return (
             <div style={{
                 textAlign: "center",
                 backgroundColor: 'white',
-                height: '300px',
+                height: '250px',
                 width: '300px',
                 margin: '0 auto'
             }}>
@@ -120,15 +112,19 @@ export class Login extends Component {
                     alt="Schedule It" />
                 <br />
                 {this.state.isSignedIn ? (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        component={Link}
-                        to="/home"
-                    >
-                        Home
-                    </Button>
+                    <div>
+                        <br />
+                        <br />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            component={Link}
+                            to="/home"
+                        >
+                            Home
+                        </Button>
+                    </div>
                 ) : (
                         <StyledFirebaseAuth
                             uiCallback={ui => ui.disableAutoSignIn()}
