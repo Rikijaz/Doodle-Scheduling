@@ -1,178 +1,263 @@
-import React from "react";
+import React, { Component } from "react";
+import { firebase, db } from "./firebase";
+import FileUploader from "react-firebase-file-uploader";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import Header from "./header";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import { Link } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
+import AddContact from "./AddContact";
 
-//database
-import { db, firebase } from "./firebase";
+//import logo from "./logo.png";
+//import { textAlign } from "@material-ui/system";
 
-export default function AddContact() {
-    //----- states -----
-    const [open, setOpen] = React.useState(false);
-    const [userInput, setUserInput] = React.useState("");
-    const [currentUser] = React.useState(
-        JSON.parse(localStorage.getItem("currentUser"))
-    );
-    const [errorOpen, setErrorOpen] = React.useState(false);
-    const [successOpen, setSuccessOpen] = React.useState(false);
-    const [message, setMessage] = React.useState("");
-    //----- end of states -----
+const logInStyle = {
+    textAlign: "center",
+    top: "100%",
+    background: "#fff",
+    fontSize: "20px",
+    position: "relative"
+};
 
-    //----- styles -----
-    const btnStyle = {
-        textAlign: "left"
-    };
-    //----- end of styles -----
+export class Profile extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            user: null,
+            picURL: "",
+            oldURL: "",
+            nameDisplay: "",
+            current_user_email: "",
+            userName: "",
+            bioDisplay: "",
+            userBio: "",
+            isUploading: false,
+            progress: 0,
+            profilePic: "",
+            errorOpen: false,
+            successOpen: false,
+            message: ""
+        };
+    }
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleErrorClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setErrorOpen(false);
-    };
-    const handleSuccessClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setSuccessOpen(false);
-    };
-
-    /**
-     * Adds contact by referencing database
-     */
-    const handleAddContact = () => {
-        /*
-            first it checks in database if userinput exists
-            then it accesses the current user's doc, and updates
-            their contact list with the user's input contact
-
-            when you add the contact, it adds the name and email
-
-            concerns: we did not use boolean variables to seperate the
-            check from the database addition because it does not update 
-            fast enough and the contact does not get added
-        */
-        db.collection("users")
-            .doc(userInput)
-            .get()
-            .then(docSnapshot => {
-                if (docSnapshot.exists) {
-                    db.collection("users")
-                        .doc(currentUser)
-                        .update({
-                            contacts: firebase.firestore.FieldValue.arrayUnion(
-                                {
-                                    displayName: docSnapshot.data().displayName,
-                                    email: userInput,
-                                }
-                            )
-                        });
-                    handleClose();
-                    setSuccessOpen(true);
-                    setMessage("Successfully added contact!");
-                } else {
-                    setErrorOpen(true);
-                    setMessage("Invalid contact!");
-                }
+    componentDidMount = () => {
+        let docRef = db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")));
+        docRef.get().then(doc => {
+            if (!doc.exists) {
+                //console.log('No such document!');
+            } else {
+                //console.log('Document data:', doc.data());
+                this.setState({ user: doc.data() });
+                this.setState({ picURL: doc.data().pictureURL });
+                this.setState({ nameDisplay: doc.data().displayName });
+                this.setState({ userName: doc.data().displayName });
+                this.setState({ current_user_email: doc.data().email });
+                this.setState({ bioDisplay: doc.data().bio });
+                this.setState({ userBio: doc.data().bio });
+                this.setState({ current_user_email: doc.data().email });
+                this.setState({ oldURL: doc.data().pictureURL });
+            }
+        })
+            .catch(err => {
+                console.log('Error getting document', err);
             });
     };
 
-    /**
-     * Handles User Input when entering contact's
-     * email
-     * @param {*} t text that user types in
-     */
-    const handleInput = t => {
-        setUserInput(t.target.value);
+    handleErrorClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        this.setState({ errorOpen: false });
+    };
+    handleSuccessClose = (event, reason) => {
+        this.setState({ successOpen: false });
+    };
+    
+    // handle profile pic upload to Storage
+    handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
+
+    handleProgress = progress => this.setState({ progress });
+
+    handleUploadError = error => {
+        this.setState({
+            isUploading: false
+        });
+        console.error(error);
     };
 
-    return (
-        <div>
-            <div style={btnStyle}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={handleClickOpen}
-                >
-                    Add Contact
-                </Button>
+    handleUploadSuccess = filename => {
+        this.setState({
+            profilePic: filename,
+            progress: 100,
+            isUploading: false,
+        });
+        firebase
+            .storage()
+            .ref("images")
+            .child(filename)
+            .getDownloadURL()
+            .then(url => this.setState({ picURL: url }));
+    };
+
+    signOut = () => {
+        firebase.auth().signOut();
+        localStorage.clear();
+    };
+
+    //update profile info in db
+    updateDb = e => {
+        if (this.state.nameDisplay !== this.state.userName) {
+            db.collection("users")
+                .doc(this.state.current_user_email)
+                .update({
+                    displayName: this.state.nameDisplay,
+                });
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
+            });
+        }
+        if (this.state.bioDisplay !== this.state.userBio) {
+            db.collection("users")
+                .doc(this.state.current_user_email)
+                .update({
+                    bio: this.state.bioDisplay
+                });
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
+            });
+        }
+        if (this.state.picURL !== this.state.oldURL) {
+            db.collection("users")
+                .doc(this.state.current_user_email)
+                .update({
+                    pictureURL: this.state.picURL
+                });
+            this.setState({
+                successOpen: true,
+                message: "Successfully saved changes"
+            });
+        }
+    };
+
+    render() {
+        return (
+            <div style={{ textAlign: "center" }}>
+                <Header />
+                <div style={logInStyle}>
+                    <img src={this.state.picURL} alt="Profile" vertical-align="middle" width="100px" height="100px" border-radius="50%" />
+                    <br />
+                    <form onSubmit={this.updateDb}>
+                        <label
+                            style={{
+                                backgroundColor: '#3f51b5',
+                                color: 'white',
+                                padding: '5px',
+                                borderRadius: 4,
+                                fontSize: 18,
+                                cursor: 'pointer'
+                            }}>
+                            Upload profile picture
+                                <FileUploader
+                                hidden
+                                accept="image/*"
+                                name="Profile Picture"
+                                randomizeFilename
+                                storageRef={firebase.storage().ref("images")}
+                                onUploadStart={this.handleUploadStart}
+                                onUploadError={this.handleUploadError}
+                                onUploadSuccess={this.handleUploadSuccess}
+                                onProgress={this.handleProgress}
+                            />
+                        </label>
+                        <br />
+                        <label style={{
+                            fontSize: 18
+                        }}>
+                            {this.state.current_user_email}
+                        </label>
+                        <br />
+                        <label style={{
+                            fontSize: 18,
+                        }}>
+                            Name
+                            </label>
+                        <br />
+                        <input
+                            type="text"
+                            name="fullname"
+                            size="26"
+                            placeholder="Your name"
+                            onChange={e => this.setState({ nameDisplay: e.target.value })}
+                            value={this.state.nameDisplay}
+                        />
+                        <br />
+                        <label style={{
+                            fontSize: 18,
+                        }}>
+                            Biography
+                            </label>
+                        <br />
+                        <textarea
+                            name="bioText"
+                            rows="10"
+                            cols="27"
+                            placeholder="Biography"
+                            value={this.state.bioDisplay}
+                            onChange={e => this.setState({ bioDisplay: e.target.value })}
+                        >
+                        </textarea>
+                        <br />
+                        <button type="submit">Save changes</button>
+                    </form>
+                    <br />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => this.signOut()}
+                        size="small"
+                        component={Link}
+                        to="/"
+                    >
+                        Sign Out
+                    </Button>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left"
+                        }}
+                        open={this.state.errorOpen}
+                        autoHideDuration={10}
+                        onClose={this.state.handleErrorClose}
+                    >
+                        <MySnackbarContent
+                            onClose={this.state.handleErrorClose}
+                            variant="error"
+                            message={this.state.message}
+                        />
+                    </Snackbar>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left"
+                        }}
+                        open={this.state.successOpen}
+                        autoHideDuration={10}
+                        onClose={this.state.handleSuccessClose}
+                    >
+                        <MySnackbarContent
+                            onClose={this.state.handleSuccessClose}
+                            variant="success"
+                            message={this.state.message}
+                        />
+                    </Snackbar>
+                </div>
             </div>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="form-dialog-title"
-            >
-                <DialogTitle id="form-dialog-title">Adding Contact</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        To add a contact, please enter their email address.
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        onChange={handleInput}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleAddContact} color="primary">
-                        Enter
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <Snackbar
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left"
-                }}
-                open={errorOpen}
-                autoHideDuration={6000}
-                onClose={handleErrorClose}
-            >
-                <MySnackbarContent
-                    onClose={handleErrorClose}
-                    variant="error"
-                    message={message}
-                />
-            </Snackbar>
-            <Snackbar
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left"
-                }}
-                open={successOpen}
-                autoHideDuration={6000}
-                onClose={handleSuccessClose}
-            >
-                <MySnackbarContent
-                    onClose={handleSuccessClose}
-                    variant="success"
-                    message={message}
-                />
-            </Snackbar>
-        </div>
-    );
+        );
+    }
 }
+
+export default Profile;

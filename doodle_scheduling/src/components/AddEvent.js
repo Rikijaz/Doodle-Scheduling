@@ -10,6 +10,18 @@ import AddSecondPage from "./AddSecondPage";
 import AddThirdPage from "./AddThirdPage";
 import { db } from "./firebase";
 import uuid from "uuid";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import "./styling/AddEvent.css";
+
+export const categories = Object.freeze({
+    None: "None",
+    Hobbies: "Hobbies",
+    Social: "Social",
+    Errands: "Errands",
+    Projects: "Projects",
+    Miscellaneous: "Miscellaneous"
+});
 
 export class AddEvent extends Component {
     constructor(props) {
@@ -19,8 +31,12 @@ export class AddEvent extends Component {
             title: JSON.parse(localStorage.getItem("saved_title")) || "",
             description:
                 JSON.parse(localStorage.getItem("saved_description")) || "",
-            startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
+            startDate:
+                JSON.parse(localStorage.getItem("saved_start_date")) || "",
             endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
+            category:
+                JSON.parse(localStorage.getItem("saved_category")) ||
+                categories.None,
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -37,7 +53,11 @@ export class AddEvent extends Component {
             //snackbar errors
             errorMessageOpen: false,
             message: "",
-            successMessageOpen: false
+            successMessageOpen: false,
+
+            // Category
+            anchorEl: null,
+            openMenu: false
         };
     }
 
@@ -130,6 +150,10 @@ export class AddEvent extends Component {
                 "saved_description",
                 JSON.stringify(this.state.description)
             );
+            localStorage.setItem(
+                "saved_category",
+                JSON.stringify(this.state.category)
+            );
             //going to second page & unrendering first page
             this.setState({ firstPage: false, secondPage: true });
         } else {
@@ -149,6 +173,7 @@ export class AddEvent extends Component {
         this.setState({ firstPage: true, secondPage: false });
     };
     //redo error messages later when implementing another date and time picker
+
     /**
      * @param {string=} startDate Takes in start date from eric's calendar
      * @param {string=} endDate Takes in end date from eric's calendar
@@ -158,7 +183,12 @@ export class AddEvent extends Component {
      */
     goToThirdPage = (startDate, endDate, e) => {
         e.preventDefault();
-        if (startDate !== null && startDate !== "" && endDate !== null && endDate !== "") {
+        if (
+            startDate !== null &&
+            startDate !== "" &&
+            endDate !== null &&
+            endDate !== ""
+        ) {
             this.setState({
                 startDate: startDate,
                 endDate: endDate,
@@ -183,6 +213,28 @@ export class AddEvent extends Component {
         this.setState({ firstPage: false, secondPage: true, thirdPage: false });
     };
 
+    handleCategoryMenuClick = selectedCategory => {
+        this.handleClose();
+        this.setState({ category: selectedCategory });
+    };
+
+    handleClose = () => {
+        this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
+    };
+
+    /**
+     * Opening drop down menu
+     * @param e takes in event of clicking drop down menu
+     * @return position of drop down menu
+     * @return boolean to open menu
+     */
+    handleClick = e => {
+        this.setState({
+            anchorEl: e.currentTarget,
+            openMenu: !this.state.openMenu
+        });
+    };
+
     /**
      * When creating/editing event, it adds/edits it to the database./
      * If the event is going to be shared, it will add it to the
@@ -199,6 +251,16 @@ export class AddEvent extends Component {
 
         if (!editingEvent) {
             //add new event
+            let batch = db.batch();
+            if(invitees.length!== 0){
+                for(let x = 0; x < invitees.length; x++){
+                    const id2 = uuid.v4();
+                    var temp = db.collection("notifications").doc(id2);
+                    batch.set(temp, {user: invitees[x], seen: false, typeOf : 1, eventTitle: this.state.title, id : id2});
+                }
+            }
+            batch.commit();
+            
             db.collection("events")
                 .doc(id)
                 .set({
@@ -206,28 +268,91 @@ export class AddEvent extends Component {
                     code: code,
                     title: this.state.title,
                     description: this.state.description,
+                    category: this.state.category,
                     startDate: this.state.startDate,
                     endDate: this.state.endDate,
-                    // date: this.state.startDate,
-                    // time: this.state.endDate,
                     owners: this.state.owners,
                     accepted_invitees: [],
                     declined_invitees: [],
                     invitees: invitees
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = this.state.startDate;
+            var emailEndDate = this.state.endDate;
+
+            console.log("add event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         } else {
             //editing event
+
+            let batch = db.batch();
+            db.collection("events").doc(idOfEditEvent).get()
+            .then(doc =>{
+                if(doc.data().accepted_invitees.length !== 0){
+                    for(let x = 0; x < doc.data().accepted_invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
+                    }
+                }
+                console.log(doc.data())
+                if(doc.data().invitees.length!== 0){
+                    for(let x = 0; x < doc.data().invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
+                    }
+                }
+                batch.commit();
+            })
+            .catch(err => console.log(err));
+            
             db.collection("events")
                 .doc(idOfEditEvent)
                 .update({
                     title: this.state.title,
                     description: this.state.description,
-                    // date: this.state.startDate,
-                    // time: this.state.endDate,
+                    category: this.state.category,
                     startDate: this.state.startDate,
-                    endDate: this.state.endDate,
-                    invitees: invitees
+                    endDate: this.state.endDate
+                    // invitees: invitees TODO: XD it nukes all the other invitees that you didn't call for
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = this.state.startDate;
+            var emailEndDate = this.state.endDate;
+            
+            console.log("edit event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         }
         this.props.setHomePage();
     };
@@ -258,17 +383,76 @@ export class AddEvent extends Component {
      * conditionally renders new pages
      */
     viewForm = () => {
-        const btnStyle = {
-            textAlign: "right"
-        };
-
         //this will be the same as AddFirstPage
         //just grabbing title and description
         if (this.state.firstPage) {
             return (
                 <div>
-                    <Container maxWidth="sm">
-                        <form onSubmit={e => this.onSubmitFirstPage(e)}>
+                    <Container className="container" maxWidth="md">
+                        <div className="categoryBtn">
+                            <Button
+                                variant="contained"
+                                color={this.state.category !== categories.None ? "primary" : "secondary"}
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={e => this.handleClick(e)}
+                            >
+                                {this.state.category}
+                            </Button>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={this.state.anchorEl}
+                                open={this.state.openMenu}
+                                onClose={this.handleClose}
+                            >
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Hobbies
+                                        )
+                                    }
+                                >
+                                    {categories.Hobbies}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Social
+                                        )
+                                    }
+                                >
+                                    {categories.Social}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Errands
+                                        )
+                                    }
+                                >
+                                    {categories.Errands}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Projects
+                                        )
+                                    }
+                                >
+                                    {categories.Projects}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Miscellaneous
+                                        )
+                                    }
+                                >
+                                    {categories.Miscellaneous}
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                        <form className="form" onSubmit={e => this.onSubmitFirstPage(e)}>
                             <TextField
                                 type="text"
                                 variant="outlined"
@@ -279,6 +463,7 @@ export class AddEvent extends Component {
                                 onChange={title => this.handleTitle(title)}
                             />
                             <TextField
+                                className="form"
                                 type="text"
                                 variant="outlined"
                                 placeholder="Event Description ... Optional"
@@ -287,8 +472,19 @@ export class AddEvent extends Component {
                                 margin="normal"
                                 onChange={des => this.handleDescription(des)}
                             />
-                            <br />
-                            <div style={btnStyle}>
+
+                            <div className="btnGroup">
+                                <Button
+                                    type="button"
+                                    className="userCancelButton"
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    endIcon={<CancelIcon />}
+                                    onClick={this.props.cancelEvent}
+                                >
+                                    Cancel
+                                </Button>
                                 <Button
                                     type="submit"
                                     className="userContinueButton"
@@ -301,17 +497,6 @@ export class AddEvent extends Component {
                                     Continue
                                 </Button>
                             </div>
-                            <Button
-                                type="button"
-                                className="userCancelButton"
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                endIcon={<CancelIcon />}
-                                onClick={this.props.cancelEvent}
-                            >
-                                Cancel
-                            </Button>
                         </form>
                     </Container>
                 </div>

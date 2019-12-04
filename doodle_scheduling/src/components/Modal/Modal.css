@@ -51,7 +51,7 @@ body {
 }
 .modal .content {
   padding: 1rem;
-
+  text-align: left;
 
 }
 .modal .actions {

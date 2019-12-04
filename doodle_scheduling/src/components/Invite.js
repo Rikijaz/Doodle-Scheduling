@@ -9,6 +9,7 @@ import Slide from "@material-ui/core/Slide";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
+import uuid from "uuid";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -20,32 +21,47 @@ export default function Invite(props) {
         JSON.parse(localStorage.getItem("currentUser"))
     );
 
+    const [originalInvitees, setOriginalInvitees] = React.useState([]);
+
     const [personEmail, setPersonEmail] = React.useState([]);
 
     const [emails, setEmails] = React.useState([]);
 
     //this is because personEmail will be empty on first render
-    //since useState callback 
+    //since useState callback
     const [fix, setFix] = React.useState(false);
 
     const handleClose = () => {
+        //i think you might have to check which one is longer
+        //personEmail is finished one, you can maybe do filter and combine with includes?
+        let temp2 = personEmail.filter( x => {return !originalInvitees.includes(x)}); //this is n^2 lmao it was gonna be it anyways// alright, I'm gonna assume this works, i would consolelog, yeah, but it's hard to test with just myself anyways
+        let batch = db.batch();
+            if(temp2.length!== 0){
+                for(let x = 0; x < temp2.length; x++){
+                    const id2 = uuid.v4();
+                    var temp = db.collection("notifications").doc(id2);
+                    batch.set(temp, {user: temp2[x], seen: false, typeOf : 1, eventTitle: props.title, id : id2});
+                }
+            }
+            batch.commit();
         setOpen(false);
     };
 
     /**
-     * 
+     *
      * @param {*} n an email that user selected
      * @return {array} array with user included or not included
      */
     const handleChange = n => {
         if (!personEmail.includes(n)) {
             setPersonEmail([...personEmail, n]);
-        }
-        else{
-            setPersonEmail(personEmail.filter((email) => email !== n))
+        } else {
+            setPersonEmail(personEmail.filter(email => email !== n));
         }
     };
+    //okay  
 
+    //this useEffect acts like a componentDidMount 
     useEffect(() => {
         db.collection("users")
             .doc(currentUser)
@@ -55,7 +71,7 @@ export default function Invite(props) {
                     let temp = doc.data().contacts.map(c => {
                         return c.email;
                     });
-                    setEmails(temp); 
+                    setEmails(temp);
                 }
             });
         db.collection("events")
@@ -63,6 +79,7 @@ export default function Invite(props) {
             .get()
             .then(doc => {
                 setPersonEmail(doc.data().invitees); //this will finish after next useEffect
+                setOriginalInvitees(doc.data().invitees);
                 setFix(true); //so you need this line
             });
         //eslint-disable-next-line

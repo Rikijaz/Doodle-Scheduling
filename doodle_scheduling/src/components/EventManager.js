@@ -22,6 +22,16 @@ export class EventManager extends Component {
      * @return clears localStorage of event details
      */
     beginAddEvent = () => {
+
+        db.collection("events").get().then(snapshot => {
+
+            snapshot.forEach(doc => {
+          
+              console.log( doc);    
+          
+            });
+          
+          });
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
@@ -63,14 +73,10 @@ export class EventManager extends Component {
                             "saved_description",
                             JSON.stringify(doc.data().description)
                         );
-                        // localStorage.setItem(
-                        //     "saved_date",
-                        //     JSON.stringify(doc.data().date)
-                        // );
-                        // localStorage.setItem(
-                        //     "saved_time",
-                        //     JSON.stringify(doc.data().time)
-                        // );
+                        localStorage.setItem(
+                            "saved_category",
+                            JSON.stringify(doc.data().category)
+                        );
                         localStorage.setItem(
                             "saved_start_date",
                             JSON.stringify(doc.data().startDate)
