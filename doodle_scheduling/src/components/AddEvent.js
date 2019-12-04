@@ -278,29 +278,29 @@ export class AddEvent extends Component {
                 });
         } else {
             //editing event
-            if(invitees.length !== 0){
-                let batch = db.batch();
-                db.collection("events").doc(idOfEditEvent).get()
-                .then(doc =>{
-                    if(doc.data().accepted_invitees.length !== 0){
-                        for(let x = 0; x < doc.data().accepted_invitees.length; x++){
-                            const id2 = uuid.v4();
-                            var temp = db.collection("notifications").doc(id2);
-                            batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
-                        }
+
+            let batch = db.batch();
+            db.collection("events").doc(idOfEditEvent).get()
+            .then(doc =>{
+                if(doc.data().accepted_invitees.length !== 0){
+                    for(let x = 0; x < doc.data().accepted_invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
                     }
-                    console.log(doc.data())
-                    if(doc.data().invitees.length!== 0){
-                        for(let x = 0; x < doc.data().invitees.length; x++){
-                            const id2 = uuid.v4();
-                            var temp = db.collection("notifications").doc(id2);
-                            batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
-                        }
+                }
+                console.log(doc.data())
+                if(doc.data().invitees.length!== 0){
+                    for(let x = 0; x < doc.data().invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
                     }
-                    batch.commit();
-                })
-                .catch(err => console.log(err));
-            }
+                }
+                batch.commit();
+            })
+            .catch(err => console.log(err));
+            
             db.collection("events")
                 .doc(idOfEditEvent)
                 .update({

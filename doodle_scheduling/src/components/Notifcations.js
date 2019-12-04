@@ -12,12 +12,12 @@ export default class Notifcations extends Component {
     
     getMessage = () =>{
         const {data} = this.props
-        if(data.typeOf === "1"){
+        if(data.typeOf === 1){
             return "You've been invited to " + data.eventTitle +  "!"
-        } else if(data.typeOf === "2"){
+        } else if(data.typeOf === 2){
             return data.eventTitle  +  " has been deleted!"
         }
-        else if(data.typeOf === "3"){
+        else if(data.typeOf === 3){
             return data.eventTitle + " has been changed by the owner!"
         }
         else{
