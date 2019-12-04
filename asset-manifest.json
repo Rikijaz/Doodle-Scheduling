@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Doodle-Scheduling/static/css/main.03f01da4.chunk.css",
-    "main.js": "/Doodle-Scheduling/static/js/main.70463bdd.chunk.js",
-    "main.js.map": "/Doodle-Scheduling/static/js/main.70463bdd.chunk.js.map",
+    "main.js": "/Doodle-Scheduling/static/js/main.b1846a62.chunk.js",
+    "main.js.map": "/Doodle-Scheduling/static/js/main.b1846a62.chunk.js.map",
     "runtime-main.js": "/Doodle-Scheduling/static/js/runtime-main.66966abe.js",
     "runtime-main.js.map": "/Doodle-Scheduling/static/js/runtime-main.66966abe.js.map",
     "static/css/2.1d4aeea7.chunk.css": "/Doodle-Scheduling/static/css/2.1d4aeea7.chunk.css",
-    "static/js/2.f2a86516.chunk.js": "/Doodle-Scheduling/static/js/2.f2a86516.chunk.js",
-    "static/js/2.f2a86516.chunk.js.map": "/Doodle-Scheduling/static/js/2.f2a86516.chunk.js.map",
+    "static/js/2.3b2167e9.chunk.js": "/Doodle-Scheduling/static/js/2.3b2167e9.chunk.js",
+    "static/js/2.3b2167e9.chunk.js.map": "/Doodle-Scheduling/static/js/2.3b2167e9.chunk.js.map",
     "index.html": "/Doodle-Scheduling/index.html",
-    "precache-manifest.4bbef08191dd0114e303608cac6ab7f0.js": "/Doodle-Scheduling/precache-manifest.4bbef08191dd0114e303608cac6ab7f0.js",
+    "precache-manifest.6807abc59bed14e72bd524fc58f63327.js": "/Doodle-Scheduling/precache-manifest.6807abc59bed14e72bd524fc58f63327.js",
     "service-worker.js": "/Doodle-Scheduling/service-worker.js",
     "static/css/2.1d4aeea7.chunk.css.map": "/Doodle-Scheduling/static/css/2.1d4aeea7.chunk.css.map",
     "static/css/main.03f01da4.chunk.css.map": "/Doodle-Scheduling/static/css/main.03f01da4.chunk.css.map",
@@ -18,8 +18,8 @@
   "entrypoints": [
     "static/js/runtime-main.66966abe.js",
     "static/css/2.1d4aeea7.chunk.css",
-    "static/js/2.f2a86516.chunk.js",
+    "static/js/2.3b2167e9.chunk.js",
     "static/css/main.03f01da4.chunk.css",
-    "static/js/main.70463bdd.chunk.js"
+    "static/js/main.b1846a62.chunk.js"
   ]
 }
