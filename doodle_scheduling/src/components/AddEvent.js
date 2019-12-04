@@ -341,7 +341,6 @@ export class AddEvent extends Component {
             var emailStartDate = this.state.startDate;
             var emailEndDate = this.state.endDate;
             
-<<<<<<< HEAD
             console.log("edit event");
             console.log("invitees: " + invitees);
             console.log("emailEvent: " + emailEvent);
@@ -350,9 +349,6 @@ export class AddEvent extends Component {
             console.log("emailEndDate: " + emailEndDate);
             
             window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
-=======
-            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartTime": emailStartDate, "emailEndTime": emailEndDate})
->>>>>>> ada3d7bd871f7c1ea4494597c9c97f8aedbbc928
             .then(res => {
                 console.log('Email successfully sent!');
             })
