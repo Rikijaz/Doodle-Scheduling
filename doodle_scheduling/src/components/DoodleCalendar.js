@@ -1,79 +1,99 @@
-import React from 'react';
-import moment from 'moment';
-import WeekCalendar from 'react-week-calendar';
+import React from "react";
+import moment from "moment";
+import WeekCalendar from "react-week-calendar";
 
 // garbage text for testing pull requests to dev
 
 export default class DoodleCalendar extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      lastUid: 1,
-      selectedIntervals: [
-        // {
-        //   uid: 1,
-        //   start: moment({h: 6, m: 30}),
-        //   end: moment({h: 7, m: 59}),
-        //   value: "CS150 exam"
-        // },
-      ]
-    }
-  }
-
-  handleEventRemove = (event) => {
-    const {selectedIntervals} = this.state;
-    //console.log('Removing event');
-
-    const index = selectedIntervals.findIndex((interval) => interval.uid === event.uid);
-    if (index > -1) {
-      selectedIntervals.splice(index, 1);
-      this.setState({selectedIntervals});
+    constructor(props) {
+        super(props);
+        this.state = {
+            lastUid: 1,
+            selectedIntervals: [
+                // {
+                //   uid: 1,
+                //   start: moment({h: 6, m: 30}),
+                //   end: moment({h: 7, m: 59}),
+                //   value: "CS150 exam"
+                // },
+            ]
+        };
     }
 
-  }
+    handleEventRemove = event => {
+        const { selectedIntervals } = this.state;
+        //console.log('Removing event');
 
-  handleEventUpdate = (event) => {
-    const {selectedIntervals} = this.state;
-    //console.log('Updating event');
+        const index = selectedIntervals.findIndex(interval => interval.uid === event.uid);
+        if (index > -1) {
+            selectedIntervals.splice(index, 1);
+            this.setState({ selectedIntervals });
+        }
+    };
 
-    const index = selectedIntervals.findIndex((interval) => interval.uid === event.uid);
-    if (index > -1) {
-      selectedIntervals[index] = event;
-      this.setState({selectedIntervals});
+    handleEventUpdate = event => {
+        const { selectedIntervals } = this.state;
+        //console.log('Updating event');
+
+        const index = selectedIntervals.findIndex(interval => interval.uid === event.uid);
+        if (index > -1) {
+            selectedIntervals[index] = event;
+            this.setState({ selectedIntervals });
+        }
+    };
+
+    handleSelect = newIntervals => {
+        const { lastUid, selectedIntervals } = this.state;
+        const intervals = newIntervals.map((interval, index) => {
+            return {
+                ...interval,
+                uid: lastUid + index
+            };
+        });
+
+        this.setState({
+            selectedIntervals: selectedIntervals.concat(intervals),
+            lastUid: lastUid + newIntervals.length
+        });
+
+        // if (doesMomentOverLap)
+
+        this.props.parentMethod(intervals);
+    };
+
+    // doesMomentOverlap = (timeSegments) => {
+    //     let ret = false;
+    //     let i = 0;
+    //     while (!ret && i < timeSegments.length - 1) {
+    //         let seg1 = timeSegments[i];
+    //         let seg2 = timeSegments[i + 1];
+    //         let range1 = moment.range(moment(seg1[0]), moment(seg1[1]));
+    //         let range2 = moment.range(moment(seg2[0]), moment(seg2[1]));
+    //         // let range1 = moment.range( moment(seg1[0], 'HH:mm'),  moment(seg1[1], 'HH:mm'));
+    //         // let range2 = moment.range( moment(seg2[0], 'HH:mm'),  moment(seg2[1], 'HH:mm'));
+    //         if (range1.overlaps(range2)) {
+    //             ret = true;
+    //         }
+    //         i++;
+
+    //         return ret;
+    //     }
+    // };
+
+    render() {
+        return (
+            <WeekCalendar
+                dayFormat={"dddd, MM.DD"}
+                startTime={moment({ h: 0, m: 0 })}
+                endTime={moment({ h: 23, m: 50 })}
+                scaleFormat={"hh:mm a"}
+                numberOfDays={7}
+                selectedIntervals={this.state.selectedIntervals}
+                onIntervalSelect={this.handleSelect}
+                onIntervalUpdate={this.handleEventUpdate}
+                onIntervalRemove={this.handleEventRemove}
+                useModal={false}
+            />
+        );
     }
-  }
-
-  handleSelect = (newIntervals) => {
-    const {lastUid, selectedIntervals} = this.state;
-    const intervals = newIntervals.map( (interval, index) => {
-
-      return {
-        ...interval,
-        uid: lastUid + index
-      }
-    });
-
-    this.setState({
-      selectedIntervals: selectedIntervals.concat(intervals),
-      lastUid: lastUid + newIntervals.length
-    })
-
-    this.props.parentMethod(intervals);
-  }
-
-  render() {
-    return <WeekCalendar
-      dayFormat = {'dddd, MM.DD'}
-      startTime = {moment({h: 0, m: 0})}
-      endTime = {moment({h: 23, m: 50})}
-      scaleFormat = {'hh:mm a'}
-      numberOfDays= {7}
-      selectedIntervals = {this.state.selectedIntervals}
-      onIntervalSelect = {this.handleSelect}
-      onIntervalUpdate = {this.handleEventUpdate}
-      onIntervalRemove = {this.handleEventRemove}
-      useModal = {false}
-      />
-  }
 }

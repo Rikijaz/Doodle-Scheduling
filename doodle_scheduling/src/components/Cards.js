@@ -77,6 +77,7 @@ class Cards extends Component {
                         <Typography variant="h5" component="h2">
                             {data.title}
                         </Typography>
+                        <Typography>{data.code}</Typography>
                         <Typography>{data.description}</Typography>
                         {/* <Typography>{data.date}</Typography>
                         <Typography>{data.time}</Typography> */}
@@ -111,6 +112,7 @@ class Cards extends Component {
                                 <br />
                                 Invitees: {invitees}
                             </Typography>
+                            
                         </CardContent>
                     </Collapse>
                 </Card>
