@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/Doodle-Scheduling/precache-manifest.dd3c654caf3227a0815c23b181c020ee.js"
+  "/Doodle-Scheduling/precache-manifest.462cbc79eeecd214915a4176d53cb318.js"
 );
 
 self.addEventListener('message', (event) => {
