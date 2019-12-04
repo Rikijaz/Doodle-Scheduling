@@ -22,6 +22,16 @@ export class EventManager extends Component {
      * @return clears localStorage of event details
      */
     beginAddEvent = () => {
+
+        db.collection("events").get().then(snapshot => {
+
+            snapshot.forEach(doc => {
+          
+              console.log( doc);    
+          
+            });
+          
+          });
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
