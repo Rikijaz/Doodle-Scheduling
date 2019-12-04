@@ -63,8 +63,7 @@ class Cards extends Component {
             </IconButton>
             </div>
         ) : null;
-        
-      
+
         return (
             <div>
                 <Card>
@@ -75,9 +74,11 @@ class Cards extends Component {
                         <Typography variant="h5" component="h2">
                             {data.title}
                         </Typography>
+                        <Typography variant="h5" component="h2">
+                            {data.category}
+                        </Typography>
                         <Typography>{data.description}</Typography>
-                         <Typography>{data.startDate} - {data.endDate} </Typography>
-                        <Typography>{moment(data.startDate).format("LLLL")}</Typography>
+                        <Typography>{moment(data.startDate).format("LLLL")+ " - " + moment(data.endDate).format("LT")}</Typography>
                     </CardContent>
                     <CardActions>
                         {editButton}
