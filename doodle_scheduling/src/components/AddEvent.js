@@ -336,12 +336,16 @@ export class AddEvent extends Component {
                 });
             
             /* email notification */
-            var invitees = invitees;
+            var invitees = this.state.accepted_invitees;   //FIXME: accepted_invitees is empty?
             var templateId = 'yes';
             var emailEvent = this.state.title;
             var emailDescription = this.state.description;
             var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
             var emailCategory = this.state.category;
+            if (emailCategory === "")   //FIXME: add this case to each emailCategory    // fix edit event problem (add invitee to event creation, click through edit event, invitee is not emailed)
+            {
+                emailCategory = "None";
+            }
             //var emailEndDate = this.state.endDate;
             
             console.log("edit event");
