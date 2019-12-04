@@ -427,9 +427,43 @@ export class EventHome extends Component {
                     }
                 }
                 batch.commit();
-                db.collection("events")
-                .doc(id)
-                .delete();
+
+              this.state.events.find(event => {
+                if (event.id === id)
+                {
+                  /* email notification */
+                  var invitees = event.invitees;
+                  var templateId = 'yes';
+                  var emailEvent = event.title;
+                  var emailDescription = event.description;
+                  var emailStartDate = event.startDate;
+                  var emailEndDate = event.endDate;
+
+                  console.log("delete event");
+                  console.log("invitees: " + invitees);
+                  console.log("emailEvent: " + emailEvent);
+                  console.log("emailDescription: " + emailDescription);
+                  console.log("emailStartDate: " + emailStartDate);
+                  console.log("emailEndDate: " + emailEndDate);
+                  
+                  window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+                  .then(res => {
+                      console.log('Email successfully sent!');
+                      db.collection("events")
+                      .doc(id)
+                      .delete();
+                  })
+                  .catch(
+                    db.collection("events")
+                    .doc(id)
+                    .delete()
+                  )
+                }
+              })
+
+                // db.collection("events")
+                // .doc(id)
+                // .delete();
             })
             .catch(err => console.log(err));
        
