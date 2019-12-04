@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-//import { TextField } from '@material-ui/core';
 import { Button } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
+import IconButton from "@material-ui/core/IconButton";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import DoodleCalendar from "./DoodleCalendar";
 import "react-week-calendar/dist/style.css";
 import moment from "moment";
+import './styling/AddSecondPage.css'
 
 export class AddSecondPage extends Component {
     constructor(props) {
@@ -27,22 +29,15 @@ export class AddSecondPage extends Component {
         console.log(eventData[0].start.format());
         console.log(moment(eventData[0].start.format()).format("LLLL"));
 
-        // //right now it should only take in one date & one range of time
-        // let x = new Date(eventData[0].start.format("LLLL"));
-        // let y = new Date(eventData[0].end.format("LLLL"));
-        // let start = x.getHours().toString() + ":" + x.getMinutes().toString();
-        // let end = y.getHours().toString() + ":" + y.getMinutes().toString();
-        // let together = start + "-" + end;
-        // let date = (x.getMonth() + 1).toString() + "/" + x.getDate().toString();
-        // localStorage.setItem("saved_date", JSON.stringify(date));
-        // localStorage.setItem("saved_time", JSON.stringify(together));
-
         var eventStartDate = eventData[0].start.format();
         var eventEndDate = eventData[0].end.format();
 
         this.setState({ startDate: eventStartDate, endDate: eventEndDate });
 
-        localStorage.setItem("saved_start_date", JSON.stringify(eventStartDate));
+        localStorage.setItem(
+            "saved_start_date",
+            JSON.stringify(eventStartDate)
+        );
         localStorage.setItem("saved_end_date", JSON.stringify(eventEndDate));
         // https://momentjs.com/docs/#/parsing/string-format/ if you are looking for a different time format
     };
@@ -66,7 +61,7 @@ export class AddSecondPage extends Component {
     renderCalendar = () => {
         return (
             <div>
-                <h3>Choose your time!</h3>
+                <h3 className="text">Choose your time!</h3>
                 <DoodleCalendar parentMethod={e => this.onEventSubmitted(e)}>
                     {this.props.children}
                 </DoodleCalendar>
@@ -77,32 +72,33 @@ export class AddSecondPage extends Component {
     renderButtons = () => {
         return (
             <div>
-                <Button
-                    type="button"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={this.props.goToFirstPage}
-                >
-                    Back
-                </Button>
-                <br />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={e =>
-                        this.props.goToThirdPage(
-                            this.state.startDate,
-                            this.state.endDate,
-                            e
-                        )
-                    }
-                >
-                    Next
-                </Button>
-                <br />
+                <div className="rightGroup">
+                    <IconButton
+                        className="button"
+                        aria-label="back"
+                        onClick={this.props.goToFirstPage}
+                        color="primary"
+                        size="medium"
+                    >
+                        <ArrowBackIosIcon />
+                    </IconButton>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={e =>
+                            this.props.goToThirdPage(
+                                this.state.startDate,
+                                this.state.endDate,
+                                e
+                            )
+                        }
+                    >
+                        Next
+                    </Button>
+                </div>
                 <Button
                     type="button"
                     className="userCancelButton"
@@ -120,16 +116,3 @@ export class AddSecondPage extends Component {
 }
 
 export default AddSecondPage;
-/*  
-    Eric's Stuff that was added in:
-        renderCalendar
-        calendar
-        DoodleCalendar
-        onEventSubmitted
-        changeCalendar
-        calendar in state
-        DoodleCalendar.js
-
-
-
-*/

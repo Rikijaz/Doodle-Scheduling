@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import AddContact from './AddContact'
-import ViewContacts from './ViewContacts'
+import AddContact from "./AddContact";
+import ViewContacts from "./ViewContacts";
 import firebase from "firebase";
 import logo from "./logo.png";
 import { Link } from "react-router-dom";
@@ -9,26 +9,24 @@ import { db } from "./firebase";
 //import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
 const headerStyle = {
-    background: "#fff",
-    //color: "#5a769e",
+    background: "#7FDBFF",
+    color: "white",
     textAlign: "center",
-    padding: "3px",
-    //fontSize: "24px",
-    //fontFamily: "Courier New",
-    //fontStyle: "italic"
+    padding: "2px",
+    fontSize: "24px",
+    fontFamily: "Simplifica"
 };
 
 const headButtonStyle = {
     textAlign: "left"
 };
 
-
 export class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
             user: null,
-            addContactsPrompt: false,
+            addContactsPrompt: false
         };
     }
 
@@ -45,7 +43,7 @@ export class Header extends Component {
             .get()
             .then(data => {
                 if (data.exists) {
-                    this.setState({ user: data.data()});
+                    this.setState({ user: data.data() });
                 } else {
                     //console.log("Sad toot");
                 }
@@ -74,18 +72,6 @@ export class Header extends Component {
         return (
             <div>
                 <header style={headerStyle}>
-                    <div>
-                        <header>
-                            <img
-                                src={logo}
-                                height="117px"
-                                width="150px"
-                                alt="Schedule It" />
-                        </header>
-                    </div>
-                    <AddContact/>
-                    <ViewContacts/>
-
                     {this.state.user && (
                         <div>
                             <div style={headButtonStyle}>
@@ -111,6 +97,9 @@ export class Header extends Component {
                             </div>
                         </div>
                     )}
+                    <h1>Schedule It!</h1>
+                    <AddContact />
+                    <ViewContacts />
                 </header>
             </div>
         );
