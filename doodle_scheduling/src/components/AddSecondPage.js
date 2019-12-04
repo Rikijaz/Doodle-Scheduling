@@ -6,7 +6,7 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import DoodleCalendar from "./DoodleCalendar";
 import "react-week-calendar/dist/style.css";
 import moment from "moment";
-import "./styling/AddSecondPage.css";
+import './styling/AddSecondPage.css'
 
 export class AddSecondPage extends Component {
     constructor(props) {
@@ -61,7 +61,7 @@ export class AddSecondPage extends Component {
     renderCalendar = () => {
         return (
             <div>
-                <h3>Choose your time!</h3>
+                <h3 className="text">Choose your time!</h3>
                 <DoodleCalendar parentMethod={e => this.onEventSubmitted(e)}>
                     {this.props.children}
                 </DoodleCalendar>
@@ -72,8 +72,9 @@ export class AddSecondPage extends Component {
     renderButtons = () => {
         return (
             <div>
-                <div className="rightBtnGroup">
+                <div className="rightGroup">
                     <IconButton
+                        className="button"
                         aria-label="back"
                         onClick={this.props.goToFirstPage}
                         color="primary"
