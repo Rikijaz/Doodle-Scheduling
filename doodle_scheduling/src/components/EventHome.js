@@ -547,6 +547,9 @@ export class EventHome extends Component {
                 tempObject.temp = [];
                 data.forEach(doc => {
                     console.log("1");
+
+                    console.log(doc.data());
+
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ events: tempObject.temp });

@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import WeekCalendar from 'react-week-calendar';
+import { db, firebase } from "./firebase";
 
 // garbage text for testing pull requests to dev
 
@@ -17,8 +18,10 @@ export default class DoodleCalendar extends React.Component {
         //   end: moment({h: 7, m: 59}),
         //   value: "CS150 exam"
         // },
-      ]
+      ],
     }
+
+    this.displayCurrentEvents();
   }
 
   handleEventRemove = (event) => {
@@ -59,21 +62,61 @@ export default class DoodleCalendar extends React.Component {
       lastUid: lastUid + newIntervals.length
     })
 
+    console.log(selectedIntervals);
+
     this.props.parentMethod(intervals);
   }
 
+  displayCurrentEvents() {
+    let currentEvents = [];
+
+    let i = 0;
+
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    this.unsubscribe1 = db
+        .collection("events")
+        .where("owners", "array-contains", currentUser)
+        .onSnapshot(data => {
+            currentEvents = [];
+            data.forEach(doc => {
+                i++;
+                var eventData = {
+                    end: moment(doc.data().endDate),
+                    start: moment(doc.data().startDate),
+                    value: doc.data().title,
+                    uid: i,
+                };
+
+                currentEvents.push(eventData);
+            });
+            this.setState({ selectedIntervals: currentEvents });
+        });
+  }
+
+  getCalendarStyle= () => {
+    return {
+        padding: "45px",
+    };
+  };
+
   render() {
-    return <WeekCalendar
-      dayFormat = {'dddd, MM.DD'}
-      startTime = {moment({h: 0, m: 0})}
-      endTime = {moment({h: 23, m: 50})}
-      scaleFormat = {'hh:mm a'}
-      numberOfDays= {7}
-      selectedIntervals = {this.state.selectedIntervals}
-      onIntervalSelect = {this.handleSelect}
-      onIntervalUpdate = {this.handleEventUpdate}
-      onIntervalRemove = {this.handleEventRemove}
-      useModal = {false}
-      />
+
+    return ( 
+      <div style={this.getCalendarStyle()}>
+
+      <WeekCalendar
+        dayFormat = {'dddd, MM.DD'}
+        startTime = {moment({h: 8, m: 0})}
+        endTime = {moment({h: 20, m: 50})}
+        scaleFormat = {'hh:mm a'}
+        numberOfDays= {7}
+        selectedIntervals = {this.state.selectedIntervals}
+        onIntervalSelect = {this.handleSelect}
+        onIntervalUpdate = {this.handleEventUpdate}
+        onIntervalRemove = {this.handleEventRemove}
+        useModal = {true}
+        />
+        </div>
+      )
   }
 }
