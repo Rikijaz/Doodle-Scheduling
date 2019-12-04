@@ -186,7 +186,7 @@ export class EventHome extends Component {
         if (this.isSearching()) {
             displayedEvents = this.state.filteredSharedEvents;
         } else {
-            displayedEvents = this.state.events;
+            displayedEvents = this.state.sharedEvents;
         }
 
         switch (this.state.eventSortOrder) {
@@ -230,7 +230,7 @@ export class EventHome extends Component {
         if (this.isSearching()) {
             displayedEvents = this.state.filteredAcceptedEvents;
         } else {
-            displayedEvents = this.state.events;
+            displayedEvents = this.state.acceptedEvents;
         }
 
         switch (this.state.eventSortOrder) {
