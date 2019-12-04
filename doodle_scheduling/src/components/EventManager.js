@@ -39,6 +39,7 @@ export class EventManager extends Component {
         // localStorage.removeItem("saved_date");
         localStorage.removeItem("saved_start_date");
         localStorage.removeItem("saved_end_date");
+        localStorage.removeItem("saved_category");
         this.setAdd();
     };
 
