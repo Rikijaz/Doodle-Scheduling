@@ -5,6 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import "react-table/react-table.css";
 import Form from "./Form";
 import { db, firebase } from "./firebase";
+import uuid from "uuid";
 import Cards from "./Cards";
 import EventCalendar from "./EventCalendar/EventCalendar";
 import moment from "moment";
@@ -407,9 +408,31 @@ export class EventHome extends Component {
      * Delete Event
      */
     deleteEvent = id => {
-        db.collection("events")
-            .doc(id)
-            .delete();
+        
+            let batch = db.batch();
+            db.collection("events").doc(id).get()
+            .then(doc =>{
+                if(doc.data().accepted_invitees){
+                    for(let x = 0; x < doc.data().accepted_invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 2, eventTitle: doc.data().title, id : id2});
+                    }
+                }
+                if(doc.data().invitees){
+                    for(let x = 0; x < doc.data().invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 2, eventTitle: doc.data().title, id : id2});
+                    }
+                }
+                batch.commit();
+                db.collection("events")
+                .doc(id)
+                .delete();
+            })
+            .catch(err => console.log(err));
+       
     };
     acceptInvite = id => {
         const document = db.collection("events").doc(id);
@@ -546,10 +569,6 @@ export class EventHome extends Component {
             .onSnapshot(data => {
                 tempObject.temp = [];
                 data.forEach(doc => {
-                    console.log("1");
-
-                    console.log(doc.data());
-
                     tempObject.temp.push(doc.data());
                 });
                 this.setState({ events: tempObject.temp });
