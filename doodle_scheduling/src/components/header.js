@@ -1,34 +1,32 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
-import AddContact from './AddContact'
-import ViewContacts from './ViewContacts'
+import AddContact from "./AddContact";
+import ViewContacts from "./ViewContacts";
 import firebase from "firebase";
-//import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import logo from "./logo.png";
 import { Link } from "react-router-dom";
-
 import { db } from "./firebase";
+//import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
 const headerStyle = {
-    background: "#D0E6FF",
-    color: "#5a769e",
+    background: "#7FDBFF",
+    color: "white",
     textAlign: "center",
-    padding: "3px",
+    padding: "2px",
     fontSize: "24px",
-    fontFamily: "Courier New",
-    fontStyle: "italic"
+    fontFamily: "Simplifica"
 };
 
-const signOutStyle = {
-    textAlign: "right"
+const headButtonStyle = {
+    textAlign: "left"
 };
-
 
 export class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
             user: null,
-            addContactsPrompt: false,
+            addContactsPrompt: false
         };
     }
 
@@ -37,29 +35,35 @@ export class Header extends Component {
      * when header mounts, it updates user data
      * @return user data from the database
      */
+    
     componentDidMount() {
+        /*
         db.collection("users")
             .doc(JSON.parse(localStorage.getItem("currentUser")))
             .get()
             .then(data => {
                 if (data.exists) {
-                    this.setState({ user: data.data()});
+                    this.setState({ user: data.data() });
                 } else {
                     //console.log("Sad toot");
                 }
             });
+            */
+        let docRef = db.collection("users")
+            .doc(JSON.parse(localStorage.getItem("currentUser")));
+        docRef.get().then(doc => {
+            if (!doc.exists) {
+                console.log('No such document!');
+            } else {
+                console.log('Document data:', doc.data());
+                this.setState({ user: doc.data() });
+            }
+        })
+            .catch(err => {
+                console.log('Error getting document', err);
+            });
     }
-
-    /**
-     * Signs out user, kicks them back to login page
-     * @return Back to login page and clears localStorage
-     */
-    onClickSignOut = () => {
-        firebase.auth().signOut();
-        //localStorage.removeItem("currentUser");
-        localStorage.clear();
-    };
-
+    
     /**
      * Renders the buttons to view/add contacts and
      * sign out button and name of user
@@ -68,26 +72,34 @@ export class Header extends Component {
         return (
             <div>
                 <header style={headerStyle}>
-                    <h1>Schedule It</h1>
-                    <AddContact/>
-                    <ViewContacts/>
-
                     {this.state.user && (
                         <div>
-                            <div style={signOutStyle}>
+                            <div style={headButtonStyle}>
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     size="small"
                                     component={Link}
-                                    to="/"
+                                    to="/profile"
                                 >
-                                    {this.state.user.email}
+                                    Profile
+                                </Button>
+                                <br />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    component={Link}
+                                    to="/home"
+                                >
+                                    Events
                                 </Button>
                             </div>
-                            <div>Welcome {this.state.user.displayName}</div>
                         </div>
                     )}
+                    <h1>Schedule It!</h1>
+                    <AddContact />
+                    <ViewContacts />
                 </header>
             </div>
         );

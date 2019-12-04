@@ -12,6 +12,7 @@ import { db } from "./firebase";
 import uuid from "uuid";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import "./styling/AddEvent.css";
 
 export const categories = Object.freeze({
     None: "None",
@@ -19,7 +20,7 @@ export const categories = Object.freeze({
     Social: "Social",
     Errands: "Errands",
     Projects: "Projects",
-    Miscellaneous: "Miscellaneous",
+    Miscellaneous: "Miscellaneous"
 });
 
 export class AddEvent extends Component {
@@ -30,9 +31,12 @@ export class AddEvent extends Component {
             title: JSON.parse(localStorage.getItem("saved_title")) || "",
             description:
                 JSON.parse(localStorage.getItem("saved_description")) || "",
-            startDate: JSON.parse(localStorage.getItem("saved_start_date")) || "",
+            startDate:
+                JSON.parse(localStorage.getItem("saved_start_date")) || "",
             endDate: JSON.parse(localStorage.getItem("saved_end_date")) || "",
-            category: JSON.parse(localStorage.getItem("saved_category")) || categories.None,
+            category:
+                JSON.parse(localStorage.getItem("saved_category")) ||
+                categories.None,
             calendar: "default",
 
             //variables to keep track of pages & state
@@ -53,7 +57,7 @@ export class AddEvent extends Component {
 
             // Category
             anchorEl: null,
-            openMenu: false,
+            openMenu: false
         };
     }
 
@@ -179,7 +183,12 @@ export class AddEvent extends Component {
      */
     goToThirdPage = (startDate, endDate, e) => {
         e.preventDefault();
-        if (startDate !== null && startDate !== "" && endDate !== null && endDate !== "") {
+        if (
+            startDate !== null &&
+            startDate !== "" &&
+            endDate !== null &&
+            endDate !== ""
+        ) {
             this.setState({
                 startDate: startDate,
                 endDate: endDate,
@@ -213,7 +222,6 @@ export class AddEvent extends Component {
         this.setState({ anchorEl: null, openMenu: !this.state.openMenu });
     };
 
-    
     /**
      * Opening drop down menu
      * @param e takes in event of clicking drop down menu
@@ -240,7 +248,7 @@ export class AddEvent extends Component {
         let code = this.makeCode(5);
         const { idOfEditEvent, editingEvent } = this.props;
         const id = uuid.v4();
-        
+
         if (!editingEvent) {
             //add new event
             db.collection("events")
@@ -300,39 +308,16 @@ export class AddEvent extends Component {
      * conditionally renders new pages
      */
     viewForm = () => {
-        const btnStyle = {
-            textAlign: "right"
-        };
-
         //this will be the same as AddFirstPage
         //just grabbing title and description
         if (this.state.firstPage) {
             return (
                 <div>
-                    <Container maxWidth="sm">
-                        <form onSubmit={e => this.onSubmitFirstPage(e)}>
-                            <TextField
-                                type="text"
-                                variant="outlined"
-                                placeholder="Event Name"
-                                fullWidth
-                                value={this.state.title}
-                                margin="normal"
-                                onChange={title => this.handleTitle(title)}
-                            />
-                            <TextField
-                                type="text"
-                                variant="outlined"
-                                placeholder="Event Description ... Optional"
-                                fullWidth
-                                value={this.state.description}
-                                margin="normal"
-                                onChange={des => this.handleDescription(des)}
-                            />
-                            {/* <div style={this.getBtnStyle()}> */}
+                    <Container className="container" maxWidth="md">
+                        <div className="categoryBtn">
                             <Button
                                 variant="contained"
-                                color="primary"
+                                color={this.state.category !== categories.None ? "primary" : "secondary"}
                                 aria-controls="simple-menu"
                                 aria-haspopup="true"
                                 onClick={e => this.handleClick(e)}
@@ -345,25 +330,86 @@ export class AddEvent extends Component {
                                 open={this.state.openMenu}
                                 onClose={this.handleClose}
                             >
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Hobbies)}>
-                                {categories.Hobbies}
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Hobbies
+                                        )
+                                    }
+                                >
+                                    {categories.Hobbies}
                                 </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Social)}>
-                                {categories.Social}
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Social
+                                        )
+                                    }
+                                >
+                                    {categories.Social}
                                 </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Errands)}>
-                                {categories.Errands}
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Errands
+                                        )
+                                    }
+                                >
+                                    {categories.Errands}
                                 </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Projects)}>
-                                {categories.Projects}
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Projects
+                                        )
+                                    }
+                                >
+                                    {categories.Projects}
                                 </MenuItem>
-                                <MenuItem onClick={() => this.handleCategoryMenuClick(categories.Miscellaneous)}>
-                                {categories.Miscellaneous}
+                                <MenuItem
+                                    onClick={() =>
+                                        this.handleCategoryMenuClick(
+                                            categories.Miscellaneous
+                                        )
+                                    }
+                                >
+                                    {categories.Miscellaneous}
                                 </MenuItem>
                             </Menu>
-                            {/* </div> */}
-                            <br />
-                            <div style={btnStyle}>
+                        </div>
+                        <form className="form" onSubmit={e => this.onSubmitFirstPage(e)}>
+                            <TextField
+                                type="text"
+                                variant="outlined"
+                                placeholder="Event Name"
+                                fullWidth
+                                value={this.state.title}
+                                margin="normal"
+                                onChange={title => this.handleTitle(title)}
+                            />
+                            <TextField
+                                className="form"
+                                type="text"
+                                variant="outlined"
+                                placeholder="Event Description ... Optional"
+                                fullWidth
+                                value={this.state.description}
+                                margin="normal"
+                                onChange={des => this.handleDescription(des)}
+                            />
+
+                            <div className="btnGroup">
+                                <Button
+                                    type="button"
+                                    className="userCancelButton"
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    endIcon={<CancelIcon />}
+                                    onClick={this.props.cancelEvent}
+                                >
+                                    Cancel
+                                </Button>
                                 <Button
                                     type="submit"
                                     className="userContinueButton"
@@ -376,17 +422,6 @@ export class AddEvent extends Component {
                                     Continue
                                 </Button>
                             </div>
-                            <Button
-                                type="button"
-                                className="userCancelButton"
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                endIcon={<CancelIcon />}
-                                onClick={this.props.cancelEvent}
-                            >
-                                Cancel
-                            </Button>
                         </form>
                     </Container>
                 </div>

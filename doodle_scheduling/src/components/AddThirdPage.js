@@ -5,6 +5,9 @@ import FormGroup from "@material-ui/core/FormGroup";
 import { Checkbox } from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InviteContacts from "./InviteContacts";
+import IconButton from "@material-ui/core/IconButton";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import "./styling/AddThirdPage.css";
 
 export class AddThirdPage extends Component {
     constructor(props) {
@@ -40,7 +43,7 @@ export class AddThirdPage extends Component {
     renderOptions = () => {
         return (
             <div>
-                <FormGroup row>
+                <FormGroup className="checkrow" row>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -76,28 +79,28 @@ export class AddThirdPage extends Component {
     renderButtons = () => {
         return (
             <div>
-                <Button
-                    type="button"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={this.props.goToSecondPage}
-                >
-                    Back
-                </Button>
-                <br />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={e =>
-                        this.props.submitEvent(e, this.state.invite_list)
-                    }
-                >
-                    Submit Event
-                </Button>
-                <br />
+                <div className="right">
+                    <IconButton
+                        className="button"
+                        aria-label="back"
+                        onClick={this.props.goToSecondPage}
+                        color="primary"
+                        size="medium"
+                    >
+                        <ArrowBackIosIcon />
+                    </IconButton>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={e =>
+                            this.props.submitEvent(e, this.state.invite_list)
+                        }
+                    >
+                        Submit Event
+                    </Button>
+                </div>
                 <Button
                     type="button"
                     className="userCancelButton"

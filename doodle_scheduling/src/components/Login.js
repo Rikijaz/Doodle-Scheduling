@@ -1,29 +1,24 @@
 import React, { Component } from "react";
+import { firebase, db } from "./firebase";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import { Redirect, Link } from "react-router-dom";
 import logo from "./logo.png";
 import { Button } from "@material-ui/core";
-
-// import firebase from "firebase";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-
-import { Link } from "react-router-dom";
-
-import { firebase, db } from "./firebase";
+import { textAlign } from "@material-ui/system";
 
 var CLIENT_ID = "YOUR_OAUTH_CLIENT_ID";
-const logoStyle = {
-    textAlign: "center"
-};
 
 const logInStyle = {
     textAlign: "center",
     top: "100%",
+    background: "#fff",
     fontSize: "20px",
     position: "relative"
 };
 const uiConfig = {
     // Popup signin flow rather than redirect flow.
     signInFlow: "popup",
-    // We will display Google and Facebook as auth providers.
+    // We will use Google and email as auth providers.
     signInOptions: [
         {
             provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -47,7 +42,7 @@ export class Login extends Component {
         super(props);
         this.state = {
             isSignedIn: false,
-			picURL: ""
+            current_user_email: "",
         };
     }
 
@@ -55,8 +50,12 @@ export class Login extends Component {
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 this.setState({
-                    isSignedIn: !!user
+                    //isSignedIn: !!user
+                    isSignedIn: true
                 });
+                //locally store current user's email
+                localStorage.setItem("currentUser", JSON.stringify(user.email));
+
                 //lets contacts data persist
                 let docReference = db.collection("users").doc(user.email);
                 docReference.get().then(documentSnapshot => {
@@ -68,6 +67,7 @@ export class Login extends Component {
                             events: [],
                             polls: [],
                             pictureURL: user.photoURL,
+                            bio: ""
                         });
                     }
                 });
@@ -79,67 +79,59 @@ export class Login extends Component {
                     } else {
                         //console.log('Document data:', doc.data());
                         this.setState({ picURL: doc.data().pictureURL });
+                        this.setState({ nameDisplay: doc.data().displayName });
+                        this.setState({ userName: doc.data().displayName });
+                        this.setState({ current_user_email: doc.data().email });
+                        this.setState({ bioDisplay: doc.data().bio });
+                        this.setState({ userBio: doc.data().bio });
                     }
                 })
-                .catch(err => {
-                    console.log('Error getting document', err);
-                });
-
-                //keep this so header can load the page
-                localStorage.setItem("currentUser", JSON.stringify(user.email));
-                //console.log("toot");
+                    .catch(err => {
+                        console.log('Error getting document', err);
+                    });
             }
-        });
+            else {
+                this.setState({ isSignedIn: false })
+            }
+      });
     };
-
-    onClick = () => {
-        firebase.auth().signOut();
-        this.setState({ isSignedIn: false });
-        localStorage.clear();
-    };
-
+    
     render() {
         return (
-            <div>
-                <div style={logoStyle}>
-                    <header>
-                        <img src={logo} alt="Schedule It" />
-                    </header>
-                </div>
+            <div style={{
+                textAlign: "center",
+                backgroundColor: 'white',
+                height: '250px',
+                width: '300px',
+                margin: '0 auto'
+            }}>
+                <img
+                    src={logo}
+                    height="117px"
+                    width="150px"
+                    alt="Schedule It" />
+                <br />
                 {this.state.isSignedIn ? (
-                    <div style={logInStyle}>
-                        <h3>
-							<img src={this.state.picURL} alt="Profile" vertical-align="middle" width="100px" height="100px" border-radius="50%" />
-                            <br />
-							Name:
-                            {firebase.auth().currentUser.displayName}
-                            <br />
-                            email: {firebase.auth().currentUser.email}
-                        </h3>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            component={Link}
-                            to="/home"
-                        >
-                            Go to Home Page
-                        </Button>
+                    <div>
+                        <br />
                         <br />
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => this.onClick()}
+                            size="small"
+                            component={Link}
+                            to="/home"
                         >
-                            Sign Out
+                            Home
                         </Button>
                     </div>
                 ) : (
-                    <StyledFirebaseAuth
-                        uiCallback={ui => ui.disableAutoSignIn()}
-                        uiConfig={uiConfig}
-                        firebaseAuth={firebase.auth()}
-                    />
-                )}
+                        <StyledFirebaseAuth
+                            uiCallback={ui => ui.disableAutoSignIn()}
+                            uiConfig={uiConfig}
+                            firebaseAuth={firebase.auth()}
+                        />
+                    )}
             </div>
         );
     }
