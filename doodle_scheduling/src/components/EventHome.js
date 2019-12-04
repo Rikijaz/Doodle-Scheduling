@@ -428,23 +428,42 @@ export class EventHome extends Component {
                 }
                 batch.commit();
 
-              /* email notification */
-              var invitees = invitees;
-              var templateId = 'yes';
-              var emailEvent = this.state.title;
-              var emailDescription = this.state.description;
-              var emailStartDate = this.state.startDate;
-              var emailEndDate = this.state.endDate;
-              
-              window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartTime": emailStartDate, "emailEndTime": emailEndDate})
-              .then(res => {
-                  console.log('Email successfully sent!');
-              })
-              .catch(err => console.error("error: " + err))
+              this.state.events.find(event => {
+                if (event.id === id)
+                {
+                  /* email notification */
+                  var invitees = event.invitees;
+                  var templateId = 'yes';
+                  var emailEvent = event.title;
+                  var emailDescription = event.description;
+                  var emailStartDate = event.startDate;
+                  var emailEndDate = event.endDate;
 
-                db.collection("events")
-                .doc(id)
-                .delete();
+                  console.log("delete event");
+                  console.log("invitees: " + invitees);
+                  console.log("emailEvent: " + emailEvent);
+                  console.log("emailDescription: " + emailDescription);
+                  console.log("emailStartDate: " + emailStartDate);
+                  console.log("emailEndDate: " + emailEndDate);
+                  
+                  window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+                  .then(res => {
+                      console.log('Email successfully sent!');
+                      db.collection("events")
+                      .doc(id)
+                      .delete();
+                  })
+                  .catch(
+                    db.collection("events")
+                    .doc(id)
+                    .delete()
+                  )
+                }
+              })
+
+                // db.collection("events")
+                // .doc(id)
+                // .delete();
             })
             .catch(err => console.log(err));
        
