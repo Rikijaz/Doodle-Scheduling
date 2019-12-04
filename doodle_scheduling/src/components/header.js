@@ -9,17 +9,17 @@ import { db } from "./firebase";
 //import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
 const headerStyle = {
-    background: "#D0E6FF",
-    color: "#5a769e",
+    background: "#fff",
+    //color: "#5a769e",
     textAlign: "center",
     padding: "3px",
-    fontSize: "24px",
-    fontFamily: "Courier New",
-    fontStyle: "italic"
+    //fontSize: "24px",
+    //fontFamily: "Courier New",
+    //fontStyle: "italic"
 };
 
-const signOutStyle = {
-    textAlign: "right"
+const headButtonStyle = {
+    textAlign: "left"
 };
 
 
@@ -65,17 +65,7 @@ export class Header extends Component {
                 console.log('Error getting document', err);
             });
     }
-
-    /**
-     * Signs out user, kicks them back to login page
-     * @return Back to login page and clears localStorage
-     */
-    onClickSignOut = () => {
-        firebase.auth().signOut();
-        //localStorage.removeItem("currentUser");
-        localStorage.clear();
-    };
-
+    
     /**
      * Renders the buttons to view/add contacts and
      * sign out button and name of user
@@ -84,13 +74,21 @@ export class Header extends Component {
         return (
             <div>
                 <header style={headerStyle}>
-                    <h1>Schedule It</h1>
+                    <div>
+                        <header>
+                            <img
+                                src={logo}
+                                height="117px"
+                                width="150px"
+                                alt="Schedule It" />
+                        </header>
+                    </div>
                     <AddContact/>
                     <ViewContacts/>
 
                     {this.state.user && (
                         <div>
-                            <div style={signOutStyle}>
+                            <div style={headButtonStyle}>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -98,10 +96,19 @@ export class Header extends Component {
                                     component={Link}
                                     to="/profile"
                                 >
-                                    {this.state.user.email}
+                                    Profile
+                                </Button>
+                                <br />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    component={Link}
+                                    to="/home"
+                                >
+                                    Events
                                 </Button>
                             </div>
-                            <div>Welcome {this.state.user.displayName}</div>
                         </div>
                     )}
                 </header>
