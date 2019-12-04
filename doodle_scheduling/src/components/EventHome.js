@@ -268,7 +268,7 @@ export class EventHome extends Component {
         const { events } = this.state;
         const { sharedEvents, acceptedEvents } = this.state;
 
-        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents() || this.areNoAcceptedEvents()) {
+        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents() || !this.areNoAcceptedEvents()) {
             return (
                 <div className="App">
                     <main>
