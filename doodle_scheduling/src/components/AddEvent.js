@@ -13,6 +13,7 @@ import uuid from "uuid";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import "./styling/AddEvent.css";
+import moment from "moment";
 
 export const categories = Object.freeze({
     None: "None",
@@ -282,17 +283,18 @@ export class AddEvent extends Component {
             var templateId = 'yes';
             var emailEvent = this.state.title;
             var emailDescription = this.state.description;
-            var emailStartDate = this.state.startDate;
-            var emailEndDate = this.state.endDate;
+            var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
+            var emailCategory = this.state.category;
+            //var emailEndDate = this.state.endDate;
 
             console.log("add event");
             console.log("invitees: " + invitees);
             console.log("emailEvent: " + emailEvent);
             console.log("emailDescription: " + emailDescription);
             console.log("emailStartDate: " + emailStartDate);
-            console.log("emailEndDate: " + emailEndDate);
+            //console.log("emailEndDate: " + emailEndDate);
             
-            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
             .then(res => {
                 console.log('Email successfully sent!');
             })
@@ -338,17 +340,18 @@ export class AddEvent extends Component {
             var templateId = 'yes';
             var emailEvent = this.state.title;
             var emailDescription = this.state.description;
-            var emailStartDate = this.state.startDate;
-            var emailEndDate = this.state.endDate;
+            var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
+            var emailCategory = this.state.category;
+            //var emailEndDate = this.state.endDate;
             
             console.log("edit event");
             console.log("invitees: " + invitees);
             console.log("emailEvent: " + emailEvent);
             console.log("emailDescription: " + emailDescription);
             console.log("emailStartDate: " + emailStartDate);
-            console.log("emailEndDate: " + emailEndDate);
+            //console.log("emailEndDate: " + emailEndDate);
             
-            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailEndDate": emailEndDate})
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
             .then(res => {
                 console.log('Email successfully sent!');
             })
