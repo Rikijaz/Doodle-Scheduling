@@ -62,7 +62,8 @@ export default function AddContact() {
             then it accesses the current user's doc, and updates
             their contact list with the user's input contact
 
-            when you add the contact, it adds the name and email
+            when you add the contact, it adds the name, email and 
+            profile picture URL
 
             concerns: we did not use boolean variables to seperate the
             check from the database addition because it does not update 
@@ -73,6 +74,18 @@ export default function AddContact() {
             .get()
             .then(docSnapshot => {
                 if (docSnapshot.exists) {
+                    db.collection("users")
+                        .doc(currentUser)
+                        .update({
+                            ['contacts.' + userInput]: firebase.firestore.FieldValue.delete()
+                        });
+                        /*
+                        .update({
+                            "contacts": firebase.firestore.FieldValue.arrayRemove(
+                                { userInput }
+                            )
+                        });
+                        */
                     db.collection("users")
                         .doc(currentUser)
                         .update({
