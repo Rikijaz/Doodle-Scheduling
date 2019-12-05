@@ -80,6 +80,7 @@ export default function AddContact() {
                                 {
                                     displayName: docSnapshot.data().displayName,
                                     email: userInput,
+                                    pictureURL: docSnapshot.data().pictureURL,
                                 }
                             )
                         });

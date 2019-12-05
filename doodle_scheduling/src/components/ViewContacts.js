@@ -6,6 +6,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { Link } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -42,8 +43,26 @@ export default function ViewContacts() {
     };
 
     const listOfContacts = c.map((contact, index) => (
-        <li key={index}>
-            {contact.displayName} <br /> {contact.email}
+        <li key={index} style={{ listStyleType: "none" }}>
+            <img
+                src={contact.pictureURL}
+                alt="Profile"
+                vertical-align="middle"
+                width="30px"
+                height="30px"
+            />
+            {"    "}{contact.displayName}
+            <br />
+            {contact.email}
+            <br />
+            <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                component={Link}
+                to="/profile">
+                View Profile
+            </Button>
         </li>
     ));
 

@@ -3,6 +3,7 @@ import "./App.css";
 import EventManager from "./components/EventManager";
 import Login from './components/Login'
 import Profile from './components/Profile'
+import ContactProfile from './components/Profile'
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
@@ -17,6 +18,9 @@ function App() {
                 </Route>
                 <Route exact path="/profile">
                     <Profile />
+                </Route>
+                <Route exact path="/contactProfile">
+                    <ContactProfile />
                 </Route>
             </Switch>
         </Router>
