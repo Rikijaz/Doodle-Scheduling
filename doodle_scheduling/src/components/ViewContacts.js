@@ -22,6 +22,10 @@ export default function ViewContacts() {
         textAlign: "left"
     };
 
+    /**
+     * This happens on open & close,
+     * not very good but it works now
+     */
     useEffect(() => {
         db.collection("users")
             .doc(currentUser)
@@ -32,7 +36,7 @@ export default function ViewContacts() {
                 }
             });
         //eslint-disable-next-line
-    }, []);
+    },[open]);
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -40,12 +44,6 @@ export default function ViewContacts() {
     const handleClose = () => {
         setOpen(false);
     };
-
-    const listOfContacts = c.map((contact, index) => (
-        <li key={index}>
-            {contact.displayName} <br /> {contact.email}
-        </li>
-    ));
 
     return (
         <div>
@@ -68,7 +66,13 @@ export default function ViewContacts() {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"List of your Contacts"}</DialogTitle>
-                <DialogContent>{listOfContacts}</DialogContent>
+                <DialogContent>
+                    {c.map((contact, index) => (
+                        <li key={index}>
+                            {contact.displayName} <br /> {contact.email}
+                        </li>
+                    ))}
+                </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Close
