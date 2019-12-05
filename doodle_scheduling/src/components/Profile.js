@@ -7,8 +7,9 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContent from "./Snackbar";
-import AddContact from "./AddContact";
-
+import SaveIcon from '@material-ui/icons/Save';
+import IconButton from '@material-ui/core/IconButton';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 //import logo from "./logo.png";
 //import { textAlign } from "@material-ui/system";
 
@@ -157,27 +158,20 @@ export class Profile extends Component {
                         border-radius="50%" />
                     <br />
                     <form onSubmit={this.updateDb}>
-                        <label
-                            style={{
-                                backgroundColor: '#3f51b5',
-                                color: 'white',
-                                padding: '5px',
-                                borderRadius: 4,
-                                fontSize: 18,
-                                cursor: 'pointer'
-                            }}>
-                            Upload profile picture
-                                <FileUploader
-                                hidden
-                                accept="image/*"
-                                name="Profile Picture"
-                                randomizeFilename
-                                storageRef={firebase.storage().ref("images")}
-                                onUploadStart={this.handleUploadStart}
-                                onUploadError={this.handleUploadError}
-                                onUploadSuccess={this.handleUploadSuccess}
-                                onProgress={this.handleProgress}
-                            />
+                        <label>
+                            <FileUploader
+                                    hidden
+                                    accept="image/*"
+                                    name="Profile Picture"
+                                    randomizeFilename
+                                    storageRef={firebase.storage().ref("images")}
+                                    onUploadStart={this.handleUploadStart}
+                                    onUploadError={this.handleUploadError}
+                                    onUploadSuccess={this.handleUploadSuccess}
+                                    onProgress={this.handleProgress}
+                                /><IconButton color="primary" aria-label="upload picture" component="span">
+                                <PhotoCamera />
+                            </IconButton>
                         </label>
                         <br />
                         <label style={{
@@ -217,7 +211,16 @@ export class Profile extends Component {
                         >
                         </textarea>
                         <br />
-                        <button type="submit">Save changes</button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            type="submit"
+                            margin="theme.spacing(1)"
+                            startIcon={<SaveIcon />}
+                    >
+                        Save
+                        </Button>
                     </form>
                     <br />
                     <Button

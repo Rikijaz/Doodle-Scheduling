@@ -1,32 +1,28 @@
 import React, { useEffect } from "react";
-import Button from "@material-ui/core/Button";
-import IconButton from '@material-ui/core/IconButton';
-//import { Button, IconButton } from '@material-ui/core';
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import DeleteIcon from '@material-ui/icons/Delete';
+import { db, firebase } from "./firebase";
+import Button from "@material-ui/core/Button";
+import IconButton from '@material-ui/core/IconButton';
+//import { Button, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import { db, firebase } from "./firebase";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-/*
-function useForceUpdate() {
-    const [value, setValue] = React.useState(0); 
-    return () => setValue(value => ++value); // update the state to force render
-}
-*/
+
 export default function ViewContacts() {
     const [open, setOpen] = React.useState(false);
     const [currentUser] = React.useState(
         JSON.parse(localStorage.getItem("currentUser"))
     );
     const [c, setListofContacts] = React.useState([]);
+
     //const [contactEmail, setContactEmail] = React.useState([]);
     //const [contactName, setContactName] = React.useState([]);
     //const [contactURL, setContactURL] = React.useState([]);
@@ -44,21 +40,19 @@ export default function ViewContacts() {
             if (!doc.exists) {
                 console.log('No such document!');
             } else {
-                //store current user's contacts
+                // store current user's contacts
                 const userContacts = doc.data().contacts;
 
-                console.log("userContacts[0].email: " + userContacts[0].email);
-                console.log("userContacts.length: " + userContacts.length);
-                //userContacts.forEach((contact, index) => {
-                //var existingContacts = [];
+                // console.log("userContacts[0].email: " + userContacts[0].email);
+                // console.log("userContacts.length: " + userContacts.length);
 
                 // loop through each contact to update info
                 for (let i = 0; i < userContacts.length; i++) {
                     var contactEmail = "";
                     var contactName = "";
                     var contactURL = "";
-                    console.log("i: " + i);
-                    console.log("userContacts[i].email: " + userContacts[i].email);
+                    // console.log("i: " + i);
+                    // console.log("userContacts[i].email: " + userContacts[i].email);
                     db.collection("users")
                         .doc(userContacts[i].email)
                         .get()
@@ -70,13 +64,11 @@ export default function ViewContacts() {
                                     .data().displayName);
                                 contactURL = (docUserInContact
                                     .data().pictureURL);
-                                //
-                                console.log("UserInContact[" + i + "] email: " + contactEmail);
-                                console.log("UserInContact[" + i + "] name: " + contactName);
-                                console.log("UserInContact[" + i + "] url: " + contactURL);
+                                //console.log("UserInContact[" + i + "] email: " + contactEmail);
+                                //console.log("UserInContact[" + i + "] name: " + contactName);
+                                //console.log("UserInContact[" + i + "] url: " + contactURL);
                                 
-                                // to do: delete the current contact in loop from db
-                                //const userContacts = doc.data().contacts
+                                // delete the current contact in loop from db
 
                                 // filter the contacts array
                                 const newContacts = userContacts.filter(
@@ -105,16 +97,14 @@ export default function ViewContacts() {
                                 console.log('No such document!');
                             }
                         });
-                    //
-                    console.log("loop finishes: " + (i + 1) + " times");
+                    // console.log("loop finishes: " + (i + 1) + " times");
                 }
             }
         })
             .catch(err => {
                 console.log('handleUpdatedContact: Error getting document', err);
             });
-        //
-        console.log("finishes updating contacts");//
+
         db.collection("users")
             .doc(currentUser)
             .get()
@@ -123,7 +113,6 @@ export default function ViewContacts() {
                     setListofContacts(doc.data().contacts);
                 }
             });
-         
         //eslint-disable-next-line
     }, []);
 
@@ -169,6 +158,11 @@ export default function ViewContacts() {
         setOpen(false);
     };
 
+    function handleViewProfile(contactEmail) {
+        localStorage.setItem("selectedContact", JSON.stringify(contactEmail));
+        console.log('handleViewProfile - contactEmail: ' + contactEmail);
+    }
+
     const listOfContacts = c.map((contact, index) => (
         <li key={index} style={{ listStyleType: "none" }}>
             <br />
@@ -187,8 +181,9 @@ export default function ViewContacts() {
                 variant="contained"
                 color="primary"
                 size="small"
+                onClick={() => {handleViewProfile(contact.email)}}
                 component={Link}
-                to="/profile">
+                to="/contact">
                 View
             </Button>
             {"    "}

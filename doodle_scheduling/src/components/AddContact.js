@@ -69,35 +69,41 @@ export default function AddContact() {
             check from the database addition because it does not update 
             fast enough and the contact does not get added
         */
-        db.collection("users")
-            .doc(userInput)
-            .get()
-            .then(docSnapshot => {
-                if (docSnapshot.exists) {
-                    db.collection("users")
-                        .doc(currentUser)
-                        .update({
-                            ['contacts.' + userInput]: firebase.firestore.FieldValue.delete()
-                        });
-                    db.collection("users")
-                        .doc(currentUser)
-                        .update({
-                            contacts: firebase.firestore.FieldValue.arrayUnion(
-                                {
-                                    displayName: docSnapshot.data().displayName,
-                                    email: userInput,
-                                    pictureURL: docSnapshot.data().pictureURL,
-                                }
-                            )
-                        });
-                    handleClose();
-                    setSuccessOpen(true);
-                    setMessage("Successfully added contact!");
-                } else {
-                    setErrorOpen(true);
-                    setMessage("Invalid contact!");
-                }
-            });
+        if (userInput !== "") {
+            db.collection("users")
+                .doc(userInput)
+                .get()
+                .then(docSnapshot => {
+                    if (docSnapshot.exists) {
+                        db.collection("users")
+                            .doc(currentUser)
+                            .update({
+                                ['contacts.' + userInput]: firebase.firestore.FieldValue.delete()
+                            });
+                        db.collection("users")
+                            .doc(currentUser)
+                            .update({
+                                contacts: firebase.firestore.FieldValue.arrayUnion(
+                                    {
+                                        displayName: docSnapshot.data().displayName,
+                                        email: userInput,
+                                        pictureURL: docSnapshot.data().pictureURL,
+                                    }
+                                )
+                            });
+                        handleClose();
+                        setSuccessOpen(true);
+                        setMessage("Successfully added contact!");
+                    } else {
+                        setErrorOpen(true);
+                        setMessage("Invalid contact!");
+                    }
+                });
+        } else {
+            setErrorOpen(true);
+            setMessage("Invalid contact!");
+        }
+        
     };
 
     /**
