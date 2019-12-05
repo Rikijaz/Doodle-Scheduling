@@ -174,6 +174,15 @@ export default function ViewContacts() {
                 height="30px"
             />
             {"    "}{contact.displayName}{"    "}
+            <IconButton
+                aria-label="delete"
+                color="primary"
+                value={contact.email}
+                onClick={() => {
+                    handleDeleteContact(contact)
+                }}>
+                <DeleteIcon />
+            </IconButton>
             <br />
             {contact.email}
             <br />
@@ -187,16 +196,6 @@ export default function ViewContacts() {
                 View
             </Button>
             {"    "}
-            <Button
-                variant="contained"
-                color="primary"
-                margin="theme.spacing(1)"
-                size="small"
-                startIcon={<DeleteIcon />}
-                value={contact.email}
-                onClick={() => { handleDeleteContact(contact) }} >
-                Delete
-            </Button>
         </li>
     ));
 
