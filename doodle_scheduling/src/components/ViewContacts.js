@@ -4,12 +4,12 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 import { db, firebase } from "./firebase";
 import Button from "@material-ui/core/Button";
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from "@material-ui/core/IconButton";
 //import { Button, IconButton } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -22,136 +22,47 @@ export default function ViewContacts() {
         JSON.parse(localStorage.getItem("currentUser"))
     );
     const [c, setListofContacts] = React.useState([]);
-
-    //const [contactEmail, setContactEmail] = React.useState([]);
-    //const [contactName, setContactName] = React.useState([]);
-    //const [contactURL, setContactURL] = React.useState([]);
-
+    const [refresh, setRefresh] = React.useState(false);
     const btnStyle = {
         textAlign: "left"
     };
 
     useEffect(() => {
-        // grab current user data
-        let docRef = db.collection("users").doc(currentUser);
-        docRef
-            .get()
-            .then(doc => {
-            if (!doc.exists) {
-                console.log('No such document!');
-            } else {
-                // store current user's contacts
-                const userContacts = doc.data().contacts;
-
-                // console.log("userContacts[0].email: " + userContacts[0].email);
-                // console.log("userContacts.length: " + userContacts.length);
-
-                // loop through each contact to update info
-                for (let i = 0; i < userContacts.length; i++) {
-                    var contactEmail = "";
-                    var contactName = "";
-                    var contactURL = "";
-                    // console.log("i: " + i);
-                    // console.log("userContacts[i].email: " + userContacts[i].email);
-                    db.collection("users")
-                        .doc(userContacts[i].email)
-                        .get()
-                        .then(docUserInContact => {
-                            if (docUserInContact.exists) {
-                                contactEmail = (docUserInContact
-                                    .data().email);
-                                contactName = (docUserInContact
-                                    .data().displayName);
-                                contactURL = (docUserInContact
-                                    .data().pictureURL);
-                                //console.log("UserInContact[" + i + "] email: " + contactEmail);
-                                //console.log("UserInContact[" + i + "] name: " + contactName);
-                                //console.log("UserInContact[" + i + "] url: " + contactURL);
-                                
-                                // delete the current contact in loop from db
-
-                                // filter the contacts array
-                                const newContacts = userContacts.filter(
-                                    contact => contact.email !== contactEmail
-                                )
-
-                                // update the doc with the filtered contacts
-                                db.collection("users")
-                                    .doc(currentUser)
-                                    .update({
-                                        contacts: newContacts
-                                    })
-                                // rewrite the current contact in loop to db
-                                db.collection("users")
-                                    .doc(currentUser)
-                                    .update({
-                                    contacts: firebase.firestore.FieldValue.arrayUnion(
-                                        {
-                                            displayName: contactName,
-                                            email: contactEmail,
-                                            pictureURL: contactURL,
-                                        }
-                                    )
-                                });
-                            } else {
-                                console.log('No such document!');
-                            }
-                        });
-                    // console.log("loop finishes: " + (i + 1) + " times");
-                }
-            }
-        })
-            .catch(err => {
-                console.log('handleUpdatedContact: Error getting document', err);
-            });
-
+        let xd = [];
         db.collection("users")
             .doc(currentUser)
             .get()
             .then(doc => {
                 if (doc.exists) {
-                    setListofContacts(doc.data().contacts);
+                    doc.data().contacts.forEach(o => {
+                        db.collection("users")
+                            .doc(o.email)
+                            .get()
+                            .then(doc => {
+                                if (doc.exists) {
+                                    let obj = {
+                                        displayName: doc.data().displayName,
+                                        pictureURL: doc.data().pictureURL,
+                                        email: doc.data().email
+                                    };
+                                    xd.push(obj);
+                                    setListofContacts([...xd]);
+                                }
+                            });
+                    });
+                    //setListofContacts(xd);
                 }
             });
         //eslint-disable-next-line
-    }, []);
+    }, [refresh]);
 
     /**
      * Handles deleted contact
      */
 
-    function handleDeleteContact(deletedContact) {
-        //console.log("deleteContact email: " + deletedContact.email);
-        //console.log("deleteContact name: " + deletedContact.displayName);
-        //console.log("deleteContact picURL: " + deletedContact.pictureURL);
-        let docRef = db.collection("users").doc(currentUser);
-        docRef.get().then(doc => {
-            if (!doc.exists) {
-                //console.log('No such document!');
-            } else {
-                const userContacts = doc.data().contacts
-
-                // filter the contacts array
-                const newContacts = userContacts.filter(
-                    contact => contact.email !== deletedContact.email
-                )
-
-                // update the doc with the filtered contacts
-                db.collection("users")
-                    .doc(currentUser)
-                    .update({
-                    contacts: newContacts
-                })
-            }
-        })
-            .catch(err => {
-                console.log('handleDeleteContact: Error getting document', err);
-            });
-    }
-    
-
     const handleClickOpen = () => {
         setOpen(true);
+        setRefresh(!refresh)
     };
 
     const handleClose = () => {
@@ -160,44 +71,18 @@ export default function ViewContacts() {
 
     function handleViewProfile(contactEmail) {
         localStorage.setItem("selectedContact", JSON.stringify(contactEmail));
-        console.log('handleViewProfile - contactEmail: ' + contactEmail);
+        console.log("handleViewProfile - contactEmail: " + contactEmail);
     }
 
-    const listOfContacts = c.map((contact, index) => (
-        <li key={index} style={{ listStyleType: "none" }}>
-            <br />
-            <img
-                src={contact.pictureURL}
-                alt="Profile"
-                vertical-align="middle"
-                width="30px"
-                height="30px"
-            />
-            {"    "}{contact.displayName}{"    "}
-            <IconButton
-                aria-label="delete"
-                color="primary"
-                value={contact.email}
-                onClick={() => {
-                    handleDeleteContact(contact)
-                }}>
-                <DeleteIcon />
-            </IconButton>
-            <br />
-            {contact.email}
-            <br />
-            <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={() => {handleViewProfile(contact.email)}}
-                component={Link}
-                to="/contact">
-                View
-            </Button>
-            {"    "}
-        </li>
-    ));
+    const handleDelete = index => {
+        c.splice(index, 1);
+        db.collection("users")
+            .doc(currentUser)
+            .update({
+                contacts: c
+            });
+        setRefresh(!refresh)
+    };
 
     return (
         <div>
@@ -219,11 +104,52 @@ export default function ViewContacts() {
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>
-                    {"List of your Contacts"}
-                </DialogTitle>
+                <DialogTitle>{"List of your Contacts"}</DialogTitle>
                 <DialogContent>
-                    {listOfContacts}
+                    {c.map((contact, index) => (
+                        <li key={index} style={{ listStyleType: "none" }}>
+                            <br />
+                            <img
+                                src={contact.pictureURL}
+                                alt="Profile"
+                                vertical-align="middle"
+                                width="30px"
+                                height="30px"
+                            />
+                            {"    "}
+                            {contact.displayName}
+                            {"    "}
+                            <br />
+                            {contact.email}
+                            <br />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                    handleViewProfile(contact.email);
+                                }}
+                                component={Link}
+                                to="/contact"
+                            >
+                                View
+                            </Button>
+                            {"    "}
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                margin="theme.spacing(1)"
+                                size="small"
+                                startIcon={<DeleteIcon />}
+                                value={contact.email}
+                                onClick={() => {
+                                    handleDelete(index);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </li>
+                    ))}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
