@@ -79,13 +79,6 @@ export default function AddContact() {
                         .update({
                             ['contacts.' + userInput]: firebase.firestore.FieldValue.delete()
                         });
-                        /*
-                        .update({
-                            "contacts": firebase.firestore.FieldValue.arrayRemove(
-                                { userInput }
-                            )
-                        });
-                        */
                     db.collection("users")
                         .doc(currentUser)
                         .update({
