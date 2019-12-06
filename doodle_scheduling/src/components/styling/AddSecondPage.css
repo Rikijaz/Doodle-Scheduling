@@ -1,7 +1,9 @@
-.rightBtnGroup {
-    float: right;
+.button{
+    background-color: coral
 }
-
-.backBtn{
-    border-style: ridge;
+.rightGroup{
+    float:right
+}
+.text{
+    text-align: center;
 }

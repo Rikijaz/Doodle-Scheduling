@@ -62,35 +62,70 @@ export default function AddContact() {
             then it accesses the current user's doc, and updates
             their contact list with the user's input contact
 
-            when you add the contact, it adds the name and email
+            when you add the contact, it adds the name, email and 
+            profile picture URL
 
             concerns: we did not use boolean variables to seperate the
             check from the database addition because it does not update 
             fast enough and the contact does not get added
         */
-        db.collection("users")
-            .doc(userInput)
-            .get()
-            .then(docSnapshot => {
-                if (docSnapshot.exists) {
-                    db.collection("users")
-                        .doc(currentUser)
-                        .update({
-                            contacts: firebase.firestore.FieldValue.arrayUnion(
-                                {
-                                    displayName: docSnapshot.data().displayName,
-                                    email: userInput,
-                                }
+
+        if (userInput !== "") {
+            db.collection("users")
+                .doc(userInput)
+                .get()
+                .then(docSnapshot => {
+                    if (docSnapshot.exists) {
+                        let docRef = db.collection("users").doc(currentUser);
+                        docRef.get().then(doc => {
+                            const userContacts = doc.data().contacts
+                            // filter the contacts array
+                            const newContacts = userContacts.filter(
+                                contact => contact.email !== userInput
                             )
+
+                            // update the doc with the filtered contacts
+                            db.collection("users")
+                                .doc(currentUser)
+                                .update({
+                                    contacts: newContacts
+                                })
+                            /////
+                            /*
+                            db.collection("users")
+                                .doc(currentUser)
+                                .update({
+                                    ['contacts.' + userInput]: firebase.firestore.FieldValue.delete()
+                                });*/
+                            db.collection("users")
+                                .doc(currentUser)
+                                .update({
+                                    contacts: firebase.firestore.FieldValue.arrayUnion(
+                                        {
+                                            displayName: docSnapshot.data().displayName,
+                                            email: userInput,
+                                            pictureURL: docSnapshot.data().pictureURL,
+                                        }
+                                    )
+                                });
+                            handleClose();
+                            setSuccessOpen(true);
+                            setMessage("Successfully added contact!");
                         });
-                    handleClose();
-                    setSuccessOpen(true);
-                    setMessage("Successfully added contact!");
-                } else {
-                    setErrorOpen(true);
-                    setMessage("Invalid contact!");
-                }
-            });
+                    }
+                    else {
+                        setErrorOpen(true);
+                        setMessage("Invalid contact!");
+                    }
+                })
+                .catch(err => {
+                    console.log('handleDeleteContact: Error getting document', err);
+                });
+        } else {
+            setErrorOpen(true);
+            setMessage("Invalid contact!");
+        }
+
     };
 
     /**

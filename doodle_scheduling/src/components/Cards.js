@@ -30,10 +30,26 @@ class Cards extends Component {
             this.setState({ expanded: !this.state.expanded });
         };
         const { data, isShared, hasAccepted } = this.props;
+
+        const dataInvitees = data.invitees.map((invitee) =>
+            <li>{invitee}{"\n"}</li>
+        );
+        const acceptedInvitees = data.accepted_invitees.map((acceptedInvitee) =>
+            <li>{acceptedInvitee}{"\n"}</li>
+        );
+        const declinedInvitees = data.declined_invitees.map((declinedInvitee) =>
+            <li>{declinedInvitee}{"\n"}</li>
+        );
+        const Owners = data.owners.map((owner) =>
+            <li>{owner}{"\n"}</li>
+        );
+        
+        
+
         let invitees = data.invitees ? data.invitees.join("\n") : "";
         let shareStatus = isShared ? "Shared event" : "Made by me";
         let invitePeople = this.state.startShare ? (
-            <Invite id={data.id} open={this.state.startShare} />
+            <Invite id={data.id} open={this.state.startShare} title = {data.title} />
         ) : null;
         let editButton = !isShared ? (
             <Button
@@ -74,6 +90,7 @@ class Cards extends Component {
                         <Typography variant="h5" component="h2">
                             {data.title}
                         </Typography>
+                        <Typography>{data.code}</Typography>
                         <Typography variant="h5" component="h2">
                             {data.category}
                         </Typography>
@@ -117,14 +134,12 @@ class Cards extends Component {
 
                               }}/>
                             <Typography>
-                                Owners: {data.owners}
-                                <br />
-                                Invitees: {data.invitees}
-                                <br />
-                                Accepted Invitees: {data.accepted_invitees}
-                                <br />
-                                Declined Invitees: {data.declined_invitees}
+                                Owners: <ul style={{ listStyleType: "none" }}>{Owners}</ul>
+                                Invitees: <ul style={{ listStyleType: "none" }}>{dataInvitees}</ul>
+                                Accepted Invitees: <ul style={{ listStyleType: "none" }}>{acceptedInvitees}</ul>
+                                Declined Invitees: <ul style={{ listStyleType: "none" }}>{ declinedInvitees }</ul>
                             </Typography>
+                            
                         </CardContent>
                     </Collapse>
                 </Card>

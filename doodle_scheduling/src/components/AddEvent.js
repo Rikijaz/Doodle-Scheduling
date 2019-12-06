@@ -13,6 +13,7 @@ import uuid from "uuid";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import "./styling/AddEvent.css";
+import moment from "moment";
 
 export const categories = Object.freeze({
     None: "None",
@@ -251,6 +252,16 @@ export class AddEvent extends Component {
 
         if (!editingEvent) {
             //add new event
+            let batch = db.batch();
+            if(invitees.length!== 0){
+                for(let x = 0; x < invitees.length; x++){
+                    const id2 = uuid.v4();
+                    var temp = db.collection("notifications").doc(id2);
+                    batch.set(temp, {user: invitees[x], seen: false, typeOf : 1, eventTitle: this.state.title, id : id2});
+                }
+            }
+            batch.commit();
+            
             db.collection("events")
                 .doc(id)
                 .set({
@@ -266,8 +277,53 @@ export class AddEvent extends Component {
                     declined_invitees: [],
                     invitees: invitees
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
+            var emailCategory = this.state.category;
+            //var emailEndDate = this.state.endDate;
+
+            console.log("add event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            //console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         } else {
             //editing event
+
+            let batch = db.batch();
+            db.collection("events").doc(idOfEditEvent).get()
+            .then(doc =>{
+                if(doc.data().accepted_invitees.length !== 0){
+                    for(let x = 0; x < doc.data().accepted_invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
+                    }
+                }
+                console.log(doc.data())
+                if(doc.data().invitees.length!== 0){
+                    for(let x = 0; x < doc.data().invitees.length; x++){
+                        const id2 = uuid.v4();
+                        var temp = db.collection("notifications").doc(id2);
+                        batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 3, eventTitle: this.state.title, id : id2});
+                    }
+                }
+                batch.commit();
+            })
+            .catch(err => console.log(err));
+            
             db.collection("events")
                 .doc(idOfEditEvent)
                 .update({
@@ -275,9 +331,31 @@ export class AddEvent extends Component {
                     description: this.state.description,
                     category: this.state.category,
                     startDate: this.state.startDate,
-                    endDate: this.state.endDate,
-                    invitees: invitees
+                    endDate: this.state.endDate
+                    // invitees: invitees TODO: XD it nukes all the other invitees that you didn't call for
                 });
+            
+            /* email notification */
+            var invitees = invitees;
+            var templateId = 'yes';
+            var emailEvent = this.state.title;
+            var emailDescription = this.state.description;
+            var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
+            var emailCategory = this.state.category;
+            //var emailEndDate = this.state.endDate;
+            
+            console.log("edit event");
+            console.log("invitees: " + invitees);
+            console.log("emailEvent: " + emailEvent);
+            console.log("emailDescription: " + emailDescription);
+            console.log("emailStartDate: " + emailStartDate);
+            //console.log("emailEndDate: " + emailEndDate);
+            
+            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
+            .then(res => {
+                console.log('Email successfully sent!');
+            })
+            .catch(err => console.error("error: " + err))
         }
         this.props.setHomePage();
     };

@@ -102,7 +102,12 @@ export class EventCalendar extends React.Component {
             this.props.sharedEvents === undefined ||
             this.props.sharedEvents.length === 0);
 
-        if (areThereEvents || areThereSharedEvents) {
+        var areThereAcceptedEvents = !(
+            this.props.acceptedEvents === null ||
+            this.props.acceptedEvents === undefined ||
+            this.props.acceptedEvents.length === 0);
+
+        if (areThereEvents || areThereSharedEvents || areThereAcceptedEvents) {
             const { currentMonth, selectedDate } = this.state;
             const monthStart = dateFns.startOfMonth(currentMonth);
             const monthEnd = dateFns.endOfMonth(monthStart);
@@ -142,6 +147,22 @@ export class EventCalendar extends React.Component {
                             description: this.props.sharedEvents[i].description,
                             startDate: this.props.sharedEvents[i].startDate,
                             endDate: this.props.sharedEvents[i].endDate,
+                        }
+        
+                        eventData.push(data)
+                    }
+                }
+            }
+
+            if (areThereAcceptedEvents) {
+                for (let i = 0; i < this.props.acceptedEvents.length; ++i) {
+                    if (moment(this.props.acceptedEvents[i].startDate).format('L').split('/')[0]== dateFns.getMonth(currentMonth) + 1) {
+                        var data = {
+                            date: this.props.acceptedEvents[i].date,
+                            title: this.props.acceptedEvents[i].title,
+                            description: this.props.acceptedEvents[i].description,
+                            startDate: this.props.acceptedEvents[i].startDate,
+                            endDate: this.props.acceptedEvents[i].endDate,
                         }
         
                         eventData.push(data)
