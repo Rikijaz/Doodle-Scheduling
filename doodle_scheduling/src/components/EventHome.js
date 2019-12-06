@@ -473,6 +473,7 @@ export class EventHome extends Component {
                 this.state.events.find(event => {
                     if (event.id === id) {
                         /* email notification */
+                        var accepted_invitees = event.accepted_invitees;
                         var invitees = event.invitees;
                         var templateId = "yes";
                         var emailEvent = event.title;
@@ -492,22 +493,52 @@ export class EventHome extends Component {
                         console.log("emailStartDate: " + emailStartDate);
                         //console.log("emailEndDate: " + emailEndDate);
 
+                        console.log("emailing accepted invitees");
+                        console.log("accepted_invitees: " + accepted_invitees);
                         window.emailjs
                             .send("gmail", templateId, {
-                                send_to: [invitees],
-                                subject: "An event has been deleted!",
-                                emailEvent: emailEvent,
-                                emailDescription: emailDescription,
-                                emailStartDate: emailStartDate,
-                                emailCategory: emailCategory
+                                "send_to": [accepted_invitees],
+                                "subject": "An event has been deleted!",
+                                "emailEvent": emailEvent,
+                                "emailDescription": emailDescription,
+                                "emailStartDate": emailStartDate,
+                                "emailCategory": emailCategory
                             }) //, "emailEndDate": emailEndDate
                             .then(res => {
                                 console.log("Email successfully sent!");
+                                // delete event after sending email
+                                // db.collection("events")
+                                //     .doc(id)
+                                //     .delete();
+                            })
+                            .catch(
+                                // make sure to delete event even if email does not send
+                                // db
+                                //     .collection("events")
+                                //     .doc(id)
+                                //     .delete()
+                            );
+                        console.log("finished emailing accepted invitees");
+
+                        /* emails invitees */
+                        window.emailjs
+                            .send("gmail", templateId, {
+                                "send_to": [invitees],
+                                "subject": "An event has been deleted!",
+                                "emailEvent": emailEvent,
+                                "emailDescription": emailDescription,
+                                "emailStartDate": emailStartDate,
+                                "emailCategory": emailCategory
+                            }) //, "emailEndDate": emailEndDate
+                            .then(res => {
+                                console.log("Email successfully sent!");
+                                // delete event after sending email
                                 db.collection("events")
                                     .doc(id)
                                     .delete();
                             })
                             .catch(
+                                // make sure to delete event even if email does not send
                                 db
                                     .collection("events")
                                     .doc(id)
@@ -516,6 +547,7 @@ export class EventHome extends Component {
                     }
                 });
 
+                /* moved to being within email notifications */
                 // db.collection("events")
                 // .doc(id)
                 // .delete();

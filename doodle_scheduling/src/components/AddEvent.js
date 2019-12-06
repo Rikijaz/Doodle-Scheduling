@@ -294,8 +294,15 @@ export class AddEvent extends Component {
             console.log("emailStartDate: " + emailStartDate);
             //console.log("emailEndDate: " + emailEndDate);
             
-            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been created!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
-            .then(res => {
+            window.emailjs.send("gmail", templateId, 
+                {"send_to": [invitees], 
+                "subject": "An event has been created!", 
+                "emailEvent": emailEvent, 
+                "emailDescription": emailDescription, 
+                "emailStartDate": emailStartDate, 
+                "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
+            .then(res => 
+                {
                 console.log('Email successfully sent!');
             })
             .catch(err => console.error("error: " + err))
@@ -340,7 +347,9 @@ export class AddEvent extends Component {
             var templateId = 'yes';
             var emailEvent = this.state.title;
             var emailDescription = this.state.description;
-            var emailStartDate = moment(this.state.startDate).format("LLLL")+ " - " + moment(this.state.endDate).format("LT");
+            var emailStartDate = moment(this.state.startDate).format("LLLL")
+                                + " - " 
+                                + moment(this.state.endDate).format("LT");
             var emailCategory = this.state.category;
             //var emailEndDate = this.state.endDate;
             
@@ -351,11 +360,88 @@ export class AddEvent extends Component {
             console.log("emailStartDate: " + emailStartDate);
             //console.log("emailEndDate: " + emailEndDate);
             
-            window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been edited!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
-            .then(res => {
-                console.log('Email successfully sent!');
+            db.collection("events")
+            .doc(idOfEditEvent)
+            .get()
+            .then(doc =>{
+                console.log("invitees length: " + doc.data().invitees.length);
+                /* need to get current list of invitees */
+                if (doc.data().invitees.length != 0)
+                {
+                    invitees = doc.data().invitees;
+                    console.log("set invitees: " + invitees);
+                }
+                else
+                {
+                    invitees = [];
+                    console.log("invitees is not set: " + invitees);
+                }
+
+                /* need to send an email to invitees that have accepted the invitation to the event */
+                var accepted_invitees;
+                if (doc.data().accepted_invitees.length != 0)
+                {
+                    accepted_invitees = doc.data().accepted_invitees;
+                    console.log("set accepted invitees: " + invitees);
+                }
+                else
+                {
+                    accepted_invitees = [];
+                    console.log("accepted invitees is not set: " + accepted_invitees);
+                }
+                
+                /* need to send an email to declined invitees that have declined the invitation to the event */
+                var declined_invitees;
+                if (doc.data().declined_invitees.length != 0)
+                {
+                    declined_invitees = doc.data().declined_invitees;
+                    console.log("set declined invitees: " + declined_invitees);
+                }
+                else
+                {
+                    declined_invitees = [];
+                    console.log("declined invitees is not set: " + declined_invitees);
+                }
+
+                /* send email to invitees */
+                window.emailjs.send("gmail", templateId, 
+                {"send_to": [invitees], 
+                "subject": "An event that you were invited to has been edited!", 
+                "emailEvent": emailEvent, 
+                "emailDescription": emailDescription, 
+                "emailStartDate": emailStartDate, 
+                "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
+                .then(res => {
+                    console.log('Email successfully sent!');
+                })
+                .catch(err => console.error("error: " + err))
+
+                /* send email to accepted_invitees */
+                window.emailjs.send("gmail", templateId, 
+                {"send_to": [accepted_invitees], 
+                "subject": "An event that you accepted has been edited!", 
+                "emailEvent": emailEvent, 
+                "emailDescription": emailDescription, 
+                "emailStartDate": emailStartDate, 
+                "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
+                .then(res => {
+                    console.log('Email successfully sent!');
+                })
+                .catch(err => console.error("error: " + err))
+
+                /* send email to declined_invitees */
+                window.emailjs.send("gmail", templateId, 
+                {"send_to": [declined_invitees], 
+                "subject": "An event that you declined has been edited!", 
+                "emailEvent": emailEvent, 
+                "emailDescription": emailDescription, 
+                "emailStartDate": emailStartDate, 
+                "emailCategory" : emailCategory}) //, "emailEndDate": emailEndDate
+                .then(res => {
+                    console.log('Email successfully sent!');
+                })
+                .catch(err => console.error("error: " + err))
             })
-            .catch(err => console.error("error: " + err))
         }
         this.props.setHomePage();
     };
