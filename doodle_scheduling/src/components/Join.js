@@ -50,6 +50,7 @@ export default function Join(props) {
 
     const handleClose = () => {
         setOpen(false);
+        props.beginJoinEvent();
     };
 
     const handleJoinEvent = () => {

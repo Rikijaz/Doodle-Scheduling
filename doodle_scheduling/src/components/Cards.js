@@ -15,6 +15,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import CheckIcon from "@material-ui/icons/Check";
 import Invite from "./Invite";
 import moment from "moment";
+import { green } from '@material-ui/core/colors';
 
 class Cards extends Component {
     constructor(props) {
@@ -63,6 +64,7 @@ class Cards extends Component {
         let deleteButton = !isShared ? (
             <IconButton
                 aria-label="delete"
+                color="secondary"
                 onClick={() => this.props.deleteEvent(data.id)}
             >
                 <DeleteIcon />
@@ -72,10 +74,10 @@ class Cards extends Component {
         let acceptIcon = (isShared && !hasAccepted)? (
             <div>
                 <IconButton onClick = {() => this.props.acceptInvite(data.id)}>
-                <CheckIcon/>
+                <CheckIcon  style={{ color: green[500] }}/>
             </IconButton>
             <IconButton onClick = {() => this.props.declineInvite(data.id)}>
-                <ClearIcon/>
+                <ClearIcon color="secondary"/>
             </IconButton>
             </div>
         ) : null;
@@ -84,15 +86,14 @@ class Cards extends Component {
             <div>
                 <Card>
                     <CardContent>
+                    <Typography variant="h6" component="h2" color="primary">
+                            {data.category}
+                        </Typography>
                         <Typography color="textSecondary" gutterBottom>
                             {shareStatus}
                         </Typography>
                         <Typography variant="h5" component="h2">
                             {data.title}
-                        </Typography>
-                        <Typography>{data.code}</Typography>
-                        <Typography variant="h5" component="h2">
-                            {data.category}
                         </Typography>
                         <Typography>{data.description}</Typography>
                         <Typography>{moment(data.startDate).format("LLLL")+ " - " + moment(data.endDate).format("LT")}</Typography>
@@ -103,7 +104,7 @@ class Cards extends Component {
                             aria-label="share"
                             onClick={() => this.handleShareEvent()}
                         >
-                            <ShareIcon />
+                            <ShareIcon color="primary"/>
                         </IconButton>
                         {deleteButton}
                         <IconButton
@@ -139,6 +140,7 @@ class Cards extends Component {
                                 Accepted Invitees: <ul style={{ listStyleType: "none" }}>{acceptedInvitees}</ul>
                                 Declined Invitees: <ul style={{ listStyleType: "none" }}>{ declinedInvitees }</ul>
                             </Typography>
+                            <Typography color="primary" gutterBottom="true">Invite Code: {data.code}</Typography>
                             
                         </CardContent>
                     </Collapse>
