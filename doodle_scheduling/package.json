@@ -37,6 +37,7 @@
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "all-test": "bash ./tests.sh",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
