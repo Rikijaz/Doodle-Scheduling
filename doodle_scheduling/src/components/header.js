@@ -12,7 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Notifications from "./Notifcations";
 
 const headerStyle = {
-    background: "#7FDBFF",
+    background: "#e7f5fe",
     color: "ivory",
     textAlign: "center",
     padding: "2px",
@@ -96,6 +96,9 @@ export class Header extends Component {
             .delete();
     };
     NotificationBar = () => {
+        const style = {
+          color: "black"
+        }
         const { notifications } = this.state;
         if (notifications.length !== 0) {
             console.log(notifications);
@@ -108,7 +111,7 @@ export class Header extends Component {
             ));
         } else {
             console.log("xdxd");
-            return <h4>No notifications to be shown</h4>;
+            return <h4 style={style}>No notifications to be shown</h4>;
         }
     };
     /**

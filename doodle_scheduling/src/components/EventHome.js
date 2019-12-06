@@ -10,7 +10,7 @@ import Cards from "./Cards";
 import EventCalendar from "./EventCalendar/EventCalendar";
 import moment from "moment";
 import { categories } from "./AddEvent";
-import { TextField } from "@material-ui/core";
+import { TextField, Container } from "@material-ui/core";
 
 export class EventHome extends Component {
     constructor(props) {
@@ -36,7 +36,11 @@ export class EventHome extends Component {
     }
 
     areThereNoEvents() {
-        return this.state.events === null || this.state.events === undefined || this.state.events.length === 0;
+        return (
+            this.state.events === null ||
+            this.state.events === undefined ||
+            this.state.events.length === 0
+        );
     }
 
     areThereNoSharedEvents() {
@@ -171,12 +175,14 @@ export class EventHome extends Component {
             return <h2>No events</h2>;
         } else {
             return displayedEvents.map((event, index) => (
-                <Cards
-                    key={index}
-                    data={event}
-                    editEvent={id => this.props.editEvent(id)}
-                    deleteEvent={id => this.deleteEvent(id)}
-                />
+                <Container maxWidth="xl">
+                    <Cards
+                        key={index}
+                        data={event}
+                        editEvent={id => this.props.editEvent(id)}
+                        deleteEvent={id => this.deleteEvent(id)}
+                    />
+                </Container>
             ));
         }
     };
@@ -213,14 +219,16 @@ export class EventHome extends Component {
         } else {
             console.log();
             return displayedEvents.map((event, index) => (
-                <Cards
-                    key={index}
-                    data={event}
-                    isShared={true}
-                    hasAccepted={false}
-                    acceptInvite={id => this.acceptInvite(id)}
-                    declineInvite={id => this.declineInvite(id)}
-                />
+                <Container maxWidth="xl">
+                    <Cards
+                        key={index}
+                        data={event}
+                        isShared={true}
+                        hasAccepted={false}
+                        acceptInvite={id => this.acceptInvite(id)}
+                        declineInvite={id => this.declineInvite(id)}
+                    />
+                </Container>
             ));
         }
     };
@@ -256,7 +264,14 @@ export class EventHome extends Component {
             return <h2>No accepted events</h2>;
         } else {
             return displayedEvents.map((event, index) => (
-                <Cards key={index} data={event} isShared={true} hasAccepted={true} />
+                <Container maxWidth="xl">
+                    <Cards
+                        key={index}
+                        data={event}
+                        isShared={true}
+                        hasAccepted={true}
+                    />
+                </Container>
             ));
         }
     };
@@ -268,7 +283,11 @@ export class EventHome extends Component {
         const { events } = this.state;
         const { sharedEvents, acceptedEvents } = this.state;
 
-        if (!this.areThereNoEvents() || !this.areThereNoSharedEvents() || !this.areNoAcceptedEvents()) {
+        if (
+            !this.areThereNoEvents() ||
+            !this.areThereNoSharedEvents() ||
+            !this.areNoAcceptedEvents()
+        ) {
             return (
                 <div className="App">
                     <main>
@@ -290,7 +309,7 @@ export class EventHome extends Component {
             search: text.target.value,
             filteredEvents: this.filterEvents(this.state.events),
             filteredSharedEvents: this.filterEvents(this.state.sharedEvents),
-            filteredAcceptedEvents: this.filterEvents(this.state.acceptedEvents),
+            filteredAcceptedEvents: this.filterEvents(this.state.acceptedEvents)
         });
     };
 
@@ -306,9 +325,15 @@ export class EventHome extends Component {
             let searchLowerCase = this.state.search.toLowerCase();
 
             let accepted =
-                eventsToFilter[i].title.toLowerCase().includes(searchLowerCase) ||
-                eventsToFilter[i].category.toLowerCase().includes(searchLowerCase) ||
-                eventsToFilter[i].description.toLowerCase().includes(searchLowerCase) ||
+                eventsToFilter[i].title
+                    .toLowerCase()
+                    .includes(searchLowerCase) ||
+                eventsToFilter[i].category
+                    .toLowerCase()
+                    .includes(searchLowerCase) ||
+                eventsToFilter[i].description
+                    .toLowerCase()
+                    .includes(searchLowerCase) ||
                 moment(eventsToFilter[i].startDate)
                     .format("LLLL")
                     .toLowerCase()
@@ -408,73 +433,102 @@ export class EventHome extends Component {
      * Delete Event
      */
     deleteEvent = id => {
-        
-            let batch = db.batch();
-            db.collection("events").doc(id).get()
-            .then(doc =>{
-                if(doc.data().accepted_invitees){
-                    for(let x = 0; x < doc.data().accepted_invitees.length; x++){
+        let batch = db.batch();
+        db.collection("events")
+            .doc(id)
+            .get()
+            .then(doc => {
+                if (doc.data().accepted_invitees) {
+                    for (
+                        let x = 0;
+                        x < doc.data().accepted_invitees.length;
+                        x++
+                    ) {
                         const id2 = uuid.v4();
                         var temp = db.collection("notifications").doc(id2);
-                        batch.set(temp, {user: doc.data().accepted_invitees[x], seen: false, typeOf : 2, eventTitle: doc.data().title, id : id2});
+                        batch.set(temp, {
+                            user: doc.data().accepted_invitees[x],
+                            seen: false,
+                            typeOf: 2,
+                            eventTitle: doc.data().title,
+                            id: id2
+                        });
                     }
                 }
-                if(doc.data().invitees){
-                    for(let x = 0; x < doc.data().invitees.length; x++){
+                if (doc.data().invitees) {
+                    for (let x = 0; x < doc.data().invitees.length; x++) {
                         const id2 = uuid.v4();
                         var temp = db.collection("notifications").doc(id2);
-                        batch.set(temp, {user: doc.data().invitees[x], seen: false, typeOf : 2, eventTitle: doc.data().title, id : id2});
+                        batch.set(temp, {
+                            user: doc.data().invitees[x],
+                            seen: false,
+                            typeOf: 2,
+                            eventTitle: doc.data().title,
+                            id: id2
+                        });
                     }
                 }
                 batch.commit();
 
-              this.state.events.find(event => {
-                if (event.id === id)
-                {
-                  /* email notification */
-                  var invitees = event.invitees;
-                  var templateId = 'yes';
-                  var emailEvent = event.title;
-                  var emailDescription = event.description;
-                  var emailStartDate = moment(event.startDate).format("LLLL")+ " - " + moment(event.endDate).format("LT");
-                  console.log("event categories: " + event.categories);
-                  var emailCategory = event.category;
-                  //var emailEndDate = event.endDate;
+                this.state.events.find(event => {
+                    if (event.id === id) {
+                        /* email notification */
+                        var invitees = event.invitees;
+                        var templateId = "yes";
+                        var emailEvent = event.title;
+                        var emailDescription = event.description;
+                        var emailStartDate =
+                            moment(event.startDate).format("LLLL") +
+                            " - " +
+                            moment(event.endDate).format("LT");
+                        console.log("event categories: " + event.categories);
+                        var emailCategory = event.category;
+                        //var emailEndDate = event.endDate;
 
-                  console.log("delete event");
-                  console.log("invitees: " + invitees);
-                  console.log("emailEvent: " + emailEvent);
-                  console.log("emailDescription: " + emailDescription);
-                  console.log("emailStartDate: " + emailStartDate);
-                  //console.log("emailEndDate: " + emailEndDate);
-                  
-                  window.emailjs.send("gmail", templateId, {"send_to": [invitees], "subject": "An event has been deleted!", "emailEvent": emailEvent, "emailDescription": emailDescription, "emailStartDate": emailStartDate, "emailCategory": emailCategory}) //, "emailEndDate": emailEndDate
-                  .then(res => {
-                      console.log('Email successfully sent!');
-                      db.collection("events")
-                      .doc(id)
-                      .delete();
-                  })
-                  .catch(
-                    db.collection("events")
-                    .doc(id)
-                    .delete()
-                  )
-                }
-              })
+                        console.log("delete event");
+                        console.log("invitees: " + invitees);
+                        console.log("emailEvent: " + emailEvent);
+                        console.log("emailDescription: " + emailDescription);
+                        console.log("emailStartDate: " + emailStartDate);
+                        //console.log("emailEndDate: " + emailEndDate);
+
+                        window.emailjs
+                            .send("gmail", templateId, {
+                                send_to: [invitees],
+                                subject: "An event has been deleted!",
+                                emailEvent: emailEvent,
+                                emailDescription: emailDescription,
+                                emailStartDate: emailStartDate,
+                                emailCategory: emailCategory
+                            }) //, "emailEndDate": emailEndDate
+                            .then(res => {
+                                console.log("Email successfully sent!");
+                                db.collection("events")
+                                    .doc(id)
+                                    .delete();
+                            })
+                            .catch(
+                                db
+                                    .collection("events")
+                                    .doc(id)
+                                    .delete()
+                            );
+                    }
+                });
 
                 // db.collection("events")
                 // .doc(id)
                 // .delete();
             })
             .catch(err => console.log(err));
-       
     };
     acceptInvite = id => {
         const document = db.collection("events").doc(id);
         document
             .update({
-                invitees: firebase.firestore.FieldValue.arrayRemove(JSON.parse(localStorage.getItem("currentUser")))
+                invitees: firebase.firestore.FieldValue.arrayRemove(
+                    JSON.parse(localStorage.getItem("currentUser"))
+                )
             })
             .catch(err => console.error(err));
         document
@@ -489,7 +543,9 @@ export class EventHome extends Component {
         const document = db.collection("events").doc(id);
         document
             .update({
-                invitees: firebase.firestore.FieldValue.arrayRemove(JSON.parse(localStorage.getItem("currentUser")))
+                invitees: firebase.firestore.FieldValue.arrayRemove(
+                    JSON.parse(localStorage.getItem("currentUser"))
+                )
             })
             .catch(err => console.error(err));
         document
@@ -531,8 +587,12 @@ export class EventHome extends Component {
                         open={this.state.openMenu}
                         onClose={this.handleClose}
                     >
-                        <MenuItem onClick={this.handleAddEventMenu}>Create Event</MenuItem>
-                        <MenuItem onClick={this.handleJoinEventMenu}>Join Event</MenuItem>
+                        <MenuItem onClick={this.handleAddEventMenu}>
+                            Create Event
+                        </MenuItem>
+                        <MenuItem onClick={this.handleJoinEventMenu}>
+                            Join Event
+                        </MenuItem>
                     </Menu>
                 </div>
                 <div style={this.getBtnStyle()}>
@@ -551,15 +611,27 @@ export class EventHome extends Component {
                         open={this.state.openMenu3}
                         onClose={this.handleClose3}
                     >
-                        <MenuItem onClick={() => this.setEventOrder("descending")}>Latest</MenuItem>
-                        <MenuItem onClick={() => this.setEventOrder("ascending")}>Earliest</MenuItem>
-                        <MenuItem onClick={() => this.setEventOrder("category")}>Category</MenuItem>
+                        <MenuItem
+                            onClick={() => this.setEventOrder("descending")}
+                        >
+                            Latest
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => this.setEventOrder("ascending")}
+                        >
+                            Earliest
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => this.setEventOrder("category")}
+                        >
+                            Category
+                        </MenuItem>
                     </Menu>
                 </div>
                 <TextField
                     type="text"
                     variant="outlined"
-                    inputProps={{ style: {textAlign: 'center'} }}
+                    inputProps={{ style: { textAlign: "center" } }}
                     placeholder="Search for title, description, category, date.."
                     fullWidth
                     value={this.state.search}
@@ -567,17 +639,33 @@ export class EventHome extends Component {
                     onChange={search => this.handleSearch(search)}
                 />
                 <div style={this.getMainStyle()}>
-                    <Button onClick={e => this.handleClick2(e)}>Switch</Button>
+                    <Button color="secondary" variant="outlined" onClick={e => this.handleClick2(e)}>Switch</Button>
                     <Menu
                         id="simple-menu-sort"
                         anchorEl={this.state.anchorEl2}
                         open={this.state.openMenu2}
                         onClose={this.handleClose2}
                     >
-                        <MenuItem onClick={() => this.handleMenuClick("events")}>Show Own Events</MenuItem>
-                        <MenuItem onClick={() => this.handleMenuClick("shared")}>Show New Event Invites</MenuItem>
-                        <MenuItem onClick={() => this.handleMenuClick("accepted")}>Show Accepted Events</MenuItem>
-                        <MenuItem onClick={() => this.handleMenuClick("calendar")}>Show Event Calendar</MenuItem>
+                        <MenuItem
+                            onClick={() => this.handleMenuClick("events")}
+                        >
+                            Show Own Events
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => this.handleMenuClick("shared")}
+                        >
+                            Show New Event Invites
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => this.handleMenuClick("accepted")}
+                        >
+                            Show Accepted Events
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => this.handleMenuClick("calendar")}
+                        >
+                            Show Event Calendar
+                        </MenuItem>
                     </Menu>
                     {this.viewForm()}
                 </div>
