@@ -22,21 +22,9 @@ export class EventManager extends Component {
      * @return clears localStorage of event details
      */
     beginAddEvent = () => {
-
-        db.collection("events").get().then(snapshot => {
-
-            snapshot.forEach(doc => {
-          
-              console.log( doc);    
-          
-            });
-          
-          });
         //have to account for them refreshing
         localStorage.removeItem("saved_title");
         localStorage.removeItem("saved_description");
-        // localStorage.removeItem("saved_time");
-        // localStorage.removeItem("saved_date");
         localStorage.removeItem("saved_start_date");
         localStorage.removeItem("saved_end_date");
         localStorage.removeItem("saved_category");
@@ -55,17 +43,45 @@ export class EventManager extends Component {
      */
     editEvent = (id, viewShared) => {
         //accessing shared event collections
-        if (viewShared) {
-            //db.collection("shared_events").doc(id)
-        }
-        //accessing normal event collections
-        else {
-            db.collection("events")
+        // if (viewShared) {
+        //     //db.collection("shared_events").doc(id)
+        // }
+        // //accessing normal event collections
+        // else {
+        //     // db.collection("events")
+        //     //     .doc(id)
+        //     //     .get()
+        //     //     .then(doc => {
+        //     //         if (doc.exists) {
+        //     //             localStorage.setItem(
+        //     //                 "saved_title",
+        //     //                 JSON.stringify(doc.data().title)
+        //     //             );
+        //     //             localStorage.setItem(
+        //     //                 "saved_description",
+        //     //                 JSON.stringify(doc.data().description)
+        //     //             );
+        //     //             localStorage.setItem(
+        //     //                 "saved_category",
+        //     //                 JSON.stringify(doc.data().category)
+        //     //             );
+        //     //             localStorage.setItem(
+        //     //                 "saved_start_date",
+        //     //                 JSON.stringify(doc.data().startDate)
+        //     //             );
+        //     //             localStorage.setItem(
+        //     //                 "saved_end_date",
+        //     //                 JSON.stringify(doc.data().endDate)
+        //     //             );
+        //     //         }
+        //     //     });
+        // }
+        db.collection("events")
                 .doc(id)
                 .get()
                 .then(doc => {
                     if (doc.exists) {
-                        console.log("TOOT");
+                        console.log("GO")
                         localStorage.setItem(
                             "saved_title",
                             JSON.stringify(doc.data().title)
@@ -86,16 +102,15 @@ export class EventManager extends Component {
                             "saved_end_date",
                             JSON.stringify(doc.data().endDate)
                         );
+                        this.setState(
+                            {
+                                editingEvent: true,
+                                idOfEditEvent: id
+                            },
+                            this.setAdd()
+                        );
                     }
                 });
-        }
-        this.setState(
-            {
-                editingEvent: true,
-                idOfEditEvent: id
-            },
-            this.setAdd()
-        );
     };
 
     /**
@@ -142,7 +157,9 @@ export class EventManager extends Component {
      * home page and event creation page
      */
     render() {
-        let joinDialog = this.state.joinEvent ? <Join open={true}/> : null;
+        let joinDialog = this.state.joinEvent ? (
+            <Join open={true} beginJoinEvent={() => this.beginJoinEvent()} />
+        ) : null;
         return (
             <div>
                 <Header />

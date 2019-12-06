@@ -559,7 +559,8 @@ export class EventHome extends Component {
                 <TextField
                     type="text"
                     variant="outlined"
-                    placeholder="search for title, description, category, date.."
+                    inputProps={{ style: {textAlign: 'center'} }}
+                    placeholder="Search for title, description, category, date.."
                     fullWidth
                     value={this.state.search}
                     margin="normal"
@@ -568,7 +569,7 @@ export class EventHome extends Component {
                 <div style={this.getMainStyle()}>
                     <Button onClick={e => this.handleClick2(e)}>Switch</Button>
                     <Menu
-                        id="simple-menu"
+                        id="simple-menu-sort"
                         anchorEl={this.state.anchorEl2}
                         open={this.state.openMenu2}
                         onClose={this.handleClose2}

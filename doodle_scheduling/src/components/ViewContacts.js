@@ -11,6 +11,7 @@ import IconButton from "@material-ui/core/IconButton";
 //import { Button, IconButton } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import { Icon } from "@material-ui/core";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -62,7 +63,7 @@ export default function ViewContacts() {
 
     const handleClickOpen = () => {
         setOpen(true);
-        setRefresh(!refresh)
+        setRefresh(!refresh);
     };
 
     const handleClose = () => {
@@ -81,7 +82,7 @@ export default function ViewContacts() {
             .update({
                 contacts: c
             });
-        setRefresh(!refresh)
+        setRefresh(!refresh);
     };
 
     return (
@@ -121,6 +122,19 @@ export default function ViewContacts() {
                             {"    "}
                             <br />
                             {contact.email}
+                            <IconButton
+                                variant="contained"
+                                color="secondary"
+                                margin="theme.spacing(3)"
+                                size="small"
+                                startIcon={<DeleteIcon />}
+                                value={contact.email}
+                                onClick={() => {
+                                    handleDelete(index);
+                                }}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
                             <br />
                             <Button
                                 variant="contained"
@@ -135,19 +149,6 @@ export default function ViewContacts() {
                                 View
                             </Button>
                             {"    "}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                margin="theme.spacing(1)"
-                                size="small"
-                                startIcon={<DeleteIcon />}
-                                value={contact.email}
-                                onClick={() => {
-                                    handleDelete(index);
-                                }}
-                            >
-                                Delete
-                            </Button>
                         </li>
                     ))}
                 </DialogContent>
