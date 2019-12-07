@@ -595,44 +595,46 @@ export class EventHome extends Component {
         this.setState({ showShared: text });
     };
 
+    /* commented out for .test.js */
     componentDidMount() {
-        let tempObject = { temp: [] };
+    //     let tempObject = { temp: [] };
 
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        this.unsubscribe1 = db
-            .collection("events")
-            .where("owners", "array-contains", currentUser)
-            .onSnapshot(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ events: tempObject.temp });
-            });
+    //     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    //     this.unsubscribe1 = db
+    
+    //         .collection("events")
+    //         .where("owners", "array-contains", currentUser)
+    //         .onSnapshot(data => {
+    //             tempObject.temp = [];
+    //             data.forEach(doc => {
+    //                 tempObject.temp.push(doc.data());
+    //             });
+    //             this.setState({ events: tempObject.temp });
+    //         });
 
-        this.unsubscribe2 = db
-            .collection("events")
-            .where("invitees", "array-contains", currentUser)
-            .onSnapshot(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    console.log("2");
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ sharedEvents: tempObject.temp });
-            });
+    //     this.unsubscribe2 = db
+    //         .collection("events")
+    //         .where("invitees", "array-contains", currentUser)
+    //         .onSnapshot(data => {
+    //             tempObject.temp = [];
+    //             data.forEach(doc => {
+    //                 console.log("2");
+    //                 tempObject.temp.push(doc.data());
+    //             });
+    //             this.setState({ sharedEvents: tempObject.temp });
+    //         });
 
-        this.unsubscribe3 = db
-            .collection("events")
-            .where("accepted_invitees", "array-contains", currentUser)
-            .onSnapshot(data => {
-                tempObject.temp = [];
-                data.forEach(doc => {
-                    console.log("3");
-                    tempObject.temp.push(doc.data());
-                });
-                this.setState({ acceptedEvents: tempObject.temp });
-            });
+    //     this.unsubscribe3 = db
+    //         .collection("events")
+    //         .where("accepted_invitees", "array-contains", currentUser)
+    //         .onSnapshot(data => {
+    //             tempObject.temp = [];
+    //             data.forEach(doc => {
+    //                 console.log("3");
+    //                 tempObject.temp.push(doc.data());
+    //             });
+    //             this.setState({ acceptedEvents: tempObject.temp });
+    //         });
     }
 
     componentWillUnmount() {

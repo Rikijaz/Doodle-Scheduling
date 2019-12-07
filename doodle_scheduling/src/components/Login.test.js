@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import Login from './Login'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -24,7 +24,7 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedIsSignedIn = {isSignedIn: isSignedIn};
+    const expectedIsSignedIn = isSignedIn;
     const expectedCurrent_User_Email = {current_user_email: current_user_email};
 
     /* initializing this.state. */
@@ -32,6 +32,6 @@ it('should test handler', () => {
     componentWrapper.instance().state.current_user_email = current_user_email;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    expect(componentWrapper.instance().state.isSignedIn).toBe(expectedIsSignedIn.isSignedIn);
+    expect(componentWrapper.instance().state.isSignedIn).toBe(expectedIsSignedIn);
     expect(componentWrapper.instance().state.current_user_email).toBe(expectedCurrent_User_Email.current_user_email);
 });

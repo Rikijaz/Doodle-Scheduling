@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import Form from './Form'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -33,5 +33,5 @@ it('should test handler', () => {
 	
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
     expect(componentWrapper.instance().state.contentList).toBe(expectedContentList.contentList);
-    expect(componentWrapper.instance().state.contentList).toBe(expectedEmailList.contentList);
+    expect(componentWrapper.instance().state.emailList).toBe(expectedEmailList.emailList);
 });

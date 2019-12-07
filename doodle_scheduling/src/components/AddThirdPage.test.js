@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import AddThirdPage from './AddThirdPage'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -14,7 +14,7 @@ enzyme.configure({ adapter: new Adapter() });
 it('should test handler', () => {
     //const componentWrapper   = mount(<MyComponent/>);
     //const component          = componentWrapper.get(0);
-    const componentWrapper   = mount(<AddSecondPage/>);
+    const componentWrapper   = mount(<AddThirdPage/>);
     const component          = componentWrapper.get(0);
 
     /* this.state */
@@ -24,7 +24,7 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedChecked = {checked: checked};
+    const expectedChecked = checked;
     const expectedInvite_List = {invite_list: invite_list};
 
     /* initializing this.state. */
@@ -32,6 +32,6 @@ it('should test handler', () => {
     componentWrapper.instance().state.invite_list = invite_list;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    //expect(componentWrapper.instance().state.startDate).toBe(expectedChecked.checked);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedInvite_List.invite_list);
+    expect(componentWrapper.instance().state.checked).toBe(expectedChecked);
+    expect(componentWrapper.instance().state.invite_list).toBe(expectedInvite_List.invite_list);
 });

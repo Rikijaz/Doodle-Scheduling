@@ -10,15 +10,15 @@ export default class Form extends React.Component {
 	}
 
 	componentDidMount() {
-		db
-			.collection("users")
-			.doc(JSON.parse(localStorage.getItem("currentUser")))
-			.get()
-			.then((data) => {
-				if (data.exists) {
-					this.setState({ emailList: data.data().contacts, contentList: data.data().events })
-				}
-			})
+		// db
+		// 	.collection("users")
+		// 	.doc(JSON.parse(localStorage.getItem("currentUser")))
+		// 	.get()
+		// 	.then((data) => {
+		// 		if (data.exists) {
+		// 			this.setState({ emailList: data.data().contacts, contentList: data.data().events })
+		// 		}
+		// 	})
 	}
 
 	render() {

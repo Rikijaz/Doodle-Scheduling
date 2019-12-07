@@ -96,20 +96,20 @@ it('should test handler', () => {
     expect(componentWrapper.instance().state.category).toBe(expectedCategory.category);
     expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.calendar);
 
-    // expect(componentWrapper.instance().state.firstPage).toBe(expectedFirstPage.firstPage);
-    // expect(componentWrapper.instance().state.secondPage).toBe(expectedSecondPage.secondPage);
-    // expect(componentWrapper.instance().state.thirdPage).toBe(expectedThirdPage.thirdPage);
+    expect(componentWrapper.instance().state.firstPage).toBe(expectedFirstPage);
+    expect(componentWrapper.instance().state.secondPage).toBe(expectedSecondPage);
+    expect(componentWrapper.instance().state.thirdPage).toBe(expectedThirdPage);
 
     expect(componentWrapper.instance().state.owners).toBe(expectedOwners.owners);
-    // expect(componentWrapper.instance().state.shared).toBe(expectedShared.shared);
+    expect(componentWrapper.instance().state.shared).toBe(expectedShared);
     expect(componentWrapper.instance().state.invitees).toBe(expectedInvitees.invitees);
 
-    // expect(componentWrapper.instance().state.errorMessageOpen).toBe(expectedErrorMessageOpen.errorMessageOpen);
+    expect(componentWrapper.instance().state.errorMessageOpen).toBe(expectedErrorMessageOpen);
     expect(componentWrapper.instance().state.message).toBe(expectedMessage.message);
-    // expect(componentWrapper.instance().state.successMessageOpen).toBe(expectedSuccessMessageOpen.successMessageOpen);
+    expect(componentWrapper.instance().state.successMessageOpen).toBe(expectedSuccessMessageOpen);
 
-    // expect(componentWrapper.instance().state.anchorEl).toBe(expectedAnchorEl.anchorEl);
-    // expect(componentWrapper.instance().state.openMenu).toBe(expectedOpenMenu.openMenu);
+    expect(componentWrapper.instance().state.anchorEl).toBe(expectedAnchorEl);
+    expect(componentWrapper.instance().state.openMenu).toBe(expectedOpenMenu);
 
     /* Blob */
     // // const file               = new Blob([fileContents], {type : 'text/plain'});
@@ -281,3 +281,25 @@ it('should test handler', () => {
     // //expect(component.setState).toEqual             (expectedAnchorEl           );  // 5
     // //expect(component.setState).toEqual             (expectedOpenMenu           );  // 5
 });
+
+// onUpdateProperty = (key, value) => {
+//     this.state.formData[key] = value;
+//   }
+
+it('submitEvent input should update invitees', function () 
+{
+    const componentWrapper = mount(<AddEvent/>);
+    const spy = spyOn(componentWrapper.instance(), 'submitEvent');
+
+    expect(spy).not.toHaveBeenCalled();
+
+    const nameInput = componentWrapper.find('[e="e"]');   // FIXME
+    nameInput.simulate('change', {
+        target: { name: ["testEvent1"], invitees: ["testinvitee1"] },   // replace name with e?
+    });
+
+    componentWrapper.update();
+
+    // expect(spy).toHaveBeenCalledWith('name', 'v1');
+    expect(spy).toHaveBeenCalled();
+});  

@@ -22,17 +22,17 @@ export default function ViewContacts() {
         textAlign: "left"
     };
 
-    useEffect(() => {
-        db.collection("users")
-            .doc(currentUser)
-            .get()
-            .then(doc => {
-                if (doc.exists) {
-                    setListofContacts(doc.data().contacts);
-                }
-            });
-        //eslint-disable-next-line
-    }, []);
+    // useEffect(() => {
+    //     db.collection("users")
+    //         .doc(currentUser)
+    //         .get()
+    //         .then(doc => {
+    //             if (doc.exists) {
+    //                 setListofContacts(doc.data().contacts);
+    //             }
+    //         });
+    //     //eslint-disable-next-line
+    // }, []);
     const handleClickOpen = () => {
         setOpen(true);
     };

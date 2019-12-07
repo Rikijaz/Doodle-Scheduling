@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import EventManager from './EventManager'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -26,10 +26,10 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedHomePage = {homePage: homePage};
-    const expectedEditingEvent = {editingEvent: editingEvent};
+    const expectedHomePage = homePage;
+    const expectedEditingEvent = editingEvent;
     const expectedIdOfEditEvent = {idOfEditEvent: idOfEditEvent};
-    const expectedJoinEvent = {joinEvent: joinEvent};
+    const expectedJoinEvent = joinEvent;
 
     /* initializing this.state. */
     componentWrapper.instance().state.homePage = homePage;
@@ -38,8 +38,8 @@ it('should test handler', () => {
     componentWrapper.instance().state.joinEvent = joinEvent;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    expect(componentWrapper.instance().state.homePage).toBe(expectedHomePage.homePage);
-    expect(componentWrapper.instance().state.editingEvent).toBe(expectedEditingEvent.editingEvent);
+    expect(componentWrapper.instance().state.homePage).toBe(expectedHomePage);
+    expect(componentWrapper.instance().state.editingEvent).toBe(expectedEditingEvent);
     expect(componentWrapper.instance().state.idOfEditEvent).toBe(expectedIdOfEditEvent.idOfEditEvent);
-    expect(componentWrapper.instance().state.joinEvent).toBe(expectedJoinEvent.joinEvent);
+    expect(componentWrapper.instance().state.joinEvent).toBe(expectedJoinEvent);
 });

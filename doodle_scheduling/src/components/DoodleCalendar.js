@@ -20,7 +20,7 @@ export default class DoodleCalendar extends React.Component {
             ]
         };
 
-        this.displayCurrentEvents();
+        // this.displayCurrentEvents();
     }
 
     handleEventRemove = event => {

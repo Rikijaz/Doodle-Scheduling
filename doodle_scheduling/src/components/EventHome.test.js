@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import EventHome from './EventHome'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -14,8 +14,10 @@ enzyme.configure({ adapter: new Adapter() });
 it('should test handler', () => {
     //const componentWrapper   = mount(<MyComponent/>);
     //const component          = componentWrapper.get(0);
-    const componentWrapper   = mount(<AddSecondPage/>);
+    const componentWrapper   = mount(<EventHome/>);
     const component          = componentWrapper.get(0);
+
+    //expect(componentWrapper.declineInvite("adaf")).toBe(/*return value form function here*/);
 
     /* this.state */
     //const fileContents       = 'file contents';
@@ -37,12 +39,12 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedOpenMenu = {openMenu: openMenu};
-    const expectedAnchorEl2 = {anchorEl2: anchorEl2};
-    const expectedOpenMenu2 = {openMenu2: openMenu2};
-    const expectedAnchorEl3 = {anchorEl3: anchorEl3};
-    const expectedOpenMenu3 = {openMenu3: openMenu3};
-    const expectedShowForm = {showForm: showForm};
+    const expectedOpenMenu = openMenu;
+    const expectedAnchorEl2 = anchorEl2;
+    const expectedOpenMenu2 = openMenu2;
+    const expectedAnchorEl3 = anchorEl3;
+    const expectedOpenMenu3 = openMenu3;
+    const expectedShowForm = showForm;
     const expectedShowShared = {showShared: showShared};
     const expectedEvents = {events: events};
     const expectedSharedEvents = {sharedEvents: sharedEvents};
@@ -71,19 +73,19 @@ it('should test handler', () => {
     componentWrapper.instance().state.search = search;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    expect(componentWrapper.instance().state.startDate).toBe(expectedStartDate.openMenu);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedEndDate.anchorEl2);
-    expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.openMenu2);
-    expect(componentWrapper.instance().state.startDate).toBe(expectedStartDate.anchorEl3);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedEndDate.openMenu3);
-    expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.showForm);
-    expect(componentWrapper.instance().state.startDate).toBe(expectedStartDate.showShared);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedEndDate.events);
-    expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.sharedEvents);
-    expect(componentWrapper.instance().state.startDate).toBe(expectedStartDate.acceptedEvents);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedEndDate.filteredEvents);
-    expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.filteredSharedEvents);
-    expect(componentWrapper.instance().state.startDate).toBe(expectedStartDate.filteredAcceptedEvents);
-    expect(componentWrapper.instance().state.endDate).toBe(expectedEndDate.eventSortOrder);
-    expect(componentWrapper.instance().state.calendar).toBe(expectedCalendar.search);
+    expect(componentWrapper.instance().state.openMenu).toBe(expectedOpenMenu);
+    expect(componentWrapper.instance().state.anchorEl2).toBe(expectedAnchorEl2);
+    expect(componentWrapper.instance().state.openMenu2).toBe(expectedOpenMenu2);
+    expect(componentWrapper.instance().state.anchorEl3).toBe(expectedAnchorEl3);
+    expect(componentWrapper.instance().state.openMenu3).toBe(expectedOpenMenu3);
+    expect(componentWrapper.instance().state.showForm).toBe(expectedShowForm);
+    expect(componentWrapper.instance().state.showShared).toBe(expectedShowShared.showShared);
+    expect(componentWrapper.instance().state.events).toBe(expectedEvents.events);
+    expect(componentWrapper.instance().state.sharedEvents).toBe(expectedSharedEvents.sharedEvents);
+    expect(componentWrapper.instance().state.acceptedEvents).toBe(expectedAcceptedEvents.acceptedEvents);
+    expect(componentWrapper.instance().state.filteredEvents).toBe(expectedFilteredEvents.filteredEvents);
+    expect(componentWrapper.instance().state.filteredSharedEvents).toBe(expectedFilteredSharedEvents.filteredSharedEvents);
+    expect(componentWrapper.instance().state.filteredAcceptedEvents).toBe(expectedFilteredAcceptedEvents.filteredAcceptedEvents);
+    expect(componentWrapper.instance().state.eventSortOrder).toBe(expectedEventSortOrder.eventSortOrder);
+    expect(componentWrapper.instance().state.search).toBe(expectedSearch.search);
 });

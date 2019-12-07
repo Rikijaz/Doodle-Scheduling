@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import Cards from './Cards'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -14,7 +14,7 @@ enzyme.configure({ adapter: new Adapter() });
 it('should test handler', () => {
     //const componentWrapper   = mount(<MyComponent/>);
     //const component          = componentWrapper.get(0);
-    const componentWrapper   = mount(<AddSecondPage/>);
+    const componentWrapper   = mount(<Cards/>);
     const component          = componentWrapper.get(0);
 
     /* this.state */
@@ -32,6 +32,6 @@ it('should test handler', () => {
     componentWrapper.instance().state.startShare = startShare;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    //expect(componentWrapper.instance().state.expanded).toBe(expectedExpanded.expanded);
-    //expect(componentWrapper.instance().state.startShare).toBe(expectedStartShare.startShare);
+    expect(componentWrapper.instance().state.expanded).toBe(expectedExpanded);
+    expect(componentWrapper.instance().state.startShare).toBe(expectedStartShare);
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import Header from './header'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -27,11 +27,11 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedUser = {user: user};
-    const expectedAddContactsPrompt = {addContactsPrompt: addContactsPrompt};
-    const expectedUnreadNotifications = {unreadNotifications: unreadNotifications};
+    const expectedUser = user;
+    const expectedAddContactsPrompt = addContactsPrompt;
+    const expectedUnreadNotifications = unreadNotifications;
     const expectedNotifications = {notifications: notifications};
-    const expectedDisplayNotifications = {displayNotifications: displayNotifications};
+    const expectedDisplayNotifications = displayNotifications;
 
     /* initializing this.state. */
     componentWrapper.instance().state.user = user;
@@ -41,9 +41,9 @@ it('should test handler', () => {
     componentWrapper.instance().state.displayNotifications = displayNotifications;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    expect(componentWrapper.instance().state.user).toBe(expectedUser.user);
-    expect(componentWrapper.instance().state.addContactsPrompt).toBe(expectedAddContactsPrompt.addContactsPrompt);
-    expect(componentWrapper.instance().state.unreadNotifications).toBe(expectedUnreadNotifications.unreadNotifications);
+    expect(componentWrapper.instance().state.user).toBe(expectedUser);
+    expect(componentWrapper.instance().state.addContactsPrompt).toBe(expectedAddContactsPrompt);
+    expect(componentWrapper.instance().state.unreadNotifications).toBe(expectedUnreadNotifications);
     expect(componentWrapper.instance().state.notifications).toBe(expectedNotifications.notifications);
-    expect(componentWrapper.instance().state.displayNotifications).toBe(expectedDisplayNotifications.displayNotifications);
+    expect(componentWrapper.instance().state.displayNotifications).toBe(expectedDisplayNotifications);
 });

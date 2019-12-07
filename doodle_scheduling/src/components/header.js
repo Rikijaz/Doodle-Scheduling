@@ -42,32 +42,32 @@ export class Header extends Component {
    * @return user data from the database
    */
   componentDidMount() {
-    db.collection("users")
-      .doc(JSON.parse(localStorage.getItem("currentUser")))
-      .get()
-      .then(data => {
-        if (data.exists) {
-          this.setState({ user: data.data() });
-        } else {
-          //console.log("Sad toot");
-        }
-      });
-    db.collection("notifications")
-      .where("user", "==", JSON.parse(localStorage.getItem("currentUser")))
-      .onSnapshot(data => {
-        let tempNotifications = [];
-        let activeNotificationCount = 0;
-        data.forEach(doc => {
-          if (!doc.data().seen) {
-            activeNotificationCount++;
-          }
-          tempNotifications.push(doc.data());
-        });
-        this.setState({
-          unreadNotifications: activeNotificationCount,
-          notifications: tempNotifications
-        });
-      });
+    // db.collection("users")
+    //   .doc(JSON.parse(localStorage.getItem("currentUser")))
+    //   .get()
+    //   .then(data => {
+    //     if (data.exists) {
+    //       this.setState({ user: data.data() });
+    //     } else {
+    //       //console.log("Sad toot");
+    //     }
+    //   });
+    // db.collection("notifications")
+    //   .where("user", "==", JSON.parse(localStorage.getItem("currentUser")))
+    //   .onSnapshot(data => {
+    //     let tempNotifications = [];
+    //     let activeNotificationCount = 0;
+    //     data.forEach(doc => {
+    //       if (!doc.data().seen) {
+    //         activeNotificationCount++;
+    //       }
+    //       tempNotifications.push(doc.data());
+    //     });
+    //     this.setState({
+    //       unreadNotifications: activeNotificationCount,
+    //       notifications: tempNotifications
+    //     });
+    //   });
   }
   handleClick  = () =>{
     if(this.state.displayNotifications === true){

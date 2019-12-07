@@ -1,6 +1,6 @@
 import React from 'react';
 import {mount} from 'enzyme';
-import AddSecondPage from './AddSecondPage'
+import DoodleCalendar from './DoodleCalendar'
 
 /* need this in .test.js files */
 import { configure } from 'enzyme';
@@ -24,7 +24,7 @@ it('should test handler', () => {
 
     /* expected final */
     //const expectedFinalState = {fileContents: fileContents};
-    const expectedLastUid = {lastUid: lastUid};
+    const expectedLastUid = lastUid;
     const expectedSelectedIntervals = {selectedIntervals: selectedIntervals};
 
     /* initializing this.state. */
@@ -32,6 +32,6 @@ it('should test handler', () => {
     componentWrapper.instance().state.selectedIntervals = selectedIntervals;
 
     /* testing this.state. */   //FIXME: testing does not work with booleans?? below commented tests return boolean values
-    expect(componentWrapper.instance().state.lastUid).toBe(expectedLastUid.lastUid);
+    expect(componentWrapper.instance().state.lastUid).toBe(expectedLastUid);
     expect(componentWrapper.instance().state.selectedIntervals).toBe(expectedSelectedIntervals.selectedIntervals);
 });
