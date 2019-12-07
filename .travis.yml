@@ -6,7 +6,6 @@ cache:
   - node_modules
 script:
   - npm run --prefix doodle_scheduling all-test
-  - npm run build
 deploy:
   provider: pages
   skip_cleanup: true
