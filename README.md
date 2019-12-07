@@ -2,6 +2,22 @@
 
 [Live demo](https://rikijaz.github.io/Doodle-Scheduling/ "Doodle Scheduling")
 
+## Testing
+
+1. Go to the appropriate directory.
+
+`cd doodle_scheduling`
+
+2. Set test script permission.
+
+`chmod +x tests.sh`
+
+3. Run test script. The script will install necessary dependencies and run all test files. 
+
+`bash ./tests.sh`
+
+The test files can be located in **doodle_scheduling/src/components**.
+
 ## Contributing
 
 All development occurs on the branch **dev**. Therefore, to contribute to this project you must create a branch that branches off of the **dev** branch.
