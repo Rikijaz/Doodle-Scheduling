@@ -16,6 +16,8 @@
 
 `bash ./tests.sh`
 
+Note: Sometimes the script may get stuck on a test. I do not know the reason, but CTRL + C should skip to the next test. 
+
 The test files can be located in **doodle_scheduling/src/components**.
 
 ## Contributing
